@@ -6055,11 +6055,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\IBZ\\Downloads\\Kaustub_RestSharp API Automation\\EnterpriseApiAutomationFramework\\EnterpriseApiAutomationFramework\\EnterpriseApiAutomationFramework.csproj",
+      "projectUniqueName": "c:\\Users\\IBZ\\Downloads\\Kaustub_RestSharp API Automation\\EnterpriseApiAutomationFramework\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
       "projectName": "EnterpriseApiAutomationFramework",
-      "projectPath": "C:\\Users\\IBZ\\Downloads\\Kaustub_RestSharp API Automation\\EnterpriseApiAutomationFramework\\EnterpriseApiAutomationFramework\\EnterpriseApiAutomationFramework.csproj",
+      "projectPath": "c:\\Users\\IBZ\\Downloads\\Kaustub_RestSharp API Automation\\EnterpriseApiAutomationFramework\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
       "packagesPath": "C:\\Users\\IBZ\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\IBZ\\Downloads\\Kaustub_RestSharp API Automation\\EnterpriseApiAutomationFramework\\EnterpriseApiAutomationFramework\\obj\\",
+      "outputPath": "c:\\Users\\IBZ\\Downloads\\Kaustub_RestSharp API Automation\\EnterpriseApiAutomationFramework\\RestAPI_AutomationFramework\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

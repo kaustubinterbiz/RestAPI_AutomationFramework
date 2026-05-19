@@ -6,22 +6,29 @@ namespace EnterpriseApiAutomationFramework.Core.Configurations;
 
 public static class ConfigReaderNew
 {
-    // Dictionary to store multiple config files
     private static readonly Dictionary<string, IConfigurationRoot> _configs = new();
+    private static string? _activeConfigName;
 
     /// <summary>
-    /// Load any JSON config file dynamically with a key name
-    /// Example: "app", "login", "endpoint"
+    /// Load a JSON file and set it as the active config (keys from GetValue come from this file).
+    /// </summary>
+    public static void LoadConfig(string fileName)
+    {
+        LoadConfig(fileName, fileName, setAsActive: true);
+    }
+
+    /// <summary>
+    /// Load any JSON config file with a logical name. When setAsActive is true (default),
+    /// subsequent GetValue(key) calls read from this file, not a previously loaded one.
     /// </summary>
     public static void LoadConfig(
         string configName,
-        string fileName = "appsettings.json")
+        string fileName,
+        bool setAsActive = true)
     {
         string fullPath = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             fileName);
-
-        Console.WriteLine($"Loading config: {fullPath}");
 
         if (!File.Exists(fullPath))
         {
@@ -31,20 +38,39 @@ public static class ConfigReaderNew
 
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile(fileName, optional: false, reloadOnChange: true)
+            .AddJsonFile(fileName, optional: false, reloadOnChange: false)
             .Build();
 
         _configs[configName] = configuration;
+
+        if (setAsActive)
+        {
+            _activeConfigName = configName;
+        }
     }
 
     /// <summary>
-    /// Get value from specific config file using key
+    /// Get a value from the currently active (most recently loaded) config file.
+    /// </summary>
+    public static string GetValue(string key)
+    {
+        if (string.IsNullOrEmpty(_activeConfigName) || !_configs.ContainsKey(_activeConfigName))
+        {
+            throw new InvalidOperationException(
+                "No config is active. Call LoadConfig first.");
+        }
+
+        return _configs[_activeConfigName][key] ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Get a value from a specific named config (does not change the active config).
     /// </summary>
     public static string GetValue(string configName, string key)
     {
         if (!_configs.ContainsKey(configName))
         {
-            throw new Exception(
+            throw new InvalidOperationException(
                 $"Config '{configName}' is not loaded. Call LoadConfig first.");
         }
 
@@ -137,7 +163,7 @@ public static class ConfigReaderNew
     }
 
     /// <summary>
-    /// Get specific value directly from JSON file
+    /// Get specific value directly from JSON file (one-off read, no LoadConfig required)
     /// </summary>
     public static string GetJsonValue(
         string filePath,
