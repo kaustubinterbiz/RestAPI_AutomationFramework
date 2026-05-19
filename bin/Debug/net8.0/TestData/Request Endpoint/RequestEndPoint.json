@@ -1,4 +1,5 @@
 {
-  "get": "/Product/GetProductById/{id}",
+  "get": "$/Product/GetProductById/{id}",
+  "id": "1",
   "password": "123456"
 }

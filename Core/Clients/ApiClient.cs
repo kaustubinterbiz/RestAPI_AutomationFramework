@@ -1,5 +1,6 @@
 using RestSharp;
 using EnterpriseApiAutomationFramework.Core.Builders;
+using EnterpriseApiAutomationFramework.Core.Helpers;
 
 namespace EnterpriseApiAutomationFramework.Core.Clients;
 
@@ -16,7 +17,11 @@ public class ApiClient
 
     public async Task<RestResponse> GetAsync(string endpoint)
     {
-        var request = _requestBuilder.BuildRequest(endpoint, Method.Get);
+        var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveUrlSegments(endpoint);
+        var request = _requestBuilder.BuildRequest(
+            resolvedEndpoint,
+            Method.Get,
+            urlSegments: urlSegments.Count > 0 ? urlSegments : null);
         return await _client.ExecuteAsync(request);
     }
 

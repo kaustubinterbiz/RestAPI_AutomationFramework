@@ -11,9 +11,18 @@ public class RequestBuilder
         object? body = null,
         Dictionary<string, string>? headers = null,
         Dictionary<string, string>? queryParams = null,
+        Dictionary<string, string>? urlSegments = null,
         bool authorizationRequired = true)
     {
         var request = new RestRequest(endpoint, method);
+
+        if (urlSegments != null)
+        {
+            foreach (var segment in urlSegments)
+            {
+                request.AddUrlSegment(segment.Key, segment.Value);
+            }
+        }
 
         request.AddHeader("Content-Type", "application/json");
 
