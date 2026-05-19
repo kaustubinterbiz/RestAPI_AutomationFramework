@@ -58,4 +58,11 @@ public class UserSteps
     {
         ResponseValidator.ValidateStatusCode(response!, statusCode);
     }
+
+    [Then("Status should be (.*)")]
+    public void ThenStatusShouldBe(string status)
+    {
+        ResponseValidator.ValidateStatus(response!, status);
+    }
+
 }

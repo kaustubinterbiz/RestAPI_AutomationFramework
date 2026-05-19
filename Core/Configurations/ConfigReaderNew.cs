@@ -211,7 +211,7 @@ public static class ConfigReaderNew
 
         return result ?? throw new JsonException(
             $"Failed to deserialize '{filePath}' to {typeof(T).Name}.");
-    }
+     }
 
     /// <summary>
     /// Reads a JSON file as a mutable <see cref="JsonNode"/> tree (always reads from disk).

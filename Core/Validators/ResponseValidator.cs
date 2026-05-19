@@ -11,6 +11,12 @@ public static class ResponseValidator
         ((int)response.StatusCode).Should().Be(expectedStatusCode);
     }
 
+    public static void ValidateStatus(RestResponse response, string expectedStatusCode)
+    {
+        string status = response.StatusCode.ToString();
+        status.Equals(expectedStatusCode);
+    }
+
     // RestSharp v107+ removed ResponseTime property.
     // Use Stopwatch response timing from ApiClient and pass actualResponseTime.
     public static void ValidateResponseTime(long actualResponseTime, long expectedTime)
