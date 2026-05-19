@@ -4,19 +4,26 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="TestData\Login\LoginRequest.json" />
+    <None Remove="TestData\Request Endpoint\RequestBody.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="specflow.json" />
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\Login\LoginRequest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Request Endpoint\RequestBody.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator></Generator>
     </Content>
     <Content Include="TestData\Request Endpoint\RequestEndPoint.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -36,6 +43,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

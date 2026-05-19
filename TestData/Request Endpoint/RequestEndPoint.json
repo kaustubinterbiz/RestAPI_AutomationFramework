@@ -1,4 +1,6 @@
 {
   "get": "/Product/GetProductById/{id}",
-  "password": "123456"
+  "post": "/api/Authenticate/Login",
+  "id": "1",
+  "create_product": "/Product/Create"
 }

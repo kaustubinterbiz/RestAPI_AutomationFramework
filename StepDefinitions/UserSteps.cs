@@ -25,12 +25,15 @@ public class UserSteps
     [When(@"User sends POST request")]
     public async Task PostRequest()
     {
-        response = await _driver.CreateUser(new
-        {
-            UserName = "username",
-            Password = "password"
-        });
+        response = await _driver.LoginAsync();
     }
+
+    [When("User sends POST request to create")]
+    public async Task WhenUserSendsPOSTRequestToCreate()
+    {
+        response = await _driver.PostUser("appsettings.json", "EndpointJson", "create_product", "JsonBody","productCreateBody" );
+    }
+
 
     [When(@"User sends PUT request")]
     public async Task PutRequest()
@@ -62,4 +65,11 @@ public class UserSteps
     {
         ResponseValidator.ValidateStatusCode(response!, statusCode);
     }
+
+    [Then("Status should be (.*)")]
+    public void ThenStatusShouldBe(string status)
+    {
+        ResponseValidator.ValidateStatus(response!, status);
+    }
+
 }
