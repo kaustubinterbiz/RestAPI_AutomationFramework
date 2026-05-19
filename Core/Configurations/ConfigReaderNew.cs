@@ -1,162 +1,377 @@
-﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Configuration;
 
 namespace EnterpriseApiAutomationFramework.Core.Configurations;
 
+/// <summary>
+/// Thread-safe, file-based configuration loader.
+/// Each <see cref="LoadConfig(string)"/> call disposes prior data and loads only the new file.
+/// Use <see cref="GetValue(string)"/> on this class — not <see cref="ConfigReader"/> — after loading.
+/// </summary>
 public static class ConfigReaderNew
 {
-    // Dictionary to store multiple config files
-    private static readonly Dictionary<string, IConfigurationRoot> _configs = new();
+    public const string DefaultConfigKey = "default";
+
+    private static readonly object Sync = new();
+    private static readonly Dictionary<string, ConfigurationEntry> Entries =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    private static string _activeConfigKey = DefaultConfigKey;
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+        WriteIndented = true
+    };
 
     /// <summary>
-    /// Load any JSON config file dynamically with a key name
-    /// Example: "app", "login", "endpoint"
+    /// True when at least one configuration has been loaded.
+    /// </summary>
+    public static bool IsLoaded
+    {
+        get
+        {
+            lock (Sync)
+            {
+                return Entries.Count > 0;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Loads a JSON file as the sole active configuration.
+    /// All previously loaded entries are disposed and removed.
+    /// </summary>
+    public static void LoadConfig(string fileName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+
+        var resolvedPath = ResolvePath(fileName);
+        var entry = CreateEntry(resolvedPath);
+
+        lock (Sync)
+        {
+            DisposeAllEntries();
+            Entries[DefaultConfigKey] = entry;
+            _activeConfigKey = DefaultConfigKey;
+        }
+    }
+
+    /// <summary>
+    /// Loads (or replaces) a named configuration without clearing other named entries.
     /// </summary>
     public static void LoadConfig(
         string configName,
-        string fileName = "appsettings.json")
+        string fileName,
+        bool setAsActive = true)
     {
-        string fullPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            fileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(configName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
 
-        Console.WriteLine($"Loading config: {fullPath}");
+        var resolvedPath = ResolvePath(fileName);
+        var entry = CreateEntry(resolvedPath);
 
-        if (!File.Exists(fullPath))
+        lock (Sync)
         {
-            throw new FileNotFoundException(
-                $"Configuration file not found: {fullPath}");
+            if (Entries.Remove(configName, out var previous))
+            {
+                previous.Dispose();
+            }
+
+            Entries[configName] = entry;
+
+            if (setAsActive)
+            {
+                _activeConfigKey = configName;
+            }
         }
-
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile(fileName, optional: false, reloadOnChange: true)
-            .Build();
-
-        _configs[configName] = configuration;
     }
 
     /// <summary>
-    /// Get value from specific config file using key
+    /// Sets which named configuration <see cref="GetValue(string)"/> reads from.
+    /// </summary>
+    public static void SetActiveConfig(string configName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(configName);
+
+        lock (Sync)
+        {
+            if (!Entries.ContainsKey(configName))
+            {
+                throw new InvalidOperationException(
+                    $"Config '{configName}' is not loaded. Call LoadConfig first.");
+            }
+
+            _activeConfigKey = configName;
+        }
+    }
+
+    /// <summary>
+    /// Gets a value from the active configuration (nested keys use ':' e.g. "App:BaseUrl").
+    /// </summary>
+    public static string GetValue(string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        lock (Sync)
+        {
+            return GetValueCore(_activeConfigKey, key);
+        }
+    }
+
+    /// <summary>
+    /// Gets a value from a named configuration.
     /// </summary>
     public static string GetValue(string configName, string key)
     {
-        if (!_configs.ContainsKey(configName))
-        {
-            throw new Exception(
-                $"Config '{configName}' is not loaded. Call LoadConfig first.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(configName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-        return _configs[configName][key] ?? string.Empty;
+        lock (Sync)
+        {
+            return GetValueCore(configName, key);
+        }
     }
 
     /// <summary>
-    /// Read complete JSON file and deserialize into object
+    /// Binds a configuration section to a strongly-typed object from the active config.
+    /// </summary>
+    public static T GetSection<T>(string sectionName) where T : class, new()
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sectionName);
+
+        lock (Sync)
+        {
+            return GetSectionCore<T>(_activeConfigKey, sectionName);
+        }
+    }
+
+    /// <summary>
+    /// Binds a configuration section from a named config to a strongly-typed object.
+    /// </summary>
+    public static T GetSection<T>(string configName, string sectionName)
+        where T : class, new()
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(configName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sectionName);
+
+        lock (Sync)
+        {
+            return GetSectionCore<T>(configName, sectionName);
+        }
+    }
+
+    /// <summary>
+    /// Removes and disposes a single named configuration.
+    /// </summary>
+    public static bool Unload(string configName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(configName);
+
+        lock (Sync)
+        {
+            if (!Entries.Remove(configName, out var entry))
+            {
+                return false;
+            }
+
+            entry.Dispose();
+
+            if (_activeConfigKey.Equals(configName, StringComparison.OrdinalIgnoreCase))
+            {
+                _activeConfigKey = Entries.Keys.FirstOrDefault() ?? DefaultConfigKey;
+            }
+
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Disposes all loaded configurations and clears in-memory state.
+    /// </summary>
+    public static void ClearAll()
+    {
+        lock (Sync)
+        {
+            DisposeAllEntries();
+            _activeConfigKey = DefaultConfigKey;
+        }
+    }
+
+    /// <summary>
+    /// Deserializes a JSON file into <typeparamref name="T"/> (always reads from disk; not cached).
     /// </summary>
     public static T ReadJson<T>(string filePath)
     {
-        string fullPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            filePath);
+        var json = ReadFileText(filePath);
+        var result = JsonSerializer.Deserialize<T>(json, JsonOptions);
 
-        if (!File.Exists(fullPath))
-        {
-            throw new FileNotFoundException(
-                $"JSON file not found: {fullPath}");
-        }
-
-        var json = File.ReadAllText(fullPath);
-
-        return JsonConvert.DeserializeObject<T>(json)!;
+        return result ?? throw new JsonException(
+            $"Failed to deserialize '{filePath}' to {typeof(T).Name}.");
     }
 
     /// <summary>
-    /// Read JSON as JObject
+    /// Reads a JSON file as a mutable <see cref="JsonNode"/> tree (always reads from disk).
     /// </summary>
-    public static JObject ReadJson(string filePath)
+    public static JsonNode ReadJson(string filePath)
     {
-        string fullPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            filePath);
-
-        if (!File.Exists(fullPath))
+        var json = ReadFileText(filePath);
+        return JsonNode.Parse(json, documentOptions: new JsonDocumentOptions
         {
-            throw new FileNotFoundException(
-                $"JSON file not found: {fullPath}");
-        }
-
-        var json = File.ReadAllText(fullPath);
-
-        return JObject.Parse(json);
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true
+        }) ?? throw new JsonException($"JSON file '{filePath}' is empty or invalid.");
     }
 
     /// <summary>
-    /// Write object into JSON file
+    /// Serializes an object to a JSON file.
     /// </summary>
     public static void WriteJson<T>(string filePath, T data)
     {
-        string fullPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            filePath);
+        ArgumentNullException.ThrowIfNull(data);
 
-        var json = JsonConvert.SerializeObject(
-            data,
-            Formatting.Indented);
+        var fullPath = ResolvePath(filePath);
+        var directory = Path.GetDirectoryName(fullPath);
 
+        if (!string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        var json = JsonSerializer.Serialize(data, JsonOptions);
         File.WriteAllText(fullPath, json);
     }
 
     /// <summary>
-    /// Update JSON key value (flat JSON only)
+    /// Updates a top-level key in a JSON file (flat keys only).
     /// </summary>
-    public static void UpdateJsonValue(
-        string filePath,
-        string key,
-        string value)
+    public static void UpdateJsonValue(string filePath, string key, string value)
     {
-        string fullPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            filePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
 
-        if (!File.Exists(fullPath))
+        var fullPath = ResolvePath(filePath);
+        var jsonNode = ReadJson(filePath);
+
+        if (jsonNode is not JsonObject jsonObject)
         {
-            throw new FileNotFoundException(
-                $"JSON file not found: {fullPath}");
+            throw new JsonException($"JSON root in '{fullPath}' is not an object.");
         }
 
-        var json = File.ReadAllText(fullPath);
-
-        var jObject = JObject.Parse(json);
-
-        jObject[key] = value;
-
-        File.WriteAllText(
-            fullPath,
-            jObject.ToString(Formatting.Indented));
+        jsonObject[key] = value;
+        File.WriteAllText(fullPath, jsonObject.ToJsonString(JsonOptions));
     }
 
     /// <summary>
-    /// Get specific value directly from JSON file
+    /// Reads a top-level value directly from a JSON file (not from loaded config cache).
     /// </summary>
-    public static string GetJsonValue(
-        string filePath,
-        string key)
+    public static string GetJsonValue(string filePath, string key)
     {
-        string fullPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            filePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        var jsonObject = ReadJson(filePath);
+
+        if (jsonObject is not JsonObject obj)
+        {
+            throw new JsonException($"JSON root in '{filePath}' is not an object.");
+        }
+
+        return obj[key]?.ToString() ?? string.Empty;
+    }
+
+    private static string GetValueCore(string configName, string key)
+    {
+        if (!Entries.TryGetValue(configName, out var entry))
+        {
+            throw new InvalidOperationException(
+                $"Config '{configName}' is not loaded. Call LoadConfig first.");
+        }
+
+        return entry.Root[key] ?? string.Empty;
+    }
+
+    private static T GetSectionCore<T>(string configName, string sectionName)
+        where T : class, new()
+    {
+        if (!Entries.TryGetValue(configName, out var entry))
+        {
+            throw new InvalidOperationException(
+                $"Config '{configName}' is not loaded. Call LoadConfig first.");
+        }
+
+        var section = entry.Root.GetSection(sectionName);
+        var result = section.Get<T>();
+
+        return result ?? throw new InvalidOperationException(
+            $"Section '{sectionName}' was not found or could not be bound in config '{configName}'.");
+    }
+
+    private static ConfigurationEntry CreateEntry(string resolvedPath)
+    {
+        if (!File.Exists(resolvedPath))
+        {
+            throw new FileNotFoundException(
+                $"Configuration file not found: {resolvedPath}",
+                resolvedPath);
+        }
+
+        // New builder per load — no shared providers, reloadOnChange: false avoids file watchers.
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Path.GetDirectoryName(resolvedPath)!)
+            .AddJsonFile(Path.GetFileName(resolvedPath), optional: false, reloadOnChange: false)
+            .Build();
+
+        return new ConfigurationEntry(configuration, resolvedPath);
+    }
+
+    private static void DisposeAllEntries()
+    {
+        foreach (var entry in Entries.Values)
+        {
+            entry.Dispose();
+        }
+
+        Entries.Clear();
+    }
+
+    private static string ResolvePath(string filePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+
+        return Path.IsPathRooted(filePath)
+            ? Path.GetFullPath(filePath)
+            : Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, filePath));
+    }
+
+    private static string ReadFileText(string filePath)
+    {
+        var fullPath = ResolvePath(filePath);
 
         if (!File.Exists(fullPath))
         {
-            throw new FileNotFoundException(
-                $"JSON file not found: {fullPath}");
+            throw new FileNotFoundException($"JSON file not found: {fullPath}", fullPath);
         }
 
-        var json = File.ReadAllText(fullPath);
+        return File.ReadAllText(fullPath);
+    }
 
-        var jObject = JObject.Parse(json);
+    private sealed class ConfigurationEntry(IConfigurationRoot root, string resolvedPath) : IDisposable
+    {
+        public IConfigurationRoot Root { get; } =
+            root ?? throw new ArgumentNullException(nameof(root));
 
-        return jObject[key]?.ToString() ?? string.Empty;
+        public string ResolvedPath { get; } =
+            resolvedPath ?? throw new ArgumentNullException(nameof(resolvedPath));
+
+        public void Dispose()
+        {
+            if (Root is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
     }
 }

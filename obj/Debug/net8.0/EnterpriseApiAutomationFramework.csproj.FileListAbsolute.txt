@@ -552,3 +552,4 @@ C:\Users\IBZ\Downloads\Kaustub_RestSharp API Automation\RestAPI_AutomationFramew
 C:\Users\IBZ\Downloads\Kaustub_RestSharp API Automation\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.pdb
 C:\Users\IBZ\Downloads\Kaustub_RestSharp API Automation\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.genruntimeconfig.cache
 C:\Users\IBZ\Downloads\Kaustub_RestSharp API Automation\RestAPI_AutomationFramework\obj\Debug\net8.0\ref\EnterpriseApiAutomationFramework.dll
+c:\Users\IBZ\Downloads\Kaustub_RestSharp API Automation\RestAPI_AutomationFramework\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Binder.dll

@@ -16,9 +16,9 @@ public class UserDriver
     public async Task<RestResponse> GetUsers(string env, string key, string request)
     {
         ConfigReaderNew.LoadConfig(env);
-        string value = ConfigReader.GetValue(key);
+        string value = ConfigReaderNew.GetValue(key);
         ConfigReaderNew.LoadConfig(value);
-        string endPoint = ConfigReader.GetValue(request);
+        string endPoint = ConfigReaderNew.GetValue(request);
         return await _apiClient.GetAsync(endPoint);
     }
 
