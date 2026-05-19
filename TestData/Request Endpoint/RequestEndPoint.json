@@ -1,5 +1,6 @@
 {
   "get": "/Product/GetProductById/{id}",
   "post": "/api/Authenticate/Login",
-  "id": "1"
+  "id": "1",
+  "create_product": "/Product/Create"
 }

@@ -31,6 +31,19 @@ public class UserDriver
         return await _apiClient.GetAsync(endPoint);
     }
 
+    public async Task<RestResponse> PostUser(string env, string key, string request, string jsonBodyFileKey, string bodyKey)
+    {
+        AuthService.LoadTokenFromConfig();
+
+        ConfigReaderNew.LoadConfig(env);
+        var endpointConfigPath = ConfigReaderNew.GetValue(key);
+        var requestBodyPath = ConfigReaderNew.GetValue(jsonBodyFileKey);
+        ConfigReaderNew.LoadConfig(endpointConfigPath);
+        var endPoint = ConfigReaderNew.GetValue(request);
+        var json = ConfigReaderNew.GetJsonBody(requestBodyPath, bodyKey);
+        return await _apiClient.PostAsync(endPoint, json);
+    }
+
     public async Task<RestResponse> UpdateUser(object body)
     {
         return await _apiClient.PutAsync("/users/2", body);

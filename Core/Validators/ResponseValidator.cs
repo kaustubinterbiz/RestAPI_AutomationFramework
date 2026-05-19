@@ -13,6 +13,8 @@ public static class ResponseValidator
 
     public static void ValidateStatus(RestResponse response, string expectedStatus)
     {
+        string s = response.StatusCode.ToString();
+        bool b = s.Equals(expectedStatus);
         response.StatusCode.ToString().Should().Be(expectedStatus);
     }
 

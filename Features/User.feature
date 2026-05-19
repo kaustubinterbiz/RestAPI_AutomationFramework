@@ -1,25 +1,25 @@
 Feature: User API Testing
 
-Scenario: Verify POST User API to get Token
+Scenario:1.Verify POST User API to get Token
     When User sends POST request
     Then Status should be OK
 
-Scenario: Verify GET Product API
+Scenario:2.Verify GET Product API
     When User sends GET request
     Then Status code should be 200
 
-Scenario: Verify POST User API
-    When User sends POST request
+Scenario:3.Verify POST User API
+    When User sends POST request to create
     Then Status should be OK
 
-Scenario: Verify PUT User API
+Scenario:4.Verify PUT User API
     When User sends PUT request
     Then Status code should be 200
 
-Scenario: Verify PATCH User API
+Scenario:5.Verify PATCH User API
     When User sends PATCH request
     Then Status code should be 200
 
-Scenario: Verify DELETE User API
+Scenario:6.Verify DELETE User API
     When User sends DELETE request
     Then Status code should be 204

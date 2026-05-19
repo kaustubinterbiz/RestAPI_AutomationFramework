@@ -49,7 +49,14 @@ public class RequestBuilder
 
         if (body != null)
         {
-            request.AddJsonBody(body);
+            if (body is string jsonBody && !string.IsNullOrWhiteSpace(jsonBody))
+            {
+                request.AddStringBody(jsonBody, ContentType.Json);
+            }
+            else
+            {
+                request.AddJsonBody(body);
+            }
         }
 
         return request;

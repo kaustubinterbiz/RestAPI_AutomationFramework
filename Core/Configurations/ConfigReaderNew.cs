@@ -282,6 +282,32 @@ public static class ConfigReaderNew
         return obj[key]?.ToString() ?? string.Empty;
     }
 
+    /// <summary>
+    /// Reads a top-level key from a JSON file and returns its full value as a JSON string
+    /// (including nested objects and arrays).
+    /// </summary>
+    public static string GetJsonBody(string filePath, string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        var fullPath = ResolvePath(filePath);
+        var root = ReadJson(fullPath);
+
+        if (root is not JsonObject obj)
+        {
+            throw new JsonException($"JSON root in '{fullPath}' is not an object.");
+        }
+
+        if (!obj.TryGetPropertyValue(key, out var node) || node is null)
+        {
+            throw new InvalidOperationException(
+                $"Key '{key}' was not found in '{fullPath}'.");
+        }
+
+        return node.ToJsonString(JsonOptions);
+    }
+
     private static string GetValueCore(string configName, string key)
     {
         if (!Entries.TryGetValue(configName, out var entry))

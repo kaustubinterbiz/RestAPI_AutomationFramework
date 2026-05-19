@@ -1,0 +1,12 @@
+{
+  "productCreateBody": {
+
+       "productId": 0,
+       "name": "Test",
+       "description": null,
+       "price": 0,
+       "components": null,
+       "productType": 0
+
+  }
+}

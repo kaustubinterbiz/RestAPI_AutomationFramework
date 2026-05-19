@@ -28,6 +28,13 @@ public class UserSteps
         response = await _driver.LoginAsync();
     }
 
+    [When("User sends POST request to create")]
+    public async Task WhenUserSendsPOSTRequestToCreate()
+    {
+        response = await _driver.PostUser("appsettings.json", "EndpointJson", "create_product", "JsonBody","productCreateBody" );
+    }
+
+
     [When(@"User sends PUT request")]
     public async Task PutRequest()
     {
