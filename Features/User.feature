@@ -1,5 +1,9 @@
 Feature: User API Testing
 
+Scenario: Verify POST User API to get Token
+    When User sends POST request
+    Then Status should be OK
+
 Scenario: Verify GET Product API
     When User sends GET request
     Then Status code should be 200

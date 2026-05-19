@@ -341,9 +341,45 @@ public static class ConfigReaderNew
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
 
-        return Path.IsPathRooted(filePath)
-            ? Path.GetFullPath(filePath)
-            : Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, filePath));
+        if (Path.IsPathRooted(filePath))
+        {
+            return Path.GetFullPath(filePath);
+        }
+
+        // Prefer files next to the .csproj (source tree) so appsettings Token
+        // updates are visible in the IDE, not only under bin\Debug\...\.
+        var nearProject = FindFileNearProjectRoot(filePath);
+        if (nearProject != null)
+        {
+            return nearProject;
+        }
+
+        var inOutput = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, filePath));
+        if (File.Exists(inOutput))
+        {
+            return inOutput;
+        }
+
+        var inWorkingDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), filePath));
+        return inWorkingDir;
+    }
+
+    private static string? FindFileNearProjectRoot(string relativePath)
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (dir != null)
+        {
+            if (dir.GetFiles("*.csproj").Length > 0)
+            {
+                var candidate = Path.GetFullPath(Path.Combine(dir.FullName, relativePath));
+                return File.Exists(candidate) ? candidate : null;
+            }
+
+            dir = dir.Parent;
+        }
+
+        return null;
     }
 
     private static string ReadFileText(string filePath)

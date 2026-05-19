@@ -32,7 +32,7 @@ public static class AuthService
         ConfigReaderNew.LoadConfig(endpointJsonPath);
         var loginEndpoint = ConfigReaderNew.GetValue("post");
 
-        var response = await apiClient.PostAsync(loginEndpoint, credentials, authorizationRequired: false);
+        var response = await apiClient.PostAsync(loginEndpoint, credentials, authorizationRequired: true);
 
         if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
         {
