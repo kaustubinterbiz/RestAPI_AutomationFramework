@@ -1,0 +1,4 @@
+{
+  "get": "/Product/GetProductById/{id}",
+  "password": "123456"
+}
