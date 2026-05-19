@@ -1,5 +1,5 @@
 {
-  "get": "$/Product/GetProductById/{id}",
-  "id": "1",
-  "password": "123456"
+  "get": "/Product/GetProductById/{id}",
+  "post": "/api/Authenticate/Login",
+  "id": "1"
 }

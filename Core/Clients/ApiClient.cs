@@ -25,9 +25,16 @@ public class ApiClient
         return await _client.ExecuteAsync(request);
     }
 
-    public async Task<RestResponse> PostAsync(string endpoint, object body)
+    public async Task<RestResponse> PostAsync(
+        string endpoint,
+        object body,
+        bool authorizationRequired = true)
     {
-        var request = _requestBuilder.BuildRequest(endpoint, Method.Post, body);
+        var request = _requestBuilder.BuildRequest(
+            endpoint,
+            Method.Post,
+            body,
+            authorizationRequired: authorizationRequired);
         return await _client.ExecuteAsync(request);
     }
 

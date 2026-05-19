@@ -1,12 +1,12 @@
 Feature: User API Testing
 
+Scenario: Verify POST Login API
+    When User sends POST request
+    Then Status code should be 200
+
 Scenario: Verify GET Product API
     When User sends GET request
-    Then Status code should be 300
-
-Scenario: Verify POST User API
-    When User sends POST request
-    Then Status code should be 201
+    Then Status code should be 200
 
 Scenario: Verify PUT User API
     When User sends PUT request

@@ -25,11 +25,7 @@ public class UserSteps
     [When(@"User sends POST request")]
     public async Task PostRequest()
     {
-        response = await _driver.CreateUser(new
-        {
-            UserName = "username",
-            Password = "password"
-        });
+        response = await _driver.LoginAsync();
     }
 
     [When(@"User sends PUT request")]

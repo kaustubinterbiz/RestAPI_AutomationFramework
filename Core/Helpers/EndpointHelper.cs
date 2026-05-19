@@ -5,51 +5,44 @@ namespace EnterpriseApiAutomationFramework.Core.Helpers;
 
 public static partial class EndpointHelper
 {
-    [GeneratedRegex(@"\{([^}]+)\}", RegexOptions.Compiled)]
-    private static partial Regex UrlSegmentRegex();
+    private static readonly Regex UrlSegmentPattern = UrlSegmentRegex();
 
     /// <summary>
-    /// Strips an optional leading '$' and resolves {segment} placeholders from the active config.
+    /// Resolves endpoint placeholders such as {id} using values from the active config
+    /// (e.g. RequestEndPoint.json loaded via ConfigReaderNew).
     /// </summary>
-    public static (string Endpoint, Dictionary<string, string> UrlSegments) ResolveUrlSegments(
-        string endpoint)
+    public static (string Endpoint, Dictionary<string, string> UrlSegments) ResolveUrlSegments(string endpoint)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(endpoint);
 
         if (endpoint.StartsWith('$'))
         {
-            endpoint = endpoint[1..];
+            endpoint = ConfigReaderNew.GetValue(endpoint[1..]);
         }
 
-        var segments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var urlSegments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (Match match in UrlSegmentRegex().Matches(endpoint))
+        foreach (Match match in UrlSegmentPattern.Matches(endpoint))
         {
-            var segmentName = match.Groups[1].Value;
-
-            if (segments.ContainsKey(segmentName))
+            var key = match.Groups[1].Value;
+            if (urlSegments.ContainsKey(key))
             {
                 continue;
             }
 
-            if (!ConfigReaderNew.IsLoaded)
-            {
-                throw new InvalidOperationException(
-                    $"Endpoint '{endpoint}' contains '{{{segmentName}}}' but no configuration is loaded. " +
-                    "Call ConfigReaderNew.LoadConfig before sending the request.");
-            }
-
-            var value = ConfigReaderNew.GetValue(segmentName);
-
+            var value = ConfigReaderNew.GetValue(key);
             if (string.IsNullOrWhiteSpace(value))
             {
                 throw new InvalidOperationException(
-                    $"URL segment '{{{segmentName}}}' in endpoint '{endpoint}' has no value in the loaded configuration.");
+                    $"URL segment '{{{key}}}' was not found in the active configuration.");
             }
 
-            segments[segmentName] = value;
+            urlSegments[key] = value;
         }
 
-        return (endpoint, segments);
+        return (endpoint, urlSegments);
     }
+
+    [GeneratedRegex(@"\{(\w+)\}", RegexOptions.Compiled)]
+    private static partial Regex UrlSegmentRegex();
 }
