@@ -1,10 +1,23 @@
-﻿# Visual Studio cache folder
+﻿# Visual Studio / IDE
 .vs/
-
-# Build output folders
-bin/
-obj/
-
-# User-specific files
 *.user
 *.suo
+
+# Build output (all projects)
+[Bb]in/
+[Oo]bj/
+
+# Test host temp
+**/nunit_random_seed.tmp
+
+# Sequential Extent HTML reports (folders kept via .gitkeep)
+Reports/Html/*.html
+
+# Legacy Extent output path (deprecated; use Reports/Html)
+ExtentReports/*.html
+
+# Parallel execution generated artifacts
+Reports/Parallel/Workers/**/*
+!Reports/Parallel/Workers/.gitkeep
+Reports/Parallel/Consolidated/**/*
+!Reports/Parallel/Consolidated/.gitkeep

@@ -52,6 +52,10 @@
           "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
+            "ExtentReports": {
+              "target": "Package",
+              "version": "[5.0.4, )"
+            },
             "FluentAssertions": {
               "target": "Package",
               "version": "[6.12.0, )"

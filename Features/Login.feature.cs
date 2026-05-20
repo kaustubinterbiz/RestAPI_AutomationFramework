@@ -28,7 +28,7 @@ namespace EnterpriseApiAutomationFramework.Features
         
         private static string[] featureTags = ((string[])(null));
         
-#line 1 "User.feature"
+#line 1 "Login.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]

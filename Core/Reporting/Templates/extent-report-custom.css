@@ -1,0 +1,73 @@
+/* Dashboard layout spacing */
+.dashboard-view .row {
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-view .row .col-md-3 .card,
+.dashboard-view .row .col-md-4 .card {
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-view .row .col-md-4 .card .card-body {
+  padding: 1.25rem 1rem;
+}
+
+.dashboard-view .row .col-md-4 .card .card-body > div {
+  padding: 0.75rem 0;
+}
+
+.dashboard-view .row .col-md-12 .card {
+  margin-top: 0.5rem;
+}
+
+.dashboard-view .row .col-md-12 .card .card-body {
+  padding: 1.5rem 1.25rem 2rem;
+}
+
+.dashboard-view #timeline {
+  margin-top: 1rem;
+}
+
+/* Ensure chart canvases have visible dimensions when dashboard is shown */
+.dashboard-view #parent-analysis,
+.dashboard-view #child-analysis,
+.dashboard-view #grandchild-analysis,
+.dashboard-view #timeline {
+  display: block;
+  min-height: 90px;
+  min-width: 115px;
+}
+
+.dashboard-view .chart-card .card-body > div,
+.dashboard-view .row .col-md-4 .card .card-body > div {
+  min-height: 100px;
+}
+
+/* API step detail blocks */
+.api-report-pre {
+  background: #f4f4f4;
+  color: #1a1a1a;
+  padding: 10px 12px;
+  border-radius: 6px;
+  overflow: auto;
+  max-height: 400px;
+  margin: 8px 0 12px;
+  border: 1px solid #e0e0e0;
+}
+
+body.dark .api-report-pre,
+body.spa.bdd-report.dark .api-report-pre {
+  background: #2b2b2b;
+  color: #e8e8e8;
+  border-color: #444;
+}
+
+/* Dark mode toggle */
+.extent-theme-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.extent-theme-toggle .badge {
+  min-width: 5.5rem;
+}

@@ -5,6 +5,8 @@ VisualStudioVersion = 18.6.11806.211 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnterpriseApiAutomationFramework", "EnterpriseApiAutomationFramework.csproj", "{B14605E3-7B2C-6677-45B5-FA19A40C156B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelTestRunner", "ParallelTestRunner\ParallelTestRunner.csproj", "{C8E4A1F2-9D3B-4E5A-8F1C-2A7B9D6E4F10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{B14605E3-7B2C-6677-45B5-FA19A40C156B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B14605E3-7B2C-6677-45B5-FA19A40C156B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B14605E3-7B2C-6677-45B5-FA19A40C156B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8E4A1F2-9D3B-4E5A-8F1C-2A7B9D6E4F10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8E4A1F2-9D3B-4E5A-8F1C-2A7B9D6E4F10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8E4A1F2-9D3B-4E5A-8F1C-2A7B9D6E4F10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8E4A1F2-9D3B-4E5A-8F1C-2A7B9D6E4F10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
