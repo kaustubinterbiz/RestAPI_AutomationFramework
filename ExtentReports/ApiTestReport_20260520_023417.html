@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ <title>API Automation Report</title>
+ <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@c439bdbc7bade3d85af3b90e9e69c30ebc87445f/commons/img/logo.png">
+ <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@c439bdbc7bade3d85af3b90e9e69c30ebc87445f/commons/img/logo.png">
+ <link href="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@78fa5a2421587b8228150e93142e5ba97178e85b/spark/css/spark-style.css" rel="stylesheet" />
+ <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+ <script src="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@78fa5a2421587b8228150e93142e5ba97178e85b/spark/js/jsontree.js"></script>
+ <style>/* Dashboard layout spacing */
+.dashboard-view .row {
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-view .row .col-md-3 .card,
+.dashboard-view .row .col-md-4 .card {
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-view .row .col-md-4 .card .card-body {
+  padding: 1.25rem 1rem;
+}
+
+.dashboard-view .row .col-md-4 .card .card-body > div {
+  padding: 0.75rem 0;
+}
+
+.dashboard-view .row .col-md-12 .card {
+  margin-top: 0.5rem;
+}
+
+.dashboard-view .row .col-md-12 .card .card-body {
+  padding: 1.5rem 1.25rem 2rem;
+}
+
+.dashboard-view #timeline {
+  margin-top: 1rem;
+}
+
+/* API step detail blocks */
+.api-report-pre {
+  background: #f4f4f4;
+  color: #1a1a1a;
+  padding: 10px 12px;
+  border-radius: 6px;
+  overflow: auto;
+  max-height: 400px;
+  margin: 8px 0 12px;
+  border: 1px solid #e0e0e0;
+}
+
+body.dark .api-report-pre,
+body.spa.bdd-report.dark .api-report-pre {
+  background: #2b2b2b;
+  color: #e8e8e8;
+  border-color: #444;
+}
+
+/* Dark mode toggle */
+.extent-theme-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.extent-theme-toggle .badge {
+  min-width: 5.5rem;
+}
+</style>
+</head>
+<body class="spa bdd-report standard">
+ <div class="app">
+  <div class="layout">
+   <div class="header navbar">
+ <div class="vheader">
+  <div class="nav-logo">
+   <a href="#">
+	 <div class="logo" style="background-image: url('https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@c43b89d03a7c43dae8bb8f0f078bad1997af6b3b/commons/img/logo.png')"></div>
+   </a>
+  </div>
+  <ul class="nav-left">
+   <li class="search-box">
+	<a class="search-toggle" href="#"><i class="search-icon fa fa-search"></i><i class="search-icon-close fa fa-close"></i></a>
+   </li>
+   <li class="search-input">
+    <input id="search-tests" class="form-control" type="text" placeholder="Search...">
+   </li>
+  </ul>
+  <ul class="nav-right">
+   <li class="m-r-10"><a href="#"><span class="badge badge-primary">RestSharp API Automation Framework</span></a></li>
+   <li class="m-r-10">
+    <a href="#"><span class="badge badge-primary">20-05-2026 02:34:17</span></a>
+   </li>
+  </ul>
+ </div>
+</div>
+   <div class="side-nav">
+ <div class="side-nav-inner">
+  <ul class="side-nav-menu">
+   <li class="nav-item dropdown" onclick="toggleView('test-view')">
+    <a id="nav-test" class="dropdown-toggle" href="#">
+     <span class="ico"><i class="fa fa-list"></i></span>
+    </a>
+   </li>
+   <li class="nav-item dropdown" onclick="toggleView('dashboard-view')">
+    <a id="nav-dashboard" class="dropdown-toggle" href="#">
+     <span class="ico"><i class="fa fa-bar-chart"></i></span>
+    </a>
+   </li>
+  </ul>
+ </div>
+</div>
+
+   <div class="vcontainer">
+    <div class="main-content">
+     
+
+<div class="test-wrapper row view test-view">
+  <div class="test-list">
+    <div class="test-list-tools">
+      <ul class="tools pull-left">
+        <li><a href="#"><span class="font-size-14">Tests</span></a></li>
+      </ul>
+      <ul class="tools text-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-exclamation-circle"></i></a>
+          <ul id="status-toggle" class="dropdown-menu dropdown-md p-v-0">
+ <a class="dropdown-item" status="pass" href="#"><span>Pass</span><span class="status success"></span></a>             <div class="dropdown-divider"></div>
+            <a status="clear" class="dropdown-item" href="#"><span>Clear</span><span class="pull-right"><i class="fa fa-close"></i></span></a>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="test-list-wrapper scrollable">
+      <ul class="test-list-item">
+        <li class="test-item" status="pass" test-id="1"
+          author=""
+          tag=""
+          device="">
+          <div class="test-detail">
+            <p class="name">User API Testing</p>
+            <p class="text-sm">
+              <span>02:34:17</span> / <span>645.36 ms</span>
+              <span class="badge pass-bg log float-right">Pass</span>
+            </p>
+          </div>
+          <div class="test-contents d-none">
+            <div class="detail-head">
+              <div class="p-v-10">
+                <div class="info">
+                  <h5 class="test-status text-pass">User API Testing</h5>
+                  <span class='badge badge-success'>20-05-2026 02:34:17</span>
+                  <span class='badge badge-danger'>20-05-2026 02:34:18</span>
+                  <span class='badge badge-default'>645.36 ms</span>
+                  &middot; <span class='uri-anchor badge badge-default'>#test-id=1</span>
+                  <span title='Skip to the next failed step' class='badge badge-danger pointer float-right ne ml-1'><i class="fa fa-fast-forward"></i></span>
+                  <span title='Collapse all nodes' class='badge badge-default pointer float-right ct ml-1'><i class="fa fa-compress"></i></span>
+                  <span title='Expand all nodes' class='badge badge-default pointer float-right et'><i class="fa fa-expand"></i></span>
+                </div>
+              </div>
+            </div>
+
+
+  <div class="accordion mt-4">
+      <div class="card">
+        <div class="card-header" role="tab">
+          <div class="card-title">
+            <div class="node" id="2"><span class="badge log pass-bg mr-2">Pass</span>Scenario: 1.Verify POST User API to get Token</div>
+          </div>
+        </div>
+            <div class="collapse">
+              <div class="card-body">
+                
+
+                  <div class="step pass-bg" title="">
+                    <span>When User sends POST request</span>
+                    
+    <div>
+<b>Step:</b> User sends POST request
+<b>Step Execution Time:</b> 441 ms
+<hr/>
+<b>API:</b> Post /api/Authenticate/Login
+<b>Status Code:</b> 200
+<b>API Response Time:</b> <span style='color:#27ae60;font-weight:bold'>278 ms</span> (Expected: &lt; 1000 ms) — <span style='color:#27ae60'>WITHIN THRESHOLD</span>
+<b>Request Payload:</b>
+<pre class='api-report-pre'>{
+  &quot;username&quot;: &quot;KK6&quot;,
+  &quot;password&quot;: &quot;123456&quot;
+}</pre>
+<b>Response Body:</b>
+<pre class='api-report-pre'>{&quot;token&quot;:&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzkyMzE4NTcsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0MzcxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNzEifQ.Nh7y1794W-IBrC-EDxP_uAmRsEcl7Vuwz_JkyOEjrnE&quot;,&quot;message&quot;:&quot;Success&quot;}</pre>
+    </div>
+    <div>
+Step completed successfully.    </div>
+
+                    
+
+                  </div>
+                  <div class="step pass-bg" title="">
+                    <span>Then Status should be OK</span>
+                    
+    <div>
+<b>Step:</b> Status should be OK
+<b>Step Execution Time:</b> 15 ms
+    </div>
+    <div>
+Step completed successfully.    </div>
+
+                    
+
+                  </div>
+              </div>
+            </div>
+      </div>
+      <div class="card">
+        <div class="card-header" role="tab">
+          <div class="card-title">
+            <div class="node" id="5"><span class="badge log pass-bg mr-2">Pass</span>Scenario: 2.Verify GET Product API</div>
+          </div>
+        </div>
+            <div class="collapse">
+              <div class="card-body">
+                
+
+                  <div class="step pass-bg" title="">
+                    <span>When User sends GET request</span>
+                    
+    <div>
+<b>Step:</b> User sends GET request
+<b>Step Execution Time:</b> 53 ms
+<hr/>
+<b>API:</b> Get /Product/GetProductById/{id}
+<b>Status Code:</b> 200
+<b>API Response Time:</b> <span style='color:#27ae60;font-weight:bold'>43 ms</span> (Expected: &lt; 1000 ms) — <span style='color:#27ae60'>WITHIN THRESHOLD</span>
+<b>Response Body:</b>
+<pre class='api-report-pre'>{&quot;productId&quot;:1,&quot;name&quot;:&quot;Keyboard&quot;,&quot;description&quot;:null,&quot;price&quot;:150,&quot;components&quot;:[{&quot;id&quot;:1,&quot;name&quot;:&quot;Keys&quot;,&quot;description&quot;:&quot;Glowing Keys&quot;,&quot;productId&quot;:null,&quot;product&quot;:null},{&quot;id&quot;:2,&quot;name&quot;:&quot;Stickers&quot;,&quot;description&quot;:&quot;Key stickers&quot;,&quot;productId&quot;:null,&quot;product&quot;:null}],&quot;productType&quot;:2}</pre>
+    </div>
+    <div>
+Step completed successfully.    </div>
+
+                    
+
+                  </div>
+                  <div class="step pass-bg" title="">
+                    <span>Then Status code should be 200</span>
+                    
+    <div>
+<b>Step:</b> Status code should be 200
+<b>Step Execution Time:</b> 33 ms
+    </div>
+    <div>
+Step completed successfully.    </div>
+
+                    
+
+                  </div>
+              </div>
+            </div>
+      </div>
+      <div class="card">
+        <div class="card-header" role="tab">
+          <div class="card-title">
+            <div class="node" id="8"><span class="badge log pass-bg mr-2">Pass</span>Scenario: 3.Verify POST User API</div>
+          </div>
+        </div>
+            <div class="collapse">
+              <div class="card-body">
+                
+
+                  <div class="step pass-bg" title="">
+                    <span>When User sends POST request to create</span>
+                    
+    <div>
+<b>Step:</b> User sends POST request to create
+<b>Step Execution Time:</b> 48 ms
+<hr/>
+<b>API:</b> Post /Product/Create
+<b>Status Code:</b> 200
+<b>API Response Time:</b> <span style='color:#27ae60;font-weight:bold'>31 ms</span> (Expected: &lt; 1000 ms) — <span style='color:#27ae60'>WITHIN THRESHOLD</span>
+<b>Request Payload:</b>
+<pre class='api-report-pre'>{
+  &quot;productId&quot;: 0,
+  &quot;name&quot;: &quot;Test&quot;,
+  &quot;description&quot;: null,
+  &quot;price&quot;: 0,
+  &quot;components&quot;: null,
+  &quot;productType&quot;: 0
+}</pre>
+<b>Response Body:</b>
+<pre class='api-report-pre'>{&quot;productId&quot;:229,&quot;name&quot;:&quot;Test&quot;,&quot;description&quot;:null,&quot;price&quot;:0,&quot;components&quot;:null,&quot;productType&quot;:0}</pre>
+    </div>
+    <div>
+Step completed successfully.    </div>
+
+                    
+
+                  </div>
+                  <div class="step pass-bg" title="">
+                    <span>Then Status should be OK</span>
+                    
+    <div>
+<b>Step:</b> Status should be OK
+<b>Step Execution Time:</b> 1 ms
+    </div>
+    <div>
+Step completed successfully.    </div>
+
+                    
+
+                  </div>
+              </div>
+            </div>
+      </div>
+  </div>
+           </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="test-content scrollable">
+    <div class="test-content-tools">
+      <ul><li><a class="back-to-test" href="#"><i class="fa fa-arrow-left"></i></a></li></ul>
+    </div>
+    <div class="test-content-detail"><div class="detail-body"></div></div>
+  </div>
+</div>
+
+     
+
+<div class="container-fluid p-4 view dashboard-view">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+          <p class="m-b-0">Started</p>
+          <h3>20-05-2026 02:34:17</h3>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+          <p class="m-b-0">Ended</p>
+          <h3>20-05-2026 02:34:18</h3>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+          <p class="m-b-0 text-pass">Features Passed</p>
+          <h3>1</h3>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+          <p class="m-b-0 text-fail">Features Failed</p>
+          <h3>0</h3>
+      </div></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Features</h6>
+        </div>
+        <div class="card-body">
+          <div class="">
+            <canvas id='parent-analysis' width='115' height='90'></canvas>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div><small data-tooltip='1%'>
+            <b>1</b> features passed
+            </small>
+          </div>
+          <div>
+            <small data-tooltip='0%'><b>0</b> features failed, 
+            <b>0</b> skipped, <b data-tooltip='0%'>0</b> others
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Scenarios</h6>
+        </div>
+        <div class="card-body">
+          <div class="">
+            <canvas id='child-analysis' width='115' height='90'></canvas>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div><small data-tooltip='1%'><b>3</b> scenarios passed</small></div>
+          <div>
+            <small data-tooltip='0%'><b>0</b> scenarios failed, 
+            <b>0</b> skipped, <b data-tooltip='%'>0</b> others
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Steps</h6>
+        </div>
+        <div class="card-body">
+          <div class="">
+            <canvas id='grandchild-analysis' width='115' height='90'></canvas>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div><small data-tooltip='1%'><b>6</b> Steps passed</small></div>
+          <div>
+            <small data-tooltip='0%'><b>0</b> steps failed, 
+            <b>0</b> skipped, <b data-tooltip='%'>0</b> others
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row"><div class="col-md-12">
+    <div class="card"><div class="card-header"><p>Timeline</p></div>
+      <div class="card-body pt-0"><div>
+        <canvas id="timeline" height="120"></canvas>
+      </div></div>
+    </div>
+  </div></div>
+  <script>
+	var timeline = { "User API Testing":645.3592 };
+  </script>
+  <div class="row">
+      <div class="col-md-4 sysenv-container">
+      <div class="card">
+        <div class="card-header"><p>System/Environment</p></div>
+        <div class="card-body pb-0 pt-0"><table class="table table-sm table-bordered">
+          <thead><tr class="bg-gray"><th>Name</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Environment</td>
+              <td>QA</td>
+            </tr>
+            <tr>
+              <td>Base URL</td>
+              <td>https://localhost:5001/</td>
+            </tr>
+            <tr>
+              <td>Expected API Response Time (ms)</td>
+              <td>1000</td>
+            </tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var statusGroup = {
+    parentCount: 1,
+    childCount: 3,
+    grandChildCount: 6,
+    eventsCount: 18,
+
+passParent:1,failParent:0,warningParent:0,skipParent:0,    
+passChild:3,failChild:0,warningChild:0,skipChild:0,infoChild:0,    
+passGrandChild:6,failGrandChild:0,warningGrandChild:0,skipGrandChild:0,infoGrandChild:0,    
+passEvents:9,failEvents:0,warningEvents:0,skipEvents:0,infoEvents:9,  };
+</script>
+
+    </div>
+   </div>
+  </div>
+ </div>
+ <script src="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@c439bdbc7bade3d85af3b90e9e69c30ebc87445f/spark/js/spark-script.js"></script>
+<script>window.extentReportDefaultDark = false;</script>
+<script>(function () {
+  var storageKey = 'extentReportTheme';
+
+  function isDarkTheme() {
+    return document.body.classList.contains('dark');
+  }
+
+  function applyTheme(dark) {
+    document.body.classList.toggle('dark', dark);
+    document.body.classList.toggle('standard', !dark);
+    try {
+      localStorage.setItem(storageKey, dark ? 'dark' : 'standard');
+    } catch (e) { /* ignore */ }
+    updateToggleLabel();
+  }
+
+  function updateToggleLabel() {
+    var label = document.getElementById('extent-theme-toggle-label');
+    if (label) {
+      label.textContent = isDarkTheme() ? 'Light mode' : 'Dark mode';
+    }
+  }
+
+  function readStoredTheme(defaultDark) {
+    try {
+      var stored = localStorage.getItem(storageKey);
+      if (stored === 'dark') return true;
+      if (stored === 'standard') return false;
+    } catch (e) { /* ignore */ }
+    return defaultDark;
+  }
+
+  function addThemeToggle(defaultDark) {
+    var navRight = document.querySelector('.nav-right');
+    if (!navRight || document.getElementById('extent-theme-toggle')) return;
+
+    var li = document.createElement('li');
+    li.className = 'm-r-10 extent-theme-toggle';
+    li.id = 'extent-theme-toggle';
+    li.innerHTML =
+      '<a href="#" title="Toggle dark / light mode">' +
+      '<span class="badge badge-secondary" id="extent-theme-toggle-label">Dark mode</span>' +
+      '</a>';
+
+    li.addEventListener('click', function (e) {
+      e.preventDefault();
+      applyTheme(!isDarkTheme());
+    });
+
+    navRight.insertBefore(li, navRight.firstChild);
+    applyTheme(readStoredTheme(defaultDark));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      addThemeToggle(window.extentReportDefaultDark === true);
+    });
+  } else {
+    addThemeToggle(window.extentReportDefaultDark === true);
+  }
+})();
+</script>
+
+</body>
+</html>

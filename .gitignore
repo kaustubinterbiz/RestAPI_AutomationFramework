@@ -8,3 +8,6 @@ obj/
 # User-specific files
 *.user
 *.suo
+
+# Generated Extent HTML reports (folder kept via Reports/Html/.gitkeep)
+Reports/Html/*.html
