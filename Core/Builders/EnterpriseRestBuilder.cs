@@ -15,7 +15,7 @@ public class EnterpriseRestBuilder : IRestBuilder
 
     public EnterpriseRestBuilder()
     {
-        _client = new RestClientFactory().GetClient();
+        _client = new RestClientFactory().GetClient(ApiHost.Api);
     }
 
     public IRestBuilder WithGet<T>(string endpoint)

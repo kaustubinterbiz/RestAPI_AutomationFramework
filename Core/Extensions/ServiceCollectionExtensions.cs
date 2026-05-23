@@ -9,7 +9,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection RegisterFrameworkServices(this IServiceCollection services)
     {
-        services.AddSingleton<ApiClient>();
+        services.AddSingleton<RestClientFactory>();
+        services.AddTransient<ApiClient>();
         services.AddTransient<IRestBuilder, EnterpriseRestBuilder>();
 
         return services;

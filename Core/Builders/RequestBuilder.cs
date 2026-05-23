@@ -1,10 +1,25 @@
 using RestSharp;
 using EnterpriseApiAutomationFramework.Core.Authentication;
+using EnterpriseApiAutomationFramework.Models.Request;
 
 namespace EnterpriseApiAutomationFramework.Core.Builders;
 
 public class RequestBuilder
 {
+    public RestRequest BuildLoginRequest(string endpoint, LoginRequest credentials)
+    {
+        var request = new RestRequest(endpoint, Method.Post);
+
+        request.AddHeader("cookie", "x-ms-cpim-geo=NA");
+
+        foreach (var parameter in credentials.ToFormParameters())
+        {
+            request.AddParameter(parameter.Key, parameter.Value, ParameterType.GetOrPost);
+        }
+
+        return request;
+    }
+
     public RestRequest BuildRequest(
         string endpoint,
         Method method,
@@ -23,8 +38,6 @@ public class RequestBuilder
                 request.AddUrlSegment(segment.Key, segment.Value);
             }
         }
-
-        request.AddHeader("Content-Type", "application/json");
 
         if (authorizationRequired && !string.IsNullOrEmpty(TokenManager.AccessToken))
         {

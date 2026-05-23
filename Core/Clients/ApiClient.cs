@@ -1,72 +1,87 @@
 using System.Diagnostics;
-using RestSharp;
 using EnterpriseApiAutomationFramework.Core.Builders;
+using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Reporting;
+using EnterpriseApiAutomationFramework.Models.Request;
+using RestSharp;
 
 namespace EnterpriseApiAutomationFramework.Core.Clients;
 
-public class ApiClient
+/// <summary>
+/// HTTP facade with dynamic host switching:
+/// login/token calls → Auth base URL (B2C);
+/// all other verbs → Api base URL (application).
+/// </summary>
+public sealed class ApiClient
 {
-    private readonly RestClient _client;
+    private readonly RestClientFactory _clientFactory;
     private readonly RequestBuilder _requestBuilder;
 
-    public ApiClient()
+    public ApiClient(RestClientFactory? clientFactory = null)
     {
-        _client = new RestClientFactory().GetClient();
+        _clientFactory = clientFactory ?? new RestClientFactory();
         _requestBuilder = new RequestBuilder();
     }
 
-    public async Task<RestResponse> GetAsync(string endpoint)
+    /// <summary>OAuth token request against the Auth (B2C) host.</summary>
+    public Task<RestResponse> LoginPostAsync(string endpoint, LoginRequest credentials) =>
+        ExecuteAsync(
+            ApiHost.Auth,
+            _requestBuilder.BuildLoginRequest(endpoint, credentials),
+            endpoint);
+
+    public Task<RestResponse> GetAsync(string endpoint) =>
+        SendAsync(endpoint, Method.Get);
+
+    public Task<RestResponse> PostAsync(
+        string endpoint,
+        object body,
+        bool authorizationRequired = true) =>
+        SendAsync(endpoint, Method.Post, body, authorizationRequired);
+
+    public Task<RestResponse> PutAsync(string endpoint, object body) =>
+        SendAsync(endpoint, Method.Put, body);
+
+    public Task<RestResponse> PatchAsync(string endpoint, object body) =>
+        SendAsync(endpoint, Method.Patch, body);
+
+    public Task<RestResponse> DeleteAsync(string endpoint) =>
+        SendAsync(endpoint, Method.Delete);
+
+    private async Task<RestResponse> SendAsync(
+        string endpoint,
+        Method method,
+        object? body = null,
+        bool authorizationRequired = true)
     {
         var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveUrlSegments(endpoint);
         var request = _requestBuilder.BuildRequest(
             resolvedEndpoint,
-            Method.Get,
-            urlSegments: urlSegments.Count > 0 ? urlSegments : null);
-        return await ExecuteAndRecordAsync(request, resolvedEndpoint);
-    }
-
-    public async Task<RestResponse> PostAsync(
-        string endpoint,
-        object body,
-        bool authorizationRequired = true)
-    {
-        var request = _requestBuilder.BuildRequest(
-            endpoint,
-            Method.Post,
+            method,
             body,
+            urlSegments: urlSegments.Count > 0 ? urlSegments : null,
             authorizationRequired: authorizationRequired);
-        return await ExecuteAndRecordAsync(request, endpoint);
+
+        return await ExecuteAsync(ApiHost.Api, request, resolvedEndpoint);
     }
 
-    public async Task<RestResponse> PutAsync(string endpoint, object body)
+    private async Task<RestResponse> ExecuteAsync(
+        ApiHost host,
+        RestRequest request,
+        string endpointForReport)
     {
-        var request = _requestBuilder.BuildRequest(endpoint, Method.Put, body);
-        return await ExecuteAndRecordAsync(request, endpoint);
-    }
-
-    public async Task<RestResponse> PatchAsync(string endpoint, object body)
-    {
-        var request = _requestBuilder.BuildRequest(endpoint, Method.Patch, body);
-        return await ExecuteAndRecordAsync(request, endpoint);
-    }
-
-    public async Task<RestResponse> DeleteAsync(string endpoint)
-    {
-        var request = _requestBuilder.BuildRequest(endpoint, Method.Delete);
-        return await ExecuteAndRecordAsync(request, endpoint);
-    }
-
-    private async Task<RestResponse> ExecuteAndRecordAsync(RestRequest request, string endpoint)
-    {
+        var client = _clientFactory.GetClient(host);
         var stopwatch = Stopwatch.StartNew();
-        var response = await _client.ExecuteAsync(request);
+        var response = await client.ExecuteAsync(request);
         stopwatch.Stop();
+
+        var settings = AppConfiguration.ApiUrls;
+        var baseUrl = host == ApiHost.Auth ? settings.AuthBaseUrl : settings.ApiBaseUrl;
 
         ReportExecutionContext.RecordApiCall(new ApiCallRecord(
             request.Method.ToString() ?? "UNKNOWN",
-            endpoint,
+            $"{baseUrl.TrimEnd('/')}/{endpointForReport.TrimStart('/')}",
             (int)response.StatusCode,
             stopwatch.ElapsedMilliseconds,
             ApiRequestPayloadHelper.Extract(request),

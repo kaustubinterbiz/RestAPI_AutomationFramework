@@ -9,31 +9,35 @@ public class UserDriver
 {
     private readonly ApiClient _apiClient;
 
-    public UserDriver()
+    public UserDriver(ApiClient? apiClient = null)
     {
-        _apiClient = new ApiClient();
-        AuthService.LoadTokenFromConfig();
+        _apiClient = apiClient ?? new ApiClient();
     }
 
-    public async Task<RestResponse> LoginAsync()
-    {
-        return await AuthService.LoginAndStoreTokenAsync(_apiClient);
-    }
+    /// <summary>Token via Auth host (B2C); token stored for Api host calls.</summary>
+    public Task<RestResponse> LoginAsync() =>
+        AuthService.LoginAndStoreTokenAsync(_apiClient);
 
+    /// <summary>Api host GET with bearer token from login.</summary>
     public async Task<RestResponse> GetUsers(string env, string key, string request)
     {
-        AuthService.LoadTokenFromConfig();
+        await AuthService.EnsureAuthenticatedAsync(_apiClient);
 
         ConfigReaderNew.LoadConfig(env);
-        string value = ConfigReaderNew.GetValue(key);
-        ConfigReaderNew.LoadConfig(value);
-        string endPoint = ConfigReaderNew.GetValue(request);
+        var endpointConfigPath = ConfigReaderNew.GetValue(key);
+        ConfigReaderNew.LoadConfig(endpointConfigPath);
+        var endPoint = ConfigReaderNew.GetValue(request);
         return await _apiClient.GetAsync(endPoint);
     }
 
-    public async Task<RestResponse> PostUser(string env, string key, string request, string jsonBodyFileKey, string bodyKey)
+    public async Task<RestResponse> PostUser(
+        string env,
+        string key,
+        string request,
+        string jsonBodyFileKey,
+        string bodyKey)
     {
-        AuthService.LoadTokenFromConfig();
+        await AuthService.EnsureAuthenticatedAsync(_apiClient);
 
         ConfigReaderNew.LoadConfig(env);
         var endpointConfigPath = ConfigReaderNew.GetValue(key);
@@ -46,16 +50,19 @@ public class UserDriver
 
     public async Task<RestResponse> UpdateUser(object body)
     {
+        await AuthService.EnsureAuthenticatedAsync(_apiClient);
         return await _apiClient.PutAsync("/users/2", body);
     }
 
     public async Task<RestResponse> PatchUser(object body)
     {
+        await AuthService.EnsureAuthenticatedAsync(_apiClient);
         return await _apiClient.PatchAsync("/users/2", body);
     }
 
     public async Task<RestResponse> DeleteUser()
     {
+        await AuthService.EnsureAuthenticatedAsync(_apiClient);
         return await _apiClient.DeleteAsync("/users/2");
     }
 }

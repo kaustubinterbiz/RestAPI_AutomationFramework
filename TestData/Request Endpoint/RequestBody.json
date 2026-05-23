@@ -1,12 +1,18 @@
 {
   "productCreateBody": {
 
-       "productId": 0,
-       "name": "Test",
-       "description": null,
-       "price": 0,
-       "components": null,
-       "productType": 0
+    "productId": 0,
+    "name": "Test",
+    "description": null,
+    "price": 0,
+    "components": null,
+    "productType": 0
 
+  },
+
+  "login_body": {
+
+    "content_type": "application/x-www-form-urlencoded",
+    "cookie": "x-ms-cpim-geo=NA"
   }
 }

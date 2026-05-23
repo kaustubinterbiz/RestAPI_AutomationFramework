@@ -1,21 +1,9 @@
-using Microsoft.Extensions.Configuration;
-
 namespace EnterpriseApiAutomationFramework.Core.Configurations;
 
+/// <summary>
+/// Backward-compatible accessor. Prefer <see cref="AppConfiguration"/> for new code.
+/// </summary>
 public static class ConfigReader
 {
-    private static readonly IConfigurationRoot configuration;
-
-    static ConfigReader()
-    {
-        configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-    }
-
-    
-    public static string GetValue(string key)
-    {
-        return configuration[key] ?? string.Empty;
-    }
+    public static string GetValue(string key) => AppConfiguration.GetValue(key);
 }
