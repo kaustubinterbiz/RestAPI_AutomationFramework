@@ -14,20 +14,45 @@ public class UserDriver
         _apiClient = apiClient ?? new ApiClient();
     }
 
-    /// <summary>Token via Auth host (B2C); token stored for Api host calls.</summary>
+    /// <summary>Always calls B2C login API (used by login scenarios).</summary>
     public Task<RestResponse> LoginAsync() =>
-        AuthService.LoginAndStoreTokenAsync(_apiClient);
+        AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
 
-    /// <summary>Api host GET with bearer token from login.</summary>
-    public async Task<RestResponse> GetUsers(string env, string key, string request)
+    public Task<RestResponse> RefreshAccessTokenAsync() =>
+        AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
+
+    public Task<RestResponse> LoginWithStoredBearerTokenAsync(string bearerToken) =>
+        AuthService.LoginWithBearerOnlyAsync(_apiClient, bearerToken);
+
+    public void ApplyExpiredAccessToken(string? validToken = null) =>
+        SharedTokenProvider.ApplyExpiredTokenForTesting(
+            TokenTestHelper.GetExpiredAccessToken(
+                validToken ?? TokenManager.AccessToken));
+
+    /// <summary>GET with bearer token; uses <see cref="ApiHostContext"/> for base URL.</summary>
+    public async Task<RestResponse> GetUsers(
+        string env,
+        string key,
+        string request,
+        ApiHost? host = null)
     {
         await AuthService.EnsureAuthenticatedAsync(_apiClient);
 
+        return await GetUsersWithCurrentTokenOnly(env, key, request, host);
+    }
+
+    /// <summary>GET using the current scenario token only (no auto-login).</summary>
+    public async Task<RestResponse> GetUsersWithCurrentTokenOnly(
+        string env,
+        string key,
+        string request,
+        ApiHost? host = null)
+    {
         ConfigReaderNew.LoadConfig(env);
         var endpointConfigPath = ConfigReaderNew.GetValue(key);
         ConfigReaderNew.LoadConfig(endpointConfigPath);
         var endPoint = ConfigReaderNew.GetValue(request);
-        return await _apiClient.GetAsync(endPoint);
+        return await _apiClient.GetAsync(endPoint, host ?? ApiHostContext.CurrentOrDefault);
     }
 
     public async Task<RestResponse> PostUser(
@@ -35,7 +60,8 @@ public class UserDriver
         string key,
         string request,
         string jsonBodyFileKey,
-        string bodyKey)
+        string bodyKey,
+        ApiHost? host = null)
     {
         await AuthService.EnsureAuthenticatedAsync(_apiClient);
 
@@ -45,24 +71,24 @@ public class UserDriver
         ConfigReaderNew.LoadConfig(endpointConfigPath);
         var endPoint = ConfigReaderNew.GetValue(request);
         var json = ConfigReaderNew.GetJsonBody(requestBodyPath, bodyKey);
-        return await _apiClient.PostAsync(endPoint, json);
+        return await _apiClient.PostAsync(endPoint, json, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-    public async Task<RestResponse> UpdateUser(object body)
+    public async Task<RestResponse> UpdateUser(object body, ApiHost? host = null)
     {
         await AuthService.EnsureAuthenticatedAsync(_apiClient);
-        return await _apiClient.PutAsync("/users/2", body);
+        return await _apiClient.PutAsync("/users/2", body, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-    public async Task<RestResponse> PatchUser(object body)
+    public async Task<RestResponse> PatchUser(object body, ApiHost? host = null)
     {
         await AuthService.EnsureAuthenticatedAsync(_apiClient);
-        return await _apiClient.PatchAsync("/users/2", body);
+        return await _apiClient.PatchAsync("/users/2", body, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-    public async Task<RestResponse> DeleteUser()
+    public async Task<RestResponse> DeleteUser(ApiHost? host = null)
     {
         await AuthService.EnsureAuthenticatedAsync(_apiClient);
-        return await _apiClient.DeleteAsync("/users/2");
+        return await _apiClient.DeleteAsync("/users/2", host: host ?? ApiHostContext.CurrentOrDefault);
     }
 }

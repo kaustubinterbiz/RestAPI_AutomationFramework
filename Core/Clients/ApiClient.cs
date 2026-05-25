@@ -26,34 +26,50 @@ public sealed class ApiClient
 
     /// <summary>OAuth token request against the Auth (B2C) host.</summary>
     public Task<RestResponse> LoginPostAsync(string endpoint, LoginRequest credentials) =>
+        LoginPostAsync(endpoint, credentials, bearerToken: null);
+
+    public Task<RestResponse> LoginPostAsync(string endpoint, LoginRequest credentials, string? bearerToken) =>
         ExecuteAsync(
             ApiHost.Auth,
-            _requestBuilder.BuildLoginRequest(endpoint, credentials),
+            _requestBuilder.BuildLoginRequest(endpoint, credentials, bearerToken),
             endpoint);
 
-    public Task<RestResponse> GetAsync(string endpoint) =>
-        SendAsync(endpoint, Method.Get);
+    public Task<RestResponse> LoginPostBearerOnlyAsync(string endpoint, string bearerToken) =>
+        ExecuteAsync(
+            ApiHost.Auth,
+            _requestBuilder.BuildBearerOnlyPostRequest(endpoint, bearerToken),
+            endpoint);
+
+    public Task<RestResponse> GetAsync(string endpoint, ApiHost? host = null) =>
+        SendAsync(endpoint, Method.Get, host: host ?? ApiHostContext.CurrentOrDefault);
 
     public Task<RestResponse> PostAsync(
         string endpoint,
         object body,
-        bool authorizationRequired = true) =>
-        SendAsync(endpoint, Method.Post, body, authorizationRequired);
+        bool authorizationRequired = true,
+        ApiHost? host = null) =>
+        SendAsync(
+            endpoint,
+            Method.Post,
+            body,
+            authorizationRequired,
+            host: host ?? ApiHostContext.CurrentOrDefault);
 
-    public Task<RestResponse> PutAsync(string endpoint, object body) =>
-        SendAsync(endpoint, Method.Put, body);
+    public Task<RestResponse> PutAsync(string endpoint, object body, ApiHost? host = null) =>
+        SendAsync(endpoint, Method.Put, body, host: host ?? ApiHostContext.CurrentOrDefault);
 
-    public Task<RestResponse> PatchAsync(string endpoint, object body) =>
-        SendAsync(endpoint, Method.Patch, body);
+    public Task<RestResponse> PatchAsync(string endpoint, object body, ApiHost? host = null) =>
+        SendAsync(endpoint, Method.Patch, body, host: host ?? ApiHostContext.CurrentOrDefault);
 
-    public Task<RestResponse> DeleteAsync(string endpoint) =>
-        SendAsync(endpoint, Method.Delete);
+    public Task<RestResponse> DeleteAsync(string endpoint, ApiHost? host = null) =>
+        SendAsync(endpoint, Method.Delete, host: host ?? ApiHostContext.CurrentOrDefault);
 
     private async Task<RestResponse> SendAsync(
         string endpoint,
         Method method,
         object? body = null,
-        bool authorizationRequired = true)
+        bool authorizationRequired = true,
+        ApiHost host = ApiHost.Api)
     {
         var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveUrlSegments(endpoint);
         var request = _requestBuilder.BuildRequest(
@@ -63,7 +79,7 @@ public sealed class ApiClient
             urlSegments: urlSegments.Count > 0 ? urlSegments : null,
             authorizationRequired: authorizationRequired);
 
-        return await ExecuteAsync(ApiHost.Api, request, resolvedEndpoint);
+        return await ExecuteAsync(host, request, resolvedEndpoint);
     }
 
     private async Task<RestResponse> ExecuteAsync(

@@ -1,23 +1,32 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
+using EnterpriseApiAutomationFramework.Core.Configurations;
 using TechTalk.SpecFlow;
 
 namespace EnterpriseApiAutomationFramework.Hooks;
 
-/// <summary>
-/// Isolates bearer tokens per scenario for parallel SpecFlow execution.
-/// </summary>
 [Binding]
 public class AuthenticationHooks
 {
-    [BeforeScenario(Order = 0)]
-    public static void BeforeScenario()
+    private readonly ScenarioContext _scenarioContext;
+
+    public AuthenticationHooks(ScenarioContext scenarioContext)
     {
+        _scenarioContext = scenarioContext;
+    }
+
+    [BeforeScenario(Order = 0)]
+    public void BeforeScenario()
+    {
+        TokenManager.BindScenario(_scenarioContext);
         TokenManager.ResetForNewScenario();
     }
 
     [AfterScenario(Order = 10000)]
-    public static void AfterScenario()
+    public void AfterScenario()
     {
-        TokenManager.Clear();
+        if (AppConfiguration.Authentication.Mode == AuthenticationMode.PerScenario)
+        {
+            TokenManager.ClearScenarioToken();
+        }
     }
 }

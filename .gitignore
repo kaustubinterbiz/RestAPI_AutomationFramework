@@ -16,6 +16,9 @@ Reports/Html/*.html
 # Legacy Extent output path (deprecated; use Reports/Html)
 ExtentReports/*.html
 
+# Auth token cache (parallel workers / local reuse)
+TestData/.auth/token-cache.json
+
 # Parallel execution generated artifacts
 Reports/Parallel/Workers/**/*
 !Reports/Parallel/Workers/.gitkeep

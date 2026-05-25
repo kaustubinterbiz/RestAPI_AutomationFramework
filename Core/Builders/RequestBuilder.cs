@@ -6,17 +6,31 @@ namespace EnterpriseApiAutomationFramework.Core.Builders;
 
 public class RequestBuilder
 {
-    public RestRequest BuildLoginRequest(string endpoint, LoginRequest credentials)
+    public RestRequest BuildLoginRequest(string endpoint, LoginRequest credentials, string? bearerToken = null)
     {
         var request = new RestRequest(endpoint, Method.Post);
 
         request.AddHeader("cookie", "x-ms-cpim-geo=NA");
+
+        if (!string.IsNullOrWhiteSpace(bearerToken))
+        {
+            request.AddHeader("Authorization", $"Bearer {bearerToken}");
+        }
 
         foreach (var parameter in credentials.ToFormParameters())
         {
             request.AddParameter(parameter.Key, parameter.Value, ParameterType.GetOrPost);
         }
 
+        return request;
+    }
+
+    /// <summary>POST with bearer only (no ROPC body) — for invalid/expired token checks.</summary>
+    public RestRequest BuildBearerOnlyPostRequest(string endpoint, string bearerToken)
+    {
+        var request = new RestRequest(endpoint, Method.Post);
+        request.AddHeader("cookie", "x-ms-cpim-geo=NA");
+        request.AddHeader("Authorization", $"Bearer {bearerToken}");
         return request;
     }
 

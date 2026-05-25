@@ -363,6 +363,42 @@ public static class ConfigReaderNew
         Entries.Clear();
     }
 
+    public static string ResolvePathForRead(string filePath) => ResolvePath(filePath);
+
+    public static string ResolvePathForWrite(string filePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+
+        if (Path.IsPathRooted(filePath))
+        {
+            return Path.GetFullPath(filePath);
+        }
+
+        var projectRoot = FindProjectRootDirectory();
+        if (projectRoot != null)
+        {
+            return Path.GetFullPath(Path.Combine(projectRoot, filePath));
+        }
+
+        return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), filePath));
+    }
+
+    private static string? FindProjectRootDirectory()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null)
+        {
+            if (dir.GetFiles("*.csproj").Length > 0)
+            {
+                return dir.FullName;
+            }
+
+            dir = dir.Parent;
+        }
+
+        return null;
+    }
+
     private static string ResolvePath(string filePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);

@@ -1,3 +1,4 @@
+using EnterpriseApiAutomationFramework.Core.Authentication;
 using Microsoft.Extensions.Configuration;
 
 namespace EnterpriseApiAutomationFramework.Core.Configurations;
@@ -73,6 +74,35 @@ public static class AppConfiguration
     {
         var value = Instance[key];
         return bool.TryParse(value, out var result) ? result : defaultValue;
+    }
+
+    public static IReadOnlyDictionary<string, string> FeatureBaseUrlMap
+    {
+        get
+        {
+            var map = Instance.GetSection("FeatureBaseUrlMap")
+                .Get<Dictionary<string, string>>();
+
+            return map ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
+    public static AuthenticationSettings Authentication
+    {
+        get
+        {
+            var settings = new AuthenticationSettings();
+            Instance.GetSection("Authentication").Bind(settings);
+
+            if (Instance.GetSection("Authentication").Exists())
+            {
+                return settings;
+            }
+
+            settings.PersistAccessToken = GetBool("PersistAccessToken", true);
+            settings.UseCachedAccessToken = GetBool("UseCachedAccessToken", true);
+            return settings;
+        }
     }
 
     public static void Reload()

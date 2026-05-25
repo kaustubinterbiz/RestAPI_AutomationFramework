@@ -49,6 +49,9 @@
     <Content Include="TestData\Login\LoginRequest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\Login\ExpiredAccessToken.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\Request Endpoint\RequestBody.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Generator></Generator>

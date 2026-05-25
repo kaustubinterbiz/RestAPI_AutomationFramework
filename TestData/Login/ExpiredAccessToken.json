@@ -1,0 +1,4 @@
+{
+  "access_token": "",
+  "description": "Optional: paste a real expired B2C JWT here. If empty, the test uses a tampered token from the login step to simulate rejection."
+}

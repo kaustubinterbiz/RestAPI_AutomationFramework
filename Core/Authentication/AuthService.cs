@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
@@ -18,10 +19,47 @@ public static class AuthService
 
     public static void LoadTokenFromConfig() => TokenManager.InitializeFromConfig();
 
-    /// <summary>
-    /// POST token endpoint on Auth host, store bearer token for Api host calls.
-    /// </summary>
-    public static async Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient)
+    /// <param name="forceRefresh">True for explicit login steps; false when reusing a shared token.</param>
+    public static Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient, bool forceRefresh = true) =>
+        SharedTokenProvider.LoginAndStoreTokenAsync(apiClient, FetchTokenFromApiAsync, forceRefresh);
+
+    public static Task EnsureAuthenticatedAsync(ApiClient apiClient) =>
+        SharedTokenProvider.EnsureAuthenticatedAsync(apiClient, FetchTokenFromApiAsync);
+
+    /// <summary>POST token endpoint with an existing bearer token (re-login / logout validation).</summary>
+    public static async Task<RestResponse> LoginWithBearerTokenAsync(ApiClient apiClient, string bearerToken)
+    {
+        ConfigReaderNew.LoadConfig(AppSettingsFile);
+
+        var loginJsonPath = ConfigReaderNew.GetValue("LoginJson");
+        var endpointJsonPath = ConfigReaderNew.GetValue("EndpointJson");
+        var loginRoleKey = ConfigReaderNew.GetValue("LoginRoleKey");
+        if (string.IsNullOrWhiteSpace(loginRoleKey))
+        {
+            loginRoleKey = "OrganizationRole";
+        }
+
+        var credentialsJson = ConfigReaderNew.GetJsonBody(loginJsonPath, loginRoleKey);
+        var credentials = JsonSerializer.Deserialize<LoginRequest>(credentialsJson, JsonOptions)
+            ?? throw new JsonException($"Failed to deserialize login credentials for '{loginRoleKey}'.");
+
+        ConfigReaderNew.LoadConfig(endpointJsonPath);
+        var loginEndpoint = ConfigReaderNew.GetValue("post");
+
+        return await apiClient.LoginPostAsync(loginEndpoint, credentials, bearerToken);
+    }
+
+    /// <summary>POST token endpoint with bearer only (simulates reuse/expired token without new ROPC login).</summary>
+    public static async Task<RestResponse> LoginWithBearerOnlyAsync(ApiClient apiClient, string bearerToken)
+    {
+        ConfigReaderNew.LoadConfig(AppSettingsFile);
+        ConfigReaderNew.LoadConfig(ConfigReaderNew.GetValue("EndpointJson"));
+        var loginEndpoint = ConfigReaderNew.GetValue("post");
+        return await apiClient.LoginPostBearerOnlyAsync(loginEndpoint, bearerToken);
+    }
+
+    private static async Task<(string? Token, DateTimeOffset ExpiresAtUtc, RestResponse Response)>
+        FetchTokenFromApiAsync(ApiClient apiClient)
     {
         ConfigReaderNew.LoadConfig(AppSettingsFile);
 
@@ -46,33 +84,25 @@ public static class AuthService
 
         if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
         {
-            return response;
+            return (null, default, response);
         }
 
         var loginResponse = JsonSerializer.Deserialize<LoginResponse>(response.Content, JsonOptions);
         var token = loginResponse?.access_token;
 
-        if (!string.IsNullOrWhiteSpace(token))
+        if (string.IsNullOrWhiteSpace(token))
         {
-            TokenManager.SetAccessToken(token, AppSettingsFile);
+            return (null, default, response);
         }
 
-        return response;
-    }
-
-    /// <summary>Login only when the current scenario has no token yet.</summary>
-    public static async Task EnsureAuthenticatedAsync(ApiClient apiClient)
-    {
-        if (TokenManager.HasToken)
+        int? expiresInSeconds = null;
+        if (!string.IsNullOrWhiteSpace(loginResponse?.expires_in)
+            && int.TryParse(loginResponse.expires_in, NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
         {
-            return;
+            expiresInSeconds = seconds;
         }
 
-        var response = await LoginAndStoreTokenAsync(apiClient);
-        if (!response.IsSuccessful || !TokenManager.HasToken)
-        {
-            throw new InvalidOperationException(
-                $"Authentication failed. Status={(int)response.StatusCode}, Body={response.Content}");
-        }
+        var expiresAtUtc = JwtTokenHelper.ResolveExpiry(token, expiresInSeconds);
+        return (token, expiresAtUtc, response);
     }
 }
