@@ -18,7 +18,10 @@ Scenario:1.Verify POST User API to get Token
 
 @Api
 Scenario:2.Verify GET Product API
-    When User sends GET request for feature "User API Testing"
+    When User sends POST request on "Auth" base url
+    Then Status should be OK
+    And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
 
 @Api

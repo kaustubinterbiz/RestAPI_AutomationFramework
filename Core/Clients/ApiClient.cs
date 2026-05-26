@@ -71,7 +71,7 @@ public sealed class ApiClient
         bool authorizationRequired = true,
         ApiHost host = ApiHost.Api)
     {
-        var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveUrlSegments(endpoint);
+        var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveEndpoint(endpoint);
         var request = _requestBuilder.BuildRequest(
             resolvedEndpoint,
             method,

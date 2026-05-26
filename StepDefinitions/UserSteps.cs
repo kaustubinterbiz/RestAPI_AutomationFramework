@@ -41,14 +41,21 @@ public class UserSteps
     public async Task GetRequestForFeature(string featureName)
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
-        SaveResponse(await _driver.GetUsers("appsettings.json", "EndpointJson", "get"));
+        SaveResponse(await _driver.GetFromConfig(endpointKey: "get"));
+    }
+
+    [When(@"User sends GET request for feature ""(.*)"" with cached id")]
+    public async Task GetRequestForFeatureWithCachedId(string featureName)
+    {
+        ApiHostStepHelper.ApplyFeatureName(featureName);
+        SaveResponse(await _driver.GetFromConfig(endpointKey: "get"));
     }
 
     [When(@"User sends GET request for feature ""(.*)"" using endpoint ""(.*)""")]
     public async Task GetRequestForFeatureWithEndpoint(string featureName, string endpointKey)
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
-        SaveResponse(await _driver.GetUsers("appsettings.json", "EndpointJson", endpointKey));
+        SaveResponse(await _driver.GetFromConfig(endpointKey: endpointKey));
     }
 
     [When(@"User sends POST request")]

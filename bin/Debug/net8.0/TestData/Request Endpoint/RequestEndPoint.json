@@ -1,5 +1,5 @@
 {
-  "get": "/Product/GetProductById/{id}",
+  "get": "Session/GetSessionInfo/{id}",
   "post": "testRovicare.onmicrosoft.com/B2C_1_ROPC_Test/oauth2/v2.0/token",
   "id": "1",
   "create_product": "/Product/Create"

@@ -1,6 +1,7 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
+using EnterpriseApiAutomationFramework.Core.Helpers;
 using RestSharp;
 
 namespace EnterpriseApiAutomationFramework.Drivers;
@@ -14,7 +15,6 @@ public class UserDriver
         _apiClient = apiClient ?? new ApiClient();
     }
 
-    /// <summary>Always calls B2C login API (used by login scenarios).</summary>
     public Task<RestResponse> LoginAsync() =>
         AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
 
@@ -29,31 +29,33 @@ public class UserDriver
             TokenTestHelper.GetExpiredAccessToken(
                 validToken ?? TokenManager.AccessToken));
 
-    /// <summary>GET with bearer token; uses <see cref="ApiHostContext"/> for base URL.</summary>
-    public async Task<RestResponse> GetUsers(
-        string env,
-        string key,
-        string request,
-        ApiHost? host = null)
+    public async Task<RestResponse> GetFromConfig(
+        string env = "appsettings.json",
+        string endpointJsonKey = "EndpointJson",
+        string endpointKey = "get",
+        ApiHost? host = null,
+        bool ensureAuth = true)
     {
-        await AuthService.EnsureAuthenticatedAsync(_apiClient);
+        if (ensureAuth)
+        {
+            await AuthService.EnsureAuthenticatedAsync(_apiClient);
+        }
 
-        return await GetUsersWithCurrentTokenOnly(env, key, request, host);
-    }
-
-    /// <summary>GET using the current scenario token only (no auto-login).</summary>
-    public async Task<RestResponse> GetUsersWithCurrentTokenOnly(
-        string env,
-        string key,
-        string request,
-        ApiHost? host = null)
-    {
         ConfigReaderNew.LoadConfig(env);
-        var endpointConfigPath = ConfigReaderNew.GetValue(key);
-        ConfigReaderNew.LoadConfig(endpointConfigPath);
-        var endPoint = ConfigReaderNew.GetValue(request);
-        return await _apiClient.GetAsync(endPoint, host ?? ApiHostContext.CurrentOrDefault);
+        ConfigReaderNew.LoadConfig(ConfigReaderNew.GetValue(endpointJsonKey));
+        var endpoint = ConfigReaderNew.GetValue(endpointKey);
+        return await _apiClient.GetAsync(endpoint, host ?? ApiHostContext.CurrentOrDefault);
     }
+
+    public Task<RestResponse> GetUsers(string env, string key, string request, ApiHost? host = null) =>
+        GetFromConfig(env, key, request, host);
+
+    public Task<RestResponse> GetUsersWithCurrentTokenOnly(
+        string env,
+        string key,
+        string request,
+        ApiHost? host = null) =>
+        GetFromConfig(env, key, request, host, ensureAuth: false);
 
     public async Task<RestResponse> PostUser(
         string env,

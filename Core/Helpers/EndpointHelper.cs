@@ -8,16 +8,26 @@ public static partial class EndpointHelper
     private static readonly Regex UrlSegmentPattern = UrlSegmentRegex();
 
     /// <summary>
-    /// Resolves endpoint placeholders such as {id} using values from the active config
-    /// (e.g. RequestEndPoint.json loaded via ConfigReaderNew).
+    /// Resolves {id}, {access_token}, etc. from active config / TokenManager.
+    /// Path placeholders use RestSharp url segments; query placeholders are inlined.
     /// </summary>
-    public static (string Endpoint, Dictionary<string, string> UrlSegments) ResolveUrlSegments(string endpoint)
+    public static (string Endpoint, Dictionary<string, string> UrlSegments) ResolveEndpoint(string endpoint)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(endpoint);
 
         if (endpoint.StartsWith('$'))
         {
             endpoint = ConfigReaderNew.GetValue(endpoint[1..]);
+        }
+
+        if (!endpoint.Contains('{'))
+        {
+            return (endpoint, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        }
+
+        if (endpoint.Contains('?', StringComparison.Ordinal))
+        {
+            return (ReplacePlaceholders(endpoint), new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         }
 
         var urlSegments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -30,17 +40,26 @@ public static partial class EndpointHelper
                 continue;
             }
 
-            var value = ConfigReaderNew.GetValue(key);
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new InvalidOperationException(
-                    $"URL segment '{{{key}}}' was not found in the active configuration.");
-            }
-
-            urlSegments[key] = value;
+            urlSegments[key] = EndpointRequestHelper.GetCachedValue(key);
         }
 
         return (endpoint, urlSegments);
+    }
+
+    public static (string Endpoint, Dictionary<string, string> UrlSegments) ResolveUrlSegments(string endpoint) =>
+        ResolveEndpoint(endpoint);
+
+    private static string ReplacePlaceholders(string endpoint)
+    {
+        var result = endpoint;
+        foreach (Match match in UrlSegmentPattern.Matches(endpoint))
+        {
+            var key = match.Groups[1].Value;
+            var value = EndpointRequestHelper.GetCachedValue(key);
+            result = result.Replace(match.Value, Uri.EscapeDataString(value), StringComparison.Ordinal);
+        }
+
+        return result;
     }
 
     [GeneratedRegex(@"\{(\w+)\}", RegexOptions.Compiled)]
