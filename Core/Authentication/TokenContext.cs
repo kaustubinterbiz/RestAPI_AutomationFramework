@@ -1,4 +1,4 @@
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace EnterpriseApiAutomationFramework.Core.Authentication;
 
@@ -11,7 +11,7 @@ public static class TokenContext
     public static void StoreAccessToken(ScenarioContext context, string token)
     {
         context.Set(token, StoredAccessTokenKey);
-        TokenManager.SetAccessToken(token, persistToConfig: false);
+        TokenManager.SetAccessToken(token, persistToConfig: true);
     }
 
     public static string GetStoredAccessToken(ScenarioContext context) =>

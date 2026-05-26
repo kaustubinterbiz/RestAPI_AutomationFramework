@@ -1,5 +1,5 @@
 using EnterpriseApiAutomationFramework.Core.Clients;
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace EnterpriseApiAutomationFramework.Hooks;
 

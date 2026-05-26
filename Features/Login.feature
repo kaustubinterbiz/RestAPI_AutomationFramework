@@ -17,7 +17,7 @@ Scenario:1.Verify POST User API to get Token
     Then Status should be OK
 
 @Api
-Scenario:2.Verify GET Product API
+Scenario:2.Verify GET API to get CachedId
     When User sends POST request on "Auth" base url
     Then Status should be OK
     And the access token is stored from the last login response

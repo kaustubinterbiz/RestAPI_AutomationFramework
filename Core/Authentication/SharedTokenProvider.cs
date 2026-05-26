@@ -207,7 +207,7 @@ public static class SharedTokenProvider
     {
         _processToken = token;
         _processExpiresAtUtc = expiresAtUtc;
-        TokenManager.SetAccessToken(token, persistToConfig: false);
+        TokenManager.SetAccessToken(token, persistToConfig: true);
     }
 
     private static bool IsValid(string? token, DateTimeOffset expiresAtUtc, int refreshBufferMinutes) =>

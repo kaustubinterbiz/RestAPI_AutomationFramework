@@ -1,5 +1,5 @@
 using EnterpriseApiAutomationFramework.Core.Configurations;
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace EnterpriseApiAutomationFramework.Core.Authentication;
 

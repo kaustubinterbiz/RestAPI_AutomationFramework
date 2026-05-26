@@ -4,8 +4,8 @@ using System.Text;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Gherkin.Model;
 using EnterpriseApiAutomationFramework.Core.Reporting;
-using TechTalk.SpecFlow;
-using TechTalk.SpecFlow.Bindings;
+using Reqnroll;
+using Reqnroll.Bindings;
 
 namespace EnterpriseApiAutomationFramework.Hooks;
 

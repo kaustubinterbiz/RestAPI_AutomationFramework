@@ -1,7 +1,6 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
-using EnterpriseApiAutomationFramework.Core.Helpers;
 using RestSharp;
 
 namespace EnterpriseApiAutomationFramework.Drivers;
@@ -34,9 +33,10 @@ public class UserDriver
         string endpointJsonKey = "EndpointJson",
         string endpointKey = "get",
         ApiHost? host = null,
-        bool ensureAuth = true)
+        bool ensureAuth = true,
+        ApiGetRequestOptions? getOptions = null)
     {
-        if (ensureAuth)
+        if (ensureAuth && (getOptions is null || !getOptions.BearerTokenProvided))
         {
             await AuthService.EnsureAuthenticatedAsync(_apiClient);
         }
@@ -44,7 +44,7 @@ public class UserDriver
         ConfigReaderNew.LoadConfig(env);
         ConfigReaderNew.LoadConfig(ConfigReaderNew.GetValue(endpointJsonKey));
         var endpoint = ConfigReaderNew.GetValue(endpointKey);
-        return await _apiClient.GetAsync(endpoint, host ?? ApiHostContext.CurrentOrDefault);
+        return await _apiClient.GetAsync(endpoint, getOptions, host ?? ApiHostContext.CurrentOrDefault);
     }
 
     public Task<RestResponse> GetUsers(string env, string key, string request, ApiHost? host = null) =>

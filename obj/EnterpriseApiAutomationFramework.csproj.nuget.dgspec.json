@@ -92,6 +92,18 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
+            "Reqnroll": {
+              "target": "Package",
+              "version": "[3.3.4, )"
+            },
+            "Reqnroll.NUnit": {
+              "target": "Package",
+              "version": "[3.3.4, )"
+            },
+            "Reqnroll.Tools.MsBuild.Generation": {
+              "target": "Package",
+              "version": "[3.3.4, )"
+            },
             "RestSharp": {
               "target": "Package",
               "version": "[112.1.0, )"
@@ -103,14 +115,6 @@
             "Serilog.Sinks.File": {
               "target": "Package",
               "version": "[5.0.0, )"
-            },
-            "SpecFlow": {
-              "target": "Package",
-              "version": "[3.9.74, )"
-            },
-            "SpecFlow.NUnit": {
-              "target": "Package",
-              "version": "[3.9.74, )"
             }
           },
           "imports": [

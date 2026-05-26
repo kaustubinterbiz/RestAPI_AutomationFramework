@@ -3,7 +3,7 @@ using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
 using RestSharp;
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace EnterpriseApiAutomationFramework.StepDefinitions;
 

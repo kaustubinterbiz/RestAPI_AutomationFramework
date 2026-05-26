@@ -41,7 +41,18 @@ public sealed class ApiClient
             endpoint);
 
     public Task<RestResponse> GetAsync(string endpoint, ApiHost? host = null) =>
-        SendAsync(endpoint, Method.Get, host: host ?? ApiHostContext.CurrentOrDefault);
+        GetAsync(endpoint, options: null, host: host ?? ApiHostContext.CurrentOrDefault);
+
+    /// <summary>
+    /// GET with optional body and bearer token.
+    /// Skips body/token when not set via <see cref="ApiGetRequestOptions"/>.
+    /// Throws only when body/token was explicitly provided but null or empty.
+    /// </summary>
+    public Task<RestResponse> GetAsync(
+        string endpoint,
+        ApiGetRequestOptions? options,
+        ApiHost? host = null) =>
+        SendGetAsync(endpoint, options, host ?? ApiHostContext.CurrentOrDefault);
 
     public Task<RestResponse> PostAsync(
         string endpoint,
@@ -63,6 +74,31 @@ public sealed class ApiClient
 
     public Task<RestResponse> DeleteAsync(string endpoint, ApiHost? host = null) =>
         SendAsync(endpoint, Method.Delete, host: host ?? ApiHostContext.CurrentOrDefault);
+
+    private async Task<RestResponse> SendGetAsync(
+        string endpoint,
+        ApiGetRequestOptions? options,
+        ApiHost host)
+    {
+        options ??= ApiGetRequestOptions.Create();
+        options.ValidateProvidedValues();
+
+        var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveEndpoint(endpoint);
+
+        object? body = options.BodyProvided ? options.Body : null;
+        var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
+
+        var request = _requestBuilder.BuildRequest(
+            resolvedEndpoint,
+            Method.Get,
+            body,
+            urlSegments: urlSegments.Count > 0 ? urlSegments : null,
+            authorizationRequired: useCachedToken,
+            explicitBearerToken: options.BearerToken,
+            explicitBearerTokenProvided: options.BearerTokenProvided);
+
+        return await ExecuteAsync(host, request, resolvedEndpoint);
+    }
 
     private async Task<RestResponse> SendAsync(
         string endpoint,

@@ -41,7 +41,9 @@ public class RequestBuilder
         Dictionary<string, string>? headers = null,
         Dictionary<string, string>? queryParams = null,
         Dictionary<string, string>? urlSegments = null,
-        bool authorizationRequired = true)
+        bool authorizationRequired = true,
+        string? explicitBearerToken = null,
+        bool explicitBearerTokenProvided = false)
     {
         var request = new RestRequest(endpoint, method);
 
@@ -53,7 +55,11 @@ public class RequestBuilder
             }
         }
 
-        if (authorizationRequired && !string.IsNullOrEmpty(TokenManager.AccessToken))
+        if (explicitBearerTokenProvided)
+        {
+            request.AddHeader("Authorization", $"Bearer {explicitBearerToken}");
+        }
+        else if (authorizationRequired && !string.IsNullOrEmpty(TokenManager.AccessToken))
         {
             request.AddHeader("Authorization", $"Bearer {TokenManager.AccessToken}");
         }

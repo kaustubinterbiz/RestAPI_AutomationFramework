@@ -18,21 +18,40 @@
           "NUnit": "3.14.0",
           "NUnit3TestAdapter": "6.2.0",
           "Newtonsoft.Json": "13.0.3",
+          "Reqnroll": "3.3.4",
+          "Reqnroll.NUnit": "3.3.4",
           "RestSharp": "112.1.0",
           "Serilog": "4.0.1",
-          "Serilog.Sinks.File": "5.0.0",
-          "SpecFlow": "3.9.74",
-          "SpecFlow.NUnit": "3.9.74"
+          "Serilog.Sinks.File": "5.0.0"
         },
         "runtime": {
           "EnterpriseApiAutomationFramework.dll": {}
         }
       },
-      "BoDi/1.5.0": {
+      "Cucumber.CucumberExpressions/17.1.0": {
         "runtime": {
-          "lib/netstandard2.0/BoDi.dll": {
-            "assemblyVersion": "1.5.0.0",
-            "fileVersion": "1.5.0.0"
+          "lib/netstandard2.0/CucumberExpressions.dll": {
+            "assemblyVersion": "17.1.0.0",
+            "fileVersion": "17.1.0.0"
+          }
+        }
+      },
+      "Cucumber.HtmlFormatter/22.2.0": {
+        "dependencies": {
+          "Cucumber.Messages": "30.1.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Cucumber.HtmlFormatter.dll": {
+            "assemblyVersion": "22.2.0.0",
+            "fileVersion": "22.2.0.0"
+          }
+        }
+      },
+      "Cucumber.Messages/30.1.0": {
+        "runtime": {
+          "lib/netstandard2.0/Cucumber.Messages.dll": {
+            "assemblyVersion": "30.1.0.0",
+            "fileVersion": "30.1.0.0"
           }
         }
       },
@@ -51,7 +70,7 @@
       },
       "FluentAssertions/6.12.0": {
         "dependencies": {
-          "System.Configuration.ConfigurationManager": "4.5.0"
+          "System.Configuration.ConfigurationManager": "4.4.0"
         },
         "runtime": {
           "lib/net6.0/FluentAssertions.dll": {
@@ -60,11 +79,14 @@
           }
         }
       },
-      "Gherkin/19.0.3": {
+      "Gherkin/35.0.0": {
+        "dependencies": {
+          "Cucumber.Messages": "30.1.0"
+        },
         "runtime": {
           "lib/netstandard2.0/Gherkin.dll": {
-            "assemblyVersion": "19.0.3.0",
-            "fileVersion": "19.0.3.0"
+            "assemblyVersion": "35.0.0.0",
+            "fileVersion": "35.0.0.0"
           }
         }
       },
@@ -81,6 +103,14 @@
           "lib/netstandard2.0/Microsoft.AspNetCore.Razor.Language.dll": {
             "assemblyVersion": "3.1.0.0",
             "fileVersion": "3.100.19.56505"
+          }
+        }
+      },
+      "Microsoft.Bcl.AsyncInterfaces/9.0.6": {
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
+            "assemblyVersion": "9.0.0.6",
+            "fileVersion": "9.0.625.26613"
           }
         }
       },
@@ -856,6 +886,39 @@
           }
         }
       },
+      "Reqnroll/3.3.4": {
+        "dependencies": {
+          "Cucumber.CucumberExpressions": "17.1.0",
+          "Cucumber.HtmlFormatter": "22.2.0",
+          "Cucumber.Messages": "30.1.0",
+          "Gherkin": "35.0.0",
+          "Microsoft.Bcl.AsyncInterfaces": "9.0.6",
+          "Microsoft.Extensions.DependencyModel": "8.0.2",
+          "System.Threading.Channels": "9.0.6"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Reqnroll.Utils.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          },
+          "lib/netstandard2.0/Reqnroll.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
+      "Reqnroll.NUnit/3.3.4": {
+        "dependencies": {
+          "NUnit": "3.14.0",
+          "Reqnroll": "3.3.4"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Reqnroll.NUnit.ReqnrollPlugin.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
       "RestSharp/112.1.0": {
         "runtime": {
           "lib/net8.0/RestSharp.dll": {
@@ -883,50 +946,14 @@
           }
         }
       },
-      "SpecFlow/3.9.74": {
+      "System.Configuration.ConfigurationManager/4.4.0": {
         "dependencies": {
-          "BoDi": "1.5.0",
-          "Gherkin": "19.0.3",
-          "Microsoft.Extensions.DependencyModel": "8.0.2",
-          "SpecFlow.Internal.Json": "1.0.8",
-          "System.Configuration.ConfigurationManager": "4.5.0"
-        },
-        "runtime": {
-          "lib/netstandard2.0/TechTalk.SpecFlow.dll": {
-            "assemblyVersion": "3.9.0.0",
-            "fileVersion": "3.9.74.14555"
-          }
-        }
-      },
-      "SpecFlow.Internal.Json/1.0.8": {
-        "runtime": {
-          "lib/netstandard2.0/SpecFlow.Internal.Json.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.8.28882"
-          }
-        }
-      },
-      "SpecFlow.NUnit/3.9.74": {
-        "dependencies": {
-          "NUnit": "3.14.0",
-          "SpecFlow": "3.9.74"
-        },
-        "runtime": {
-          "lib/net6.0/TechTalk.SpecFlow.NUnit.SpecFlowPlugin.dll": {
-            "assemblyVersion": "3.9.0.0",
-            "fileVersion": "3.9.74.14555"
-          }
-        }
-      },
-      "System.Configuration.ConfigurationManager/4.5.0": {
-        "dependencies": {
-          "System.Security.Cryptography.ProtectedData": "4.5.0",
-          "System.Security.Permissions": "5.0.0"
+          "System.Security.Cryptography.ProtectedData": "4.4.0"
         },
         "runtime": {
           "lib/netstandard2.0/System.Configuration.ConfigurationManager.dll": {
-            "assemblyVersion": "4.0.1.0",
-            "fileVersion": "4.6.26515.6"
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.25519.3"
           }
         }
       },
@@ -963,19 +990,19 @@
           }
         }
       },
-      "System.Security.Cryptography.ProtectedData/4.5.0": {
+      "System.Security.Cryptography.ProtectedData/4.4.0": {
         "runtime": {
           "lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
-            "assemblyVersion": "4.0.3.0",
-            "fileVersion": "4.6.26515.6"
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.6.25519.3"
           }
         },
         "runtimeTargets": {
           "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
             "rid": "win",
             "assetType": "runtime",
-            "assemblyVersion": "4.0.3.0",
-            "fileVersion": "4.6.26515.6"
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.6.25519.3"
           }
         }
       },
@@ -987,6 +1014,14 @@
           "lib/net5.0/System.Security.Permissions.dll": {
             "assemblyVersion": "5.0.0.0",
             "fileVersion": "5.0.20.51904"
+          }
+        }
+      },
+      "System.Threading.Channels/9.0.6": {
+        "runtime": {
+          "lib/net8.0/System.Threading.Channels.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
           }
         }
       },
@@ -1017,12 +1052,26 @@
       "serviceable": false,
       "sha512": ""
     },
-    "BoDi/1.5.0": {
+    "Cucumber.CucumberExpressions/17.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-CzIPzdIAFSd2zuLxI+0K9s48Qv3HQDbWiApn9h96j284rHs2bSPrn/PMca3mi4q3xLSEqOp+GUJ6+mXDD9prKg==",
-      "path": "bodi/1.5.0",
-      "hashPath": "bodi.1.5.0.nupkg.sha512"
+      "sha512": "sha512-IZFDLLwrUCKuGDXQzmAWZa+kQFpVmVwWD8wEl0UWGOR83UQfzqg8hZeSSNUOXlW0Kh3vMO6kEm3FpNC4amKMaw==",
+      "path": "cucumber.cucumberexpressions/17.1.0",
+      "hashPath": "cucumber.cucumberexpressions.17.1.0.nupkg.sha512"
+    },
+    "Cucumber.HtmlFormatter/22.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hlP9GGzRADDKh0/GEt2aWD9G08qEDD4z6TC6iqJt3xH8kiU3iAbg1rOCtorN13zNdaaVxdraHzznWTMT/DnM1g==",
+      "path": "cucumber.htmlformatter/22.2.0",
+      "hashPath": "cucumber.htmlformatter.22.2.0.nupkg.sha512"
+    },
+    "Cucumber.Messages/30.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HDfIzDd7JFDEwiNHpgOHBPEiyVjXQws+CEnVb+Lwiq58jHNA/xYwmTswbqknOxcAejCRFP1de/hHHw+ZuTzV6A==",
+      "path": "cucumber.messages/30.1.0",
+      "hashPath": "cucumber.messages.30.1.0.nupkg.sha512"
     },
     "ExtentReports/5.0.4": {
       "type": "package",
@@ -1038,12 +1087,12 @@
       "path": "fluentassertions/6.12.0",
       "hashPath": "fluentassertions.6.12.0.nupkg.sha512"
     },
-    "Gherkin/19.0.3": {
+    "Gherkin/35.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kq9feqMojMj9aABrHb/ABEPaH2Y4dSclseSahAru6qxCeqVQNLLTgw/6vZMauzI1yBUL2fz03ub5yEd5btLfvg==",
-      "path": "gherkin/19.0.3",
-      "hashPath": "gherkin.19.0.3.nupkg.sha512"
+      "sha512": "sha512-ha+QNevQsXEESbzazUceHTCtKOjoBTBa8kLFdKpu6vSEbb3UMt3a55RG78tIoU/C4qzIqX3jQxaIdIcYGO+IWQ==",
+      "path": "gherkin/35.0.0",
+      "hashPath": "gherkin.35.0.0.nupkg.sha512"
     },
     "Microsoft.ApplicationInsights/2.23.0": {
       "type": "package",
@@ -1058,6 +1107,13 @@
       "sha512": "sha512-e/atqZ5CzmJWuG/yaYOzbWNON+oqNKfk1M/xTYW+hje/RoiUUjVP88wrX1s9rEHzaAU4UljIOSvMxLABc2X2gg==",
       "path": "microsoft.aspnetcore.razor.language/3.1.0",
       "hashPath": "microsoft.aspnetcore.razor.language.3.1.0.nupkg.sha512"
+    },
+    "Microsoft.Bcl.AsyncInterfaces/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-82rLw487j5jBXEi2r3WvA/cagOhcRREVRtet6izzjDMY+i392W5oNSN2KCtuIvlTpyMONEUD0MIlGAgDdsvQ/w==",
+      "path": "microsoft.bcl.asyncinterfaces/9.0.6",
+      "hashPath": "microsoft.bcl.asyncinterfaces.9.0.6.nupkg.sha512"
     },
     "Microsoft.CodeAnalysis.Common/3.9.0": {
       "type": "package",
@@ -1262,6 +1318,20 @@
       "path": "razorengine.netcore.nixfix/1.0.1",
       "hashPath": "razorengine.netcore.nixfix.1.0.1.nupkg.sha512"
     },
+    "Reqnroll/3.3.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tFFx0xACekjT9F/aFZjQMNTbaxy7zNU4uXFXvU1Eybuko2Rx1RLCAzN+uPDiDxsGB/Nd0wZC0M8Ho5i9xm8Jdg==",
+      "path": "reqnroll/3.3.4",
+      "hashPath": "reqnroll.3.3.4.nupkg.sha512"
+    },
+    "Reqnroll.NUnit/3.3.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-haIYJgiTdxsX/57772Pv48Gx2O1Fqlaeyd9dhQ3l5e+Ya4NfNWQeACaNfAJ7KpO6gdc7XTzib3dTjYq6KrU1/Q==",
+      "path": "reqnroll.nunit/3.3.4",
+      "hashPath": "reqnroll.nunit.3.3.4.nupkg.sha512"
+    },
     "RestSharp/112.1.0": {
       "type": "package",
       "serviceable": true,
@@ -1283,33 +1353,12 @@
       "path": "serilog.sinks.file/5.0.0",
       "hashPath": "serilog.sinks.file.5.0.0.nupkg.sha512"
     },
-    "SpecFlow/3.9.74": {
+    "System.Configuration.ConfigurationManager/4.4.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-n6kcg9ZeQWxqJFoT23SsFT89U1QQNwvcN9pAX5alB6ZPr6K0p5D5nGIJ1PZsSaFaRFutiwQ+DicmxBCPAZVYIA==",
-      "path": "specflow/3.9.74",
-      "hashPath": "specflow.3.9.74.nupkg.sha512"
-    },
-    "SpecFlow.Internal.Json/1.0.8": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-lVCC/Rie7N5rFoc7YxPS0nneLfsWSTIMMlkndwxhaD8MxBp3Bsv1HeiVjVwXCjWaQeoqZcvIy52fF5Xit00ZLw==",
-      "path": "specflow.internal.json/1.0.8",
-      "hashPath": "specflow.internal.json.1.0.8.nupkg.sha512"
-    },
-    "SpecFlow.NUnit/3.9.74": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-nMPLztTT5IZDMnvNCUxklqaM+agn4kjuNy/qAcYQQOxau2G1MF73UxhL9OXjJQaEuPuyT8gJvXudOYCFZWztxA==",
-      "path": "specflow.nunit/3.9.74",
-      "hashPath": "specflow.nunit.3.9.74.nupkg.sha512"
-    },
-    "System.Configuration.ConfigurationManager/4.5.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-UIFvaFfuKhLr9u5tWMxmVoDPkFeD+Qv8gUuap4aZgVGYSYMdERck4OhLN/2gulAc0nYTEigWXSJNNWshrmxnng==",
-      "path": "system.configuration.configurationmanager/4.5.0",
-      "hashPath": "system.configuration.configurationmanager.4.5.0.nupkg.sha512"
+      "sha512": "sha512-gWwQv/Ug1qWJmHCmN17nAbxJYmQBM/E94QxKLksvUiiKB1Ld3Sc/eK1lgmbSjDFxkQhVuayI/cGFZhpBSodLrg==",
+      "path": "system.configuration.configurationmanager/4.4.0",
+      "hashPath": "system.configuration.configurationmanager.4.4.0.nupkg.sha512"
     },
     "System.Drawing.Common/5.0.0": {
       "type": "package",
@@ -1325,12 +1374,12 @@
       "path": "system.reactive/6.0.0",
       "hashPath": "system.reactive.6.0.0.nupkg.sha512"
     },
-    "System.Security.Cryptography.ProtectedData/4.5.0": {
+    "System.Security.Cryptography.ProtectedData/4.4.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q==",
-      "path": "system.security.cryptography.protecteddata/4.5.0",
-      "hashPath": "system.security.cryptography.protecteddata.4.5.0.nupkg.sha512"
+      "sha512": "sha512-cJV7ScGW7EhatRsjehfvvYVBvtiSMKgN8bOVI0bQhnF5bU7vnHVIsH49Kva7i7GWaWYvmEzkYVk1TC+gZYBEog==",
+      "path": "system.security.cryptography.protecteddata/4.4.0",
+      "hashPath": "system.security.cryptography.protecteddata.4.4.0.nupkg.sha512"
     },
     "System.Security.Permissions/5.0.0": {
       "type": "package",
@@ -1338,6 +1387,13 @@
       "sha512": "sha512-uE8juAhEkp7KDBCdjDIE3H9R1HJuEHqeqX8nLX9gmYKWwsqk3T5qZlPx8qle5DPKimC/Fy3AFTdV7HamgCh9qQ==",
       "path": "system.security.permissions/5.0.0",
       "hashPath": "system.security.permissions.5.0.0.nupkg.sha512"
+    },
+    "System.Threading.Channels/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2MaNJVkG2yJiXQbZrrcYoJ55ehV+aX0zqR6rWJkO/Qj7jTsArWthrQ7iWywUf/sE5ylJWX/iLH2kKfwSRdkWsA==",
+      "path": "system.threading.channels/9.0.6",
+      "hashPath": "system.threading.channels.9.0.6.nupkg.sha512"
     },
     "System.Windows.Extensions/5.0.0": {
       "type": "package",
