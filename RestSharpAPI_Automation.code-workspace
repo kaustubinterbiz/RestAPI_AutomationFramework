@@ -1,0 +1,41 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "*.feature": "${capture}.feature.cs"
+    },
+    "files.associations": {
+      "*.feature": "reqnroll-feature"
+    },
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true
+    },
+    "[reqnroll-feature]": {
+      "editor.formatOnSave": false
+    },
+    "cucumber.features": [
+      "Features/**/*.feature"
+    ],
+    "cucumber.glue": [
+      "StepDefinitions/**/*.cs",
+      "Hooks/**/*.cs",
+      "**/*Steps.cs",
+      "**/*StepDefinitions.cs"
+    ],
+    "dotnet.defaultSolution": "RestSharpAPI_Automation.sln"
+  },
+  "extensions": {
+    "recommendations": [
+      "Rotbarsch.rotbarsch-reqnroll-vscode",
+      "CucumberOpen.cucumber-official",
+      "ms-dotnettools.csdevkit",
+      "ms-dotnettools.csharp"
+    ]
+  }
+}

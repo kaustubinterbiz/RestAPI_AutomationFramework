@@ -1,5 +1,11 @@
 {
   "recommendations": [
+    "Rotbarsch.rotbarsch-reqnroll-vscode",
+    "CucumberOpen.cucumber-official",
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp"
+  ],
+  "unwantedRecommendations": [
     "Reqnroll.ReqnrollForVisualStudioCode"
   ]
 }
