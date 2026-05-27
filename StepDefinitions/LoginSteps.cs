@@ -1,7 +1,6 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
-using FluentAssertions;
 using Reqnroll;
 
 namespace EnterpriseApiAutomationFramework.StepDefinitions;
@@ -22,9 +21,7 @@ public class LoginSteps
     public void ThenAccessTokenIsStoredFromLastLoginResponse()
     {
         var response = TokenContext.GetLastResponse(_context);
-        var token = LoginResponseParser.TryGetAccessToken(response.Content);
-        token.Should().NotBeNullOrWhiteSpace("login response must include access_token");
-        TokenContext.StoreAccessToken(_context, token!);
+        ApiAuth.SaveTokenFromLoginResponse(_context, response.Content);
     }
 
     [When(@"User sends POST request on ""(.*)"" base url using stored access token")]

@@ -56,20 +56,14 @@ public class TokenSteps
     public async Task WhenUserSendsGetRequestOnBaseUrlWithCurrentTokenOnly(string baseUrlType)
     {
         ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
-        _response = await _driver.GetUsersWithCurrentTokenOnly(
-            "appsettings.json",
-            "EndpointJson",
-            "get");
+        _response = await _driver.GetWithCurrentTokenAsync();
     }
 
     [When(@"User sends GET request for feature ""(.*)"" with current token only")]
     public async Task WhenUserSendsGetRequestForFeatureWithCurrentTokenOnly(string featureName)
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
-        _response = await _driver.GetUsersWithCurrentTokenOnly(
-            "appsettings.json",
-            "EndpointJson",
-            "get");
+        _response = await _driver.GetWithCurrentTokenAsync();
     }
 
     [When(@"User refreshes the access token")]
@@ -94,7 +88,7 @@ public class TokenSteps
     public async Task WhenUserSendsGetRequestAfterTokenRefresh()
     {
         ApiHostStepHelper.ApplyFeatureName("Access Token Refresh");
-        _response = await _driver.GetUsers("appsettings.json", "EndpointJson", "get");
+        _response = await _driver.GetAsync();
     }
 
     //[When(@"User sends GET request for feature ""(.*)""")]

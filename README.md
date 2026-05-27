@@ -1,5 +1,8 @@
 # Enterprise API Automation Framework
 
+> **Naye ho? Pehle yeh padho:** [START_HERE.md](START_HERE.md) (simple Hindi/English guide)  
+> **Detail architecture:** [ARCHITECTURE_GUIDE_HINDI.md](ARCHITECTURE_GUIDE_HINDI.md)
+
 ## Project structure
 
 See **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** for a full file/folder reference.

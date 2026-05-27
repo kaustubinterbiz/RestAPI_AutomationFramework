@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
@@ -88,14 +89,31 @@ public sealed class ApiClient
         object? body = options.BodyProvided ? options.Body : null;
         var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
 
+        var bearerTokenProvided = options.BearerTokenProvided;
+        var bearerToken = options.BearerToken;
+
+        if (useCachedToken && !bearerTokenProvided)
+        {
+            if (!TokenManager.HasToken)
+            {
+                TokenManager.InitializeFromConfig();
+            }
+
+            if (TokenManager.HasToken)
+            {
+                bearerToken = TokenManager.AccessToken;
+                bearerTokenProvided = true;
+            }
+        }
+
         var request = _requestBuilder.BuildRequest(
             resolvedEndpoint,
             Method.Get,
             body,
             urlSegments: urlSegments.Count > 0 ? urlSegments : null,
-            authorizationRequired: useCachedToken,
-            explicitBearerToken: options.BearerToken,
-            explicitBearerTokenProvided: options.BearerTokenProvided);
+            authorizationRequired: useCachedToken && !bearerTokenProvided,
+            explicitBearerToken: bearerToken,
+            explicitBearerTokenProvided: bearerTokenProvided);
 
         return await ExecuteAsync(host, request, resolvedEndpoint);
     }

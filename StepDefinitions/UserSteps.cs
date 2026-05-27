@@ -12,7 +12,6 @@ public class UserSteps
 {
     private readonly ScenarioContext _context;
     private readonly UserDriver _driver;
-    private RestResponse? response;
 
     public UserSteps(ScenarioContext context)
     {
@@ -22,40 +21,39 @@ public class UserSteps
 
     private void SaveResponse(RestResponse res)
     {
-        response = res;
         TokenContext.SetLastResponse(_context, res);
     }
 
     [When(@"User sends GET request")]
     public async Task GetRequest() =>
-        SaveResponse(await _driver.GetUsers("appsettings.json", "EndpointJson", "get"));
+        SaveResponse(await _driver.GetAsync());
 
     [When(@"User sends GET request on ""(.*)"" base url")]
     public async Task GetRequestOnBaseUrl(string baseUrlType)
     {
         ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
-        SaveResponse(await _driver.GetUsers("appsettings.json", "EndpointJson", "get"));
+        SaveResponse(await _driver.GetAsync());
     }
 
     [When(@"User sends GET request for feature ""(.*)""")]
     public async Task GetRequestForFeature(string featureName)
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
-        SaveResponse(await _driver.GetFromConfig(endpointKey: "get"));
+        SaveResponse(await _driver.GetAsync());
     }
 
     [When(@"User sends GET request for feature ""(.*)"" with cached id")]
     public async Task GetRequestForFeatureWithCachedId(string featureName)
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
-        SaveResponse(await _driver.GetFromConfig(endpointKey: "get"));
+        SaveResponse(await _driver.GetAsync());
     }
 
     [When(@"User sends GET request for feature ""(.*)"" using endpoint ""(.*)""")]
     public async Task GetRequestForFeatureWithEndpoint(string featureName, string endpointKey)
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
-        SaveResponse(await _driver.GetFromConfig(endpointKey: endpointKey));
+        SaveResponse(await _driver.GetAsync(endpointKey));
     }
 
     [When(@"User sends POST request")]
@@ -68,12 +66,7 @@ public class UserSteps
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
         SaveResponse(host == ApiHost.Auth
             ? await _driver.LoginAsync()
-            : await _driver.PostUser(
-                "appsettings.json",
-                "EndpointJson",
-                "create_product",
-                "JsonBody",
-                "productCreateBody"));
+            : await _driver.PostFromConfigAsync("create_product", "JsonBody", "productCreateBody"));
     }
 
     [When(@"User sends POST request for feature ""(.*)""")]
@@ -82,33 +75,18 @@ public class UserSteps
         var host = ApiHostStepHelper.ApplyFeatureName(featureName);
         SaveResponse(host == ApiHost.Auth
             ? await _driver.LoginAsync()
-            : await _driver.PostUser(
-                "appsettings.json",
-                "EndpointJson",
-                "create_product",
-                "JsonBody",
-                "productCreateBody"));
+            : await _driver.PostFromConfigAsync("create_product", "JsonBody", "productCreateBody"));
     }
 
     [When("User sends POST request to create")]
     public async Task WhenUserSendsPOSTRequestToCreate() =>
-        SaveResponse(await _driver.PostUser(
-            "appsettings.json",
-            "EndpointJson",
-            "create_product",
-            "JsonBody",
-            "productCreateBody"));
+        SaveResponse(await _driver.PostFromConfigAsync("create_product", "JsonBody", "productCreateBody"));
 
     [When(@"User sends POST request to create on ""(.*)"" base url")]
     public async Task PostCreateOnBaseUrl(string baseUrlType)
     {
         ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
-        SaveResponse(await _driver.PostUser(
-            "appsettings.json",
-            "EndpointJson",
-            "create_product",
-            "JsonBody",
-            "productCreateBody"));
+        SaveResponse(await _driver.PostFromConfigAsync("create_product", "JsonBody", "productCreateBody"));
     }
 
     [When(@"User sends PUT request")]

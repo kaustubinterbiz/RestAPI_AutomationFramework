@@ -86,9 +86,22 @@ public static class SharedTokenProvider
             return;
         }
 
+        // Reuse scenario / appsettings token instead of clearing it (Scenario 2 store-token flow).
         if (TokenManager.HasToken && !TryGetInMemoryToken(out _))
         {
-            TokenManager.ClearScenarioToken();
+            SyncProcessTokenFromScenario(TokenManager.AccessToken);
+            return;
+        }
+
+        AuthService.LoadTokenFromConfig();
+        if (TokenManager.HasToken)
+        {
+            if (!TryGetInMemoryToken(out _))
+            {
+                SyncProcessTokenFromScenario(TokenManager.AccessToken);
+            }
+
+            return;
         }
 
         var response = await LoginAndStoreTokenAsync(apiClient, loginFunc);
@@ -97,6 +110,12 @@ public static class SharedTokenProvider
             throw new InvalidOperationException(
                 $"Authentication failed. Status={(int)response.StatusCode}, Body={response.Content}");
         }
+    }
+
+    private static void SyncProcessTokenFromScenario(string token)
+    {
+        var expiry = JwtTokenHelper.GetExpiryUtc(token) ?? DateTimeOffset.UtcNow.AddHours(1);
+        StoreProcessToken(token, expiry);
     }
 
     public static void ApplySharedTokenToScenario()
