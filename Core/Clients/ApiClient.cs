@@ -142,7 +142,7 @@ public sealed class ApiClient
         string endpointForReport)
     {
         var client = _clientFactory.GetClient(host);
-        var stopwatch = Stopwatch.StartNew();
+         var stopwatch = Stopwatch.StartNew();
         var response = await client.ExecuteAsync(request);
         stopwatch.Stop();
 

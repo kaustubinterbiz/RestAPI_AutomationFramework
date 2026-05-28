@@ -218,7 +218,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
     await testRunner.ThenAsync("Status should be OK", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 23
-    await testRunner.AndAsync("the access token is stored from the last login response", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+     await testRunner.AndAsync("the access token is stored from the last login response", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 24
     await testRunner.WhenAsync("User sends GET request for feature \"User API Testing\" with cached id", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");

@@ -61,7 +61,7 @@ public static class AuthService
     private static async Task<(string? Token, DateTimeOffset ExpiresAtUtc, RestResponse Response)>
         FetchTokenFromApiAsync(ApiClient apiClient)
     {
-        ConfigReaderNew.LoadConfig(AppSettingsFile);
+          ConfigReaderNew.LoadConfig(AppSettingsFile);
 
         var loginJsonPath = ConfigReaderNew.GetValue("LoginJson");
         var endpointJsonPath = ConfigReaderNew.GetValue("EndpointJson");
