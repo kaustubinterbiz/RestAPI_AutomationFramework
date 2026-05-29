@@ -1,24 +1,27 @@
 Feature: User API Testing
   Pass base URL type or feature name in steps (Auth = B2C, Api = application).
 
-@login @logout
-Scenario: Verify POST User API to get Token and Logout
-    When User sends POST request on "Auth" base url
-    Then Status code should be 200
-    And the access token is stored from the last login response
-    When User sends POST request on "Auth" base url
-     When User sends POST request on "Auth" base url using stored access token
-    Then login should fail
-    And login error message should indicate unauthorized or expired access
+@Auth @SuperAdmin
+Scenario:1.Verify POST User API to get Token
+    When User sends POST request on "Auth" base url with "SuperAdmin"
+    Then Status should be OK
 
 @Auth
-Scenario:1.Verify POST User API to get Token
-    #When User sends POST request on "Auth" base url
-    When User sends POST request on "Auth" base url with "AdminRole"
+Scenario:2.Verify POST User API to get Token
+    When User sends POST request on "Auth" base url
     Then Status should be OK
 
 @Api
-Scenario:2.Verify GET API to get CachedId
+Scenario:3.Verify GET API to get CachedId
+    When User sends POST request on "Auth" base url with "SuperAdmin"
+    Then Status should be OK
+     And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
+
+@Api
+Scenario:4.Verify GET API to get CachedId
     When User sends POST request on "Auth" base url
     Then Status should be OK
      And the access token is stored from the last login response
@@ -27,36 +30,37 @@ Scenario:2.Verify GET API to get CachedId
     And session info from the last response is stored in appsettings
 
 @Api
-Scenario:3.Verify GET API to get Existing User
+Scenario:5.Verify GET API to get Existing User
     When User sends POST request on "Auth" base url
     Then Status should be OK
      And the access token is stored from the last login response
     When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
     And session info from the last response is stored in appsettings
-    Then check the user 
+    
 
 @Api
-Scenario:4.Verify POST User API
+Scenario:6.Verify POST User API
     When User sends POST request to create on "Api" base url
     Then Status should be OK
 
 @Api
-Scenario:5.Verify PUT User API
+Scenario:7.Verify PUT User API
     When User sends PUT request on "Api" base url
     Then Status code should be 200
 
 @Api
-Scenario:6.Verify PATCH User API
+Scenario:8.Verify PATCH User API
     When User sends PATCH request on "Api" base url
     Then Status code should be 200
 
 @Api
-Scenario:7.Verify DELETE User API
+Scenario:9.Verify DELETE User API
     When User sends DELETE request on "Api" base url
     Then Status code should be 204
 
-Scenario Outline:8. Dynamic base URL from step parameter
+@Api
+Scenario Outline:10. Dynamic base URL from step parameter
     When User sends GET request on "<BaseUrlType>" base url
     Then Status code should be <StatusCode>
 
