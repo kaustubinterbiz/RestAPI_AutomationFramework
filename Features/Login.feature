@@ -23,6 +23,7 @@ Scenario:2.Verify GET API to get CachedId
      And the access token is stored from the last login response
     When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
+    And session info from the last response is stored in appsettings
 
 @Api
 Scenario:3.Verify POST User API

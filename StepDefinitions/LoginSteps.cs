@@ -24,6 +24,13 @@ public class LoginSteps
         ApiAuth.SaveTokenFromLoginResponse(_context, response.Content);
     }
 
+    [Then(@"session info from the last response is stored in appsettings")]
+    public void ThenSessionInfoFromLastResponseIsStoredInAppSettings()
+    {
+        var response = TokenContext.GetLastResponse(_context);
+        SessionInfoStore.SaveFromResponse(response.Content);
+    }
+
     [When(@"User sends POST request on ""(.*)"" base url using stored access token")]
     public async Task WhenUserSendsPostOnAuthUsingStoredAccessToken(string baseUrlType)
     {

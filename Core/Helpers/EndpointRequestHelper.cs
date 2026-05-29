@@ -21,14 +21,26 @@ public static class EndpointRequestHelper
 
     public static string GetCachedValue(string key)
     {
-        var value = key.Equals("access_token", StringComparison.OrdinalIgnoreCase)
-            ? TokenManager.AccessToken
-            : ConfigReaderNew.GetValue(key);
+        if (key.Equals("access_token", StringComparison.OrdinalIgnoreCase))
+        {
+            return RequireValue(key, TokenManager.AccessToken);
+        }
 
+        var fromAppSettings = SessionInfoStore.GetCachedValue(key);
+        if (!string.IsNullOrWhiteSpace(fromAppSettings))
+        {
+            return fromAppSettings;
+        }
+
+        return RequireValue(key, ConfigReaderNew.GetValue(key));
+    }
+
+    private static string RequireValue(string key, string? value)
+    {
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidOperationException(
-                $"Cached config value '{key}' is missing. Check RequestEndPoint.json or login for access_token.");
+                $"Cached config value '{key}' is missing. Run GetSession step or check appsettings.json / RequestEndPoint.json.");
         }
 
         return value;

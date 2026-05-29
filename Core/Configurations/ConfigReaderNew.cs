@@ -266,6 +266,58 @@ public static class ConfigReaderNew
     }
 
     /// <summary>
+    /// Updates or creates a nested JSON object section (e.g. SessionInfo).
+    /// </summary>
+    public static void UpdateJsonSection(
+        string filePath,
+        string sectionKey,
+        IReadOnlyDictionary<string, string> values)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sectionKey);
+        ArgumentNullException.ThrowIfNull(values);
+
+        var fullPath = ResolvePath(filePath);
+        var jsonNode = ReadJson(filePath);
+
+        if (jsonNode is not JsonObject jsonObject)
+        {
+            throw new JsonException($"JSON root in '{fullPath}' is not an object.");
+        }
+
+        var section = new JsonObject();
+        foreach (var (key, value) in values)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                section[key] = value;
+            }
+        }
+
+        jsonObject[sectionKey] = section;
+        File.WriteAllText(fullPath, jsonObject.ToJsonString(JsonOptions));
+    }
+
+    /// <summary>
+    /// Reads a value from a nested section in a JSON file.
+    /// </summary>
+    public static string GetJsonSectionValue(string filePath, string sectionKey, string propertyKey)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sectionKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
+        var jsonNode = ReadJson(filePath);
+
+        if (jsonNode is not JsonObject root
+            || root[sectionKey] is not JsonObject section)
+        {
+            return string.Empty;
+        }
+
+        return section[propertyKey]?.ToString() ?? string.Empty;
+    }
+
+    /// <summary>
     /// Reads a top-level value directly from a JSON file (not from loaded config cache).
     /// </summary>
     public static string GetJsonValue(string filePath, string key)
