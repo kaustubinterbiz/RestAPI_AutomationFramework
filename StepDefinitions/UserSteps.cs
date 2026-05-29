@@ -69,6 +69,16 @@ public class UserSteps
             : await _driver.PostFromConfigAsync("create_product", "JsonBody", "productCreateBody"));
     }
 
+    [When("User sends POST request on {string} base url with {string}")]
+    public async Task WhenUserSendsPOSTRequestOnBaseUrlWith(string baseUrlType,string loginRoleKey)
+    {
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+
+        SaveResponse(host == ApiHost.Auth
+                ? await _driver.LoginAsync(loginRoleKey)
+                : await _driver.PostFromConfigAsync("create_product","JsonBody","productCreateBody"));
+    }
+
     [When(@"User sends POST request for feature ""(.*)""")]
     public async Task PostRequestForFeature(string featureName)
     {

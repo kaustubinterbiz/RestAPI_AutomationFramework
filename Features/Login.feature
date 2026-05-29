@@ -13,7 +13,8 @@ Scenario: Verify POST User API to get Token and Logout
 
 @Auth
 Scenario:1.Verify POST User API to get Token
-    When User sends POST request on "Auth" base url
+    #When User sends POST request on "Auth" base url
+    When User sends POST request on "Auth" base url with "AdminRole"
     Then Status should be OK
 
 @Api
@@ -26,26 +27,36 @@ Scenario:2.Verify GET API to get CachedId
     And session info from the last response is stored in appsettings
 
 @Api
-Scenario:3.Verify POST User API
+Scenario:3.Verify GET API to get Existing User
+    When User sends POST request on "Auth" base url
+    Then Status should be OK
+     And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
+    Then check the user 
+
+@Api
+Scenario:4.Verify POST User API
     When User sends POST request to create on "Api" base url
     Then Status should be OK
 
 @Api
-Scenario:4.Verify PUT User API
+Scenario:5.Verify PUT User API
     When User sends PUT request on "Api" base url
     Then Status code should be 200
 
 @Api
-Scenario:5.Verify PATCH User API
+Scenario:6.Verify PATCH User API
     When User sends PATCH request on "Api" base url
     Then Status code should be 200
 
 @Api
-Scenario:6.Verify DELETE User API
+Scenario:7.Verify DELETE User API
     When User sends DELETE request on "Api" base url
     Then Status code should be 204
 
-Scenario Outline: Dynamic base URL from step parameter
+Scenario Outline:8. Dynamic base URL from step parameter
     When User sends GET request on "<BaseUrlType>" base url
     Then Status code should be <StatusCode>
 

@@ -13,5 +13,13 @@
     "scope": "https://testRovicare.onmicrosoft.com/test_api/WebClient",
     "username": "hospital@rovicare.com",
     "password": "RoviPass@321"
+  },
+
+  "AdminRole": {
+    "grant_type": "password",
+    "client_id": "c6abc567-3f4a-4b13-8593-764b209a17ea",
+    "scope": "https://testRovicare.onmicrosoft.com/test_api/WebClient",
+    "username": "admin@rovicare.com",
+    "password": "SupeAdmin@132"
   }
 }

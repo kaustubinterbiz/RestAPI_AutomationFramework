@@ -19,11 +19,17 @@ public class UserDriver
     }
 
     /// <summary>Login on Auth (B2C) host and save token.</summary>
+    public Task<RestResponse> LoginAsync(string roleType) =>
+        AuthService.LoginAndStoreTokenAsync(_apiClient, roleType, forceRefresh: true);
+
     public Task<RestResponse> LoginAsync() =>
-        AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
+       AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
+
+    public Task<RestResponse> RefreshAccessTokenAsync(string roleType) =>
+        LoginAsync(roleType);
 
     public Task<RestResponse> RefreshAccessTokenAsync() =>
-        LoginAsync();
+       LoginAsync();
 
     public Task<RestResponse> LoginWithStoredBearerTokenAsync(string bearerToken) =>
         AuthService.LoginWithBearerOnlyAsync(_apiClient, bearerToken);
