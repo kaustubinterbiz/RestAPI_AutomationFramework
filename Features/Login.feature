@@ -1,18 +1,18 @@
-Feature: User API Testing
+Feature: API Testing
   Pass base URL type or feature name in steps (Auth = B2C, Api = application).
 
 @Auth @SuperAdmin
-Scenario:1.Verify POST User API to get Token
+Scenario:1.Verify POST User API generates token successfully for SuperAdmin role through valid login
     When User sends POST request on "Auth" base url with "SuperAdmin"
     Then Status should be OK
 
 @Auth
-Scenario:2.Verify POST User API to get Token
+Scenario:2.Verify POST User API generates token successfully for role through valid login
     When User sends POST request on "Auth" base url
     Then Status should be OK
 
-@Api
-Scenario:3.Verify GET API to get CachedId
+@Api @SuperAdmin
+Scenario:3.Verify GET API retrieves Cached_ID successfully using SuperAdmin role
     When User sends POST request on "Auth" base url with "SuperAdmin"
     Then Status should be OK
      And the access token is stored from the last login response
@@ -21,7 +21,7 @@ Scenario:3.Verify GET API to get CachedId
     And session info from the last response is stored in appsettings
 
 @Api
-Scenario:4.Verify GET API to get CachedId
+Scenario:4.Verify GET API retrieves Cached_ID successfully using role
     When User sends POST request on "Auth" base url
     Then Status should be OK
      And the access token is stored from the last login response
@@ -30,14 +30,14 @@ Scenario:4.Verify GET API to get CachedId
     And session info from the last response is stored in appsettings
 
 @Api
-Scenario:5.Verify GET API to get Existing User
+Scenario:5.Verify GET API retrieves existing user successfully
     When User sends POST request on "Auth" base url
     Then Status should be OK
      And the access token is stored from the last login response
     When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
     And session info from the last response is stored in appsettings
-    
+    And Confirm the existing logged_in user is exist "Api"
 
 @Api
 Scenario:6.Verify POST User API
@@ -60,7 +60,7 @@ Scenario:9.Verify DELETE User API
     Then Status code should be 204
 
 @Api
-Scenario Outline:10. Dynamic base URL from step parameter
+Scenario Outline:Dynamic base URL from step parameter
     When User sends GET request on "<BaseUrlType>" base url
     Then Status code should be <StatusCode>
 

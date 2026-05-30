@@ -2,8 +2,9 @@ using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
-using RestSharp;
 using Reqnroll;
+using RestSharp;
+using static Reqnroll.Analytics.ReqnrollFeatureUseEvent;
 
 namespace EnterpriseApiAutomationFramework.StepDefinitions;
 
@@ -77,6 +78,13 @@ public class UserSteps
         SaveResponse(host == ApiHost.Auth
                 ? await _driver.LoginAsync(loginRoleKey)
                 : await _driver.PostFromConfigAsync("create_product","JsonBody","productCreateBody"));
+    }
+
+    [Then(@"Confirm the existing logged_in user is exist ""(.*)""")]
+    public async Task ThenConfirmTheExistingLogged_InUserIsExist(string baseUrlType)
+    {
+        ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        SaveResponse(await _driver.GetAsync("getExistingUser"));
     }
 
     [When(@"User sends POST request for feature ""(.*)""")]

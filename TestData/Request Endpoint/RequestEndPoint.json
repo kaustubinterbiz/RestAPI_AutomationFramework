@@ -1,7 +1,8 @@
 {
   "get": "api/v2/Session/GetSessionInfo/",
+  "getExistingUser": "api/Account/ExistingUser?emailId=",
   "post": "testRovicare.onmicrosoft.com/B2C_1_ROPC_Test/oauth2/v2.0/token",
-  "id": "b2927256-dab6-4db2-bebb-27e9599e9928",
+  "id": "14d6df83-d95f-403b-bbe4-e3664536836c",
   "create_product": "/Product/Create",
-  "CacheId": "b2927256-dab6-4db2-bebb-27e9599e9928"
+  "CacheId": "14d6df83-d95f-403b-bbe4-e3664536836c"
 }

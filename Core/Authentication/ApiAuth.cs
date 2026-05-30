@@ -48,4 +48,17 @@ public static class ApiAuth
 
         TokenContext.StoreAccessToken(context, token);
     }
+
+
+    // key: CacheId, BusinessUnitMemberId, CompanyBusinessUnitId, BusinessUnitId, EmailId, UserName, MemberId
+    public static void SaveId_GetSessionInfo(ScenarioContext context, string? getSessionInfoBody, string? key)
+    {
+        var value = GetSessionInfoResponseParse.TryGetSessionInfoValue(getSessionInfoBody, key);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidOperationException($"GetSessionInfo response did not contain {key}");
+        }
+
+        TokenContext.StoreAccessToken(context, value);
+    }
 }

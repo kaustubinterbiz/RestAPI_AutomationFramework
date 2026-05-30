@@ -34,16 +34,9 @@ public class RequestBuilder
         return request;
     }
 
-    public RestRequest BuildRequest(
-        string endpoint,
-        Method method,
-        object? body = null,
-        Dictionary<string, string>? headers = null,
-        Dictionary<string, string>? queryParams = null,
-        Dictionary<string, string>? urlSegments = null,
-        bool authorizationRequired = true,
-        string? explicitBearerToken = null,
-        bool explicitBearerTokenProvided = false)
+    public RestRequest BuildRequest(string endpoint, Method method, object? body = null,
+        Dictionary<string, string>? headers = null, Dictionary<string, string>? queryParams = null, Dictionary<string, string>? urlSegments = null,
+        bool authorizationRequired = true, string? explicitBearerToken = null, bool explicitBearerTokenProvided = false)
     {
         var request = new RestRequest(endpoint, method);
 

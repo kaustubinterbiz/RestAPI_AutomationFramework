@@ -26,9 +26,7 @@ public static class AuthService
 
     public static Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient, string? roleType= "AdminRole", bool forceRefresh = true) =>
         SharedTokenProvider.LoginAndStoreTokenAsync(apiClient, client => FetchTokenFromCredentialRoleType_ApiAsync(client, roleType), forceRefresh);
-    //public static Task<RestResponse> LoginAndStoreTokenAsync1(ApiClient apiClient, bool forceRefresh = true) =>
-    //   SharedTokenProvider.LoginAndStoreTokenAsync(apiClient, client => FetchTokenFromCredentialRoleType_ApiAsync(client, roleType), forceRefresh);
-
+   
     public static Task EnsureAuthenticatedAsync(ApiClient apiClient) =>
         SharedTokenProvider.EnsureAuthenticatedAsync(apiClient, FetchTokenFromApiAsync);
 
@@ -118,8 +116,6 @@ public static class AuthService
 
         var loginJsonPath = ConfigReaderNew.GetValue("LoginJson");
         var endpointJsonPath = ConfigReaderNew.GetValue("EndpointJson");
-
-       
 
         var credentialsJson = ConfigReaderNew.GetJsonBody(loginJsonPath, roleType);
         var credentials = JsonSerializer.Deserialize<LoginRequest>(credentialsJson, JsonOptions)

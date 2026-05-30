@@ -25,47 +25,29 @@ public sealed class ApiClient
         _requestBuilder = new RequestBuilder();
     }
 
-    /// <summary>OAuth token request against the Auth (B2C) host.</summary>
+    /// <summary>OAuth token request against the Auth (B2C) host.</summary>  ----> Read credential by Json
     public Task<RestResponse> LoginPostAsync(string endpoint, LoginRequest credentials) =>
         LoginPostAsync(endpoint, credentials, bearerToken: null);
 
     public Task<RestResponse> LoginPostAsync(string endpoint, LoginRequest credentials, string? bearerToken) =>
-        ExecuteAsync(
-            ApiHost.Auth,
-            _requestBuilder.BuildLoginRequest(endpoint, credentials, bearerToken),
-            endpoint);
+        ExecuteAsync(ApiHost.Auth, _requestBuilder.BuildLoginRequest(endpoint, credentials, bearerToken), endpoint);
 
     public Task<RestResponse> LoginPostBearerOnlyAsync(string endpoint, string bearerToken) =>
-        ExecuteAsync(
-            ApiHost.Auth,
-            _requestBuilder.BuildBearerOnlyPostRequest(endpoint, bearerToken),
-            endpoint);
+        ExecuteAsync(ApiHost.Auth, _requestBuilder.BuildBearerOnlyPostRequest(endpoint, bearerToken), endpoint);
 
     public Task<RestResponse> GetAsync(string endpoint, ApiHost? host = null) =>
-        GetAsync(endpoint, options: null, host: host ?? ApiHostContext.CurrentOrDefault);
+                              GetAsync(endpoint, options: null, host: host ?? ApiHostContext.CurrentOrDefault);
 
     /// <summary>
     /// GET with optional body and bearer token.
     /// Skips body/token when not set via <see cref="ApiGetRequestOptions"/>.
     /// Throws only when body/token was explicitly provided but null or empty.
     /// </summary>
-    public Task<RestResponse> GetAsync(
-        string endpoint,
-        ApiGetRequestOptions? options,
-        ApiHost? host = null) =>
-        SendGetAsync(endpoint, options, host ?? ApiHostContext.CurrentOrDefault);
+    public Task<RestResponse> GetAsync(string endpoint, ApiGetRequestOptions? options, 
+        ApiHost? host = null) => SendGetAsync(endpoint, options, host ?? ApiHostContext.CurrentOrDefault);
 
-    public Task<RestResponse> PostAsync(
-        string endpoint,
-        object body,
-        bool authorizationRequired = true,
-        ApiHost? host = null) =>
-        SendAsync(
-            endpoint,
-            Method.Post,
-            body,
-            authorizationRequired,
-            host: host ?? ApiHostContext.CurrentOrDefault);
+    public Task<RestResponse> PostAsync(string endpoint, object body, bool authorizationRequired = true,
+        ApiHost? host = null) =>SendAsync(endpoint, Method.Post, body, authorizationRequired, host: host ?? ApiHostContext.CurrentOrDefault);
 
     public Task<RestResponse> PutAsync(string endpoint, object body, ApiHost? host = null) =>
         SendAsync(endpoint, Method.Put, body, host: host ?? ApiHostContext.CurrentOrDefault);
@@ -76,10 +58,7 @@ public sealed class ApiClient
     public Task<RestResponse> DeleteAsync(string endpoint, ApiHost? host = null) =>
         SendAsync(endpoint, Method.Delete, host: host ?? ApiHostContext.CurrentOrDefault);
 
-    private async Task<RestResponse> SendGetAsync(
-        string endpoint,
-        ApiGetRequestOptions? options,
-        ApiHost host)
+    private async Task<RestResponse> SendGetAsync(string endpoint, ApiGetRequestOptions? options, ApiHost host)
     {
         options ??= ApiGetRequestOptions.Create();
         options.ValidateProvidedValues();
