@@ -1,8 +1,8 @@
 {
-  "get": "api/v2/Session/GetSessionInfo/",
-  "getExistingUser": "api/Account/ExistingUser?emailId=",
-  "post": "testRovicare.onmicrosoft.com/B2C_1_ROPC_Test/oauth2/v2.0/token",
-  "id": "1bbfbcf7-7058-4f4e-8cd4-05fb0708de5b",
-  "create_product": "/Product/Create",
-  "CacheId": "1bbfbcf7-7058-4f4e-8cd4-05fb0708de5b"
+ "get": "api/v2/Session/GetSessionInfo/",
+ "getExistingUser": "api/Account/ExistingUser?emailId=",
+ "post": "testRovicare.onmicrosoft.com/B2C_1_ROPC_Test/oauth2/v2.0/token",
+ "id": "65fbd69b-36c4-4d98-8599-9454d8a5cc89",
+ "create_product": "/Product/Create",
+ "CacheId": "65fbd69b-36c4-4d98-8599-9454d8a5cc89"
 }

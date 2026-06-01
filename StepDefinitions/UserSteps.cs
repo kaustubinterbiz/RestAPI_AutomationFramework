@@ -83,8 +83,8 @@ public class UserSteps
     [Then(@"Confirm the existing logged_in user is exist ""(.*)""")]
     public async Task ThenConfirmTheExistingLogged_InUserIsExist(string baseUrlType)
     {
-        ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
-        SaveResponse(await _driver.GetAsync("getExistingUser"));
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        SaveResponse(await _driver.GetFromConfig("appsettings.json", "EndpointJson", "getExistingUser", host));
     }
 
     [When(@"User sends POST request for feature ""(.*)""")]
