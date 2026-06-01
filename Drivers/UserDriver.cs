@@ -19,24 +19,18 @@ public class UserDriver
     }
 
     /// <summary>Login on Auth (B2C) host and save token.</summary>
-    public Task<RestResponse> LoginAsync(string roleType) =>
-        AuthService.LoginAndStoreTokenAsync(_apiClient, roleType, forceRefresh: true);
+    public Task<RestResponse> LoginAsync(string roleType) => AuthService.LoginAndStoreTokenAsync(_apiClient, roleType, forceRefresh: true);
 
-    public Task<RestResponse> LoginAsync() =>
-       AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
+    public Task<RestResponse> LoginAsync() => AuthService.LoginAndStoreTokenAsync(_apiClient, forceRefresh: true);
 
-    public Task<RestResponse> RefreshAccessTokenAsync(string roleType) =>
-        LoginAsync(roleType);
+    public Task<RestResponse> RefreshAccessTokenAsync(string roleType) => LoginAsync(roleType);
 
-    public Task<RestResponse> RefreshAccessTokenAsync() =>
-       LoginAsync();
+    public Task<RestResponse> RefreshAccessTokenAsync() => LoginAsync();
 
-    public Task<RestResponse> LoginWithStoredBearerTokenAsync(string bearerToken) =>
-        AuthService.LoginWithBearerOnlyAsync(_apiClient, bearerToken);
+    public Task<RestResponse> LoginWithStoredBearerTokenAsync(string bearerToken) => AuthService.LoginWithBearerOnlyAsync(_apiClient, bearerToken);
 
     public void ApplyExpiredAccessToken(string? validToken = null) =>
-        SharedTokenProvider.ApplyExpiredTokenForTesting(
-            TokenTestHelper.GetExpiredAccessToken(validToken ?? TokenManager.AccessToken));
+        SharedTokenProvider.ApplyExpiredTokenForTesting(TokenTestHelper.GetExpiredAccessToken(validToken ?? TokenManager.AccessToken));
 
     /// <summary>
     /// Authenticated GET. Loads endpoint from RequestEndPoint.json and sends Authorization: Bearer token.
@@ -56,11 +50,7 @@ public class UserDriver
         return await _apiClient.GetAsync(endpoint, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-    public async Task<RestResponse> PostFromConfigAsync(
-        string endpointKey,
-        string bodyFileKey,
-        string bodyKey,
-        ApiHost? host = null)
+    public async Task<RestResponse> PostFromConfigAsync(string endpointKey, string bodyFileKey, string bodyKey, ApiHost? host = null)
     {
         await ApiAuth.EnsureReadyAsync(_apiClient);
 
@@ -94,37 +84,17 @@ public class UserDriver
 
     // --- Legacy names (old steps still work) ---
 
-    public Task<RestResponse> GetFromConfig(
-        string env = AppSettingsFile,
-        string endpointJsonKey = "EndpointJson",
-        string endpointKey = "get",
-        ApiHost? host = null,
-        bool ensureAuth = true,
-        ApiGetRequestOptions? getOptions = null) =>
-        ensureAuth && (getOptions is null || !getOptions.BearerTokenProvided)
-            ? GetAsync(endpointKey, host)
-            : GetWithCurrentTokenAsync(endpointKey, host);
+    public Task<RestResponse> GetFromConfig(string env = AppSettingsFile, string endpointJsonKey = "EndpointJson", string endpointKey = "get", ApiHost? host = null,
+    bool ensureAuth = true, ApiGetRequestOptions? getOptions = null) =>
+        ensureAuth && (getOptions is null || !getOptions.BearerTokenProvided) ? GetAsync(endpointKey, host) : GetWithCurrentTokenAsync(endpointKey, host);
 
-    public Task<RestResponse> GetUsers(string env, string key, string request, ApiHost? host = null) =>
-        GetAsync(request, host);
+    public Task<RestResponse> GetUsers(string env, string key, string request, ApiHost? host = null) => GetAsync(request, host);
 
-    public Task<RestResponse> GetUsersWithCurrentTokenOnly(
-        string env,
-        string key,
-        string request,
-        ApiHost? host = null) =>
-        GetWithCurrentTokenAsync(request, host);
+    public Task<RestResponse> GetUsersWithCurrentTokenOnly(string env, string key, string request, ApiHost? host = null) => GetWithCurrentTokenAsync(request, host);
 
-    public Task<RestResponse> PostUser(
-        string env,
-        string key,
-        string request,
-        string jsonBodyFileKey,
-        string bodyKey,
-        ApiHost? host = null) =>
-        PostFromConfigAsync(request, jsonBodyFileKey, bodyKey, host);
+    public Task<RestResponse> PostUser(string env, string key, string request, string jsonBodyFileKey, string bodyKey, ApiHost? host = null) => 
+    PostFromConfigAsync(request, jsonBodyFileKey, bodyKey, host);
 
     [Obsolete("Use ApiAuth.LoadTokenFromAppSettings()")]
-    public static void LoadAccessTokenFromAppSettings(string appSettingsFile = AppSettingsFile) =>
-        ApiAuth.LoadTokenFromAppSettings(appSettingsFile);
+    public static void LoadAccessTokenFromAppSettings(string appSettingsFile = AppSettingsFile) => ApiAuth.LoadTokenFromAppSettings(appSettingsFile);
 }
