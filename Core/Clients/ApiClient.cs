@@ -135,7 +135,7 @@ public sealed class ApiClient
         var request = _requestBuilder.BuildRequest(
             resolvedEndpoint,
             method,
-            body, headers: null, queryParams: Params,
+            body, headers: null, queryParams: null,
             urlSegments: urlSegments.Count > 0 ? urlSegments : null, 
             authorizationRequired: useCachedToken && !bearerTokenProvided,
             explicitBearerToken: bearerToken,
