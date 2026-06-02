@@ -63,9 +63,7 @@ public static partial class EndpointHelper
         return result;
     }
 
-    public static Dictionary<string, string>? BuildQueryParams(
-    string? queryParam,
-    Dictionary<string, string> configValues)
+    public static Dictionary<string, string>? BuildQueryParams(string? queryParam, Dictionary<string, string> configValues)
     {
         if (string.IsNullOrWhiteSpace(queryParam))
             return null;
@@ -73,8 +71,7 @@ public static partial class EndpointHelper
         var dict = new Dictionary<string, string>();
 
         var items = queryParam.Split(
-            ',',
-            StringSplitOptions.RemoveEmptyEntries);
+            ',', StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var item in items)
         {
@@ -107,6 +104,31 @@ public static partial class EndpointHelper
         }
 
         return dict;
+    }
+
+    private static string ResolveValue(string value, Dictionary<string, string> configValues)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        value = value.Trim();
+
+        // $key -> read from config
+        if (value.StartsWith("$", StringComparison.Ordinal))
+            return ConfigReaderNew.GetValue(value[1..]);
+
+        // {key} -> use cached endpoint value
+        if (value.StartsWith("{", StringComparison.Ordinal) && value.EndsWith('}'))
+        {
+            var key = value[1..^1];
+            return EndpointRequestHelper.GetCachedValue(key);
+        }
+
+        // try configValues first, then treat as literal
+        if (configValues != null && configValues.TryGetValue(value, out var resolved))
+            return resolved;
+
+        return value;
     }
 
     public static string ResolvePlaceholdersFromJsonFiles( string endPoint, params string[] jsonFiles)
@@ -147,30 +169,7 @@ public static partial class EndpointHelper
             });
     }
 
-    private static string ResolveValue(string value, Dictionary<string, string> configValues)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return string.Empty;
-
-        value = value.Trim();
-
-        // $key -> read from config
-        if (value.StartsWith('$', StringComparison.Ordinal))
-            return ConfigReaderNew.GetValue(value[1..]);
-
-        // {key} -> use cached endpoint value
-        if (value.StartsWith('{', StringComparison.Ordinal) && value.EndsWith('}'))
-        {
-            var key = value[1..^1];
-            return EndpointRequestHelper.GetCachedValue(key);
-        }
-
-        // try configValues first, then treat as literal
-        if (configValues != null && configValues.TryGetValue(value, out var resolved))
-            return resolved;
-
-        return value;
-    }
+    
 
     [GeneratedRegex(@"\{(\w+)\}", RegexOptions.Compiled)]
     private static partial Regex UrlSegmentRegex();

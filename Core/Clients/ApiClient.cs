@@ -108,10 +108,11 @@ public sealed class ApiClient
         options.ValidateProvidedValues();
         var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveEndpoint(endpoint);
         ConfigReaderNew.LoadConfig(filename);
-        var JsonPath = ConfigReaderNew.GetValue(key);
-        var resolvedEndpoint1 = EndpointHelper.ResolvePlaceholdersFromJsonFiles( endpoint, JsonPath);
+        var Params = ConfigReaderNew.GetValue(queryParam);
+        //var resolvedEndpoint1 = EndpointHelper.ResolvePlaceholdersFromJsonFiles( endpoint, JsonPath);
 
         object? body = options.BodyProvided ? options.Body : null;
+        
         var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
 
         var bearerTokenProvided = options.BearerTokenProvided;
@@ -134,7 +135,7 @@ public sealed class ApiClient
         var request = _requestBuilder.BuildRequest(
             resolvedEndpoint,
             method,
-            body, headers: null, queryParams: null,
+            body, headers: null, queryParams: Params,
             urlSegments: urlSegments.Count > 0 ? urlSegments : null, 
             authorizationRequired: useCachedToken && !bearerTokenProvided,
             explicitBearerToken: bearerToken,
