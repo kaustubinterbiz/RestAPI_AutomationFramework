@@ -84,7 +84,9 @@ public class UserSteps
     public async Task ThenConfirmTheExistingLogged_InUserIsExist(string baseUrlType)
     {
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
-        SaveResponse(await _driver.GetFromConfig("appsettings.json", "EndpointJson", "getExistingUser", host));
+        SaveResponse(host == ApiHost.Api
+                ? await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CachedId", Method.Get, "getExistingUser")
+                : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CachedId", Method.Get,"getExistingUser"));
     }
 
     [When(@"User sends POST request for feature ""(.*)""")]

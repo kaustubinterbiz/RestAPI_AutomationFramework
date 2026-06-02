@@ -1,11 +1,13 @@
-using System.Diagnostics;
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Reporting;
 using EnterpriseApiAutomationFramework.Models.Request;
+using Microsoft.CodeAnalysis;
 using RestSharp;
+using System.Diagnostics;
+using System.Net;
 
 namespace EnterpriseApiAutomationFramework.Core.Clients;
 
@@ -57,6 +59,7 @@ public sealed class ApiClient
 
     public Task<RestResponse> DeleteAsync(string endpoint, ApiHost? host = null) =>
         SendAsync(endpoint, Method.Delete, host: host ?? ApiHostContext.CurrentOrDefault);
+ 
 
     private async Task<RestResponse> SendGetAsync(string endpoint, ApiGetRequestOptions? options, ApiHost host)
     {
@@ -90,6 +93,49 @@ public sealed class ApiClient
             Method.Get,
             body,
             urlSegments: urlSegments.Count > 0 ? urlSegments : null,
+            authorizationRequired: useCachedToken && !bearerTokenProvided,
+            explicitBearerToken: bearerToken,
+            explicitBearerTokenProvided: bearerTokenProvided);
+
+        return await ExecuteAsync(host, request, resolvedEndpoint);
+    }
+
+    
+
+    public async Task<RestResponse> SendRequestAsync(string endpoint,string? filename, string? key, string? header, string? queryParam, Method method, ApiGetRequestOptions? options, ApiHost host)
+    {
+        options ??= ApiGetRequestOptions.Create();
+        options.ValidateProvidedValues();
+        var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveEndpoint(endpoint);
+        ConfigReaderNew.LoadConfig(filename);
+        var JsonPath = ConfigReaderNew.GetValue(key);
+        var resolvedEndpoint1 = EndpointHelper.ResolvePlaceholdersFromJsonFiles( endpoint, JsonPath);
+
+        object? body = options.BodyProvided ? options.Body : null;
+        var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
+
+        var bearerTokenProvided = options.BearerTokenProvided;
+        var bearerToken = options.BearerToken;
+
+        if (useCachedToken && !bearerTokenProvided)
+        {
+            if (!TokenManager.HasToken)
+            {
+                TokenManager.InitializeFromConfig();
+            }
+
+            if (TokenManager.HasToken)
+            {
+                bearerToken = TokenManager.AccessToken;
+                bearerTokenProvided = true;
+            }
+        }
+
+        var request = _requestBuilder.BuildRequest(
+            resolvedEndpoint,
+            method,
+            body, headers: null, queryParams: null,
+            urlSegments: urlSegments.Count > 0 ? urlSegments : null, 
             authorizationRequired: useCachedToken && !bearerTokenProvided,
             explicitBearerToken: bearerToken,
             explicitBearerTokenProvided: bearerTokenProvided);

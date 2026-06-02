@@ -14,7 +14,7 @@ public class UserDriver
     private readonly ApiClient _apiClient;
 
     public UserDriver(ApiClient? apiClient = null)
-    {
+        {
         _apiClient = apiClient ?? new ApiClient();
     }
 
@@ -42,12 +42,20 @@ public class UserDriver
         return await _apiClient.GetAsync(endpoint, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-    /// <summary>GET with existing token only — does not call login again (token refresh tests).</summary>
+        /// <summary>GET with existing token only — does not call login again (token refresh tests).</summary>
     public async Task<RestResponse> GetWithCurrentTokenAsync(string endpointKey = "get", ApiHost? host = null)
     {
         ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
         return await _apiClient.GetAsync(endpoint, host: host ?? ApiHostContext.CurrentOrDefault);
+    }
+
+    public async Task<RestResponse> DynamicRequestPassMethod(string filename, string key, string header, string queryParam, Method method, string endpointKey = "get", ApiHost? host = null)
+    {
+        ApiAuth.LoadTokenFromAppSettings();
+        var endpoint = EndpointConfig.GetEndpoint(endpointKey);
+        
+        return await _apiClient.SendRequestAsync(endpoint, filename, key, header, queryParam, method, null, host ?? ApiHost.Api);
     }
 
     public async Task<RestResponse> PostFromConfigAsync(string endpointKey, string bodyFileKey, string bodyKey, ApiHost? host = null)
