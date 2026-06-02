@@ -85,8 +85,8 @@ public class UserSteps
     {
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
         SaveResponse(host == ApiHost.Api
-                ? await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CachedId", Method.Get, "getExistingUser")
-                : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CachedId", Method.Get,"getExistingUser"));
+                ? await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CacheId", Method.Get, "getExistingUser")
+                : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CacheId", Method.Get,"getExistingUser"));
     }
 
     [When(@"User sends POST request for feature ""(.*)""")]

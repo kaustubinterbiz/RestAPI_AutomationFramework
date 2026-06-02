@@ -1,4 +1,4 @@
-using System.Text.Json;
+ using System.Text.Json;
 using System.Text.RegularExpressions;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 
@@ -63,10 +63,21 @@ public static partial class EndpointHelper
         return result;
     }
 
-    public static Dictionary<string, string>? BuildQueryParams(string? queryParam, Dictionary<string, string> configValues)
+    public static Dictionary<string, string>? BuildQueryParams(
+     string? queryParam,
+     string jsonFileName,
+     string jsonKey)
     {
         if (string.IsNullOrWhiteSpace(queryParam))
             return null;
+
+        // Read data from JSON
+        var configValues = ConfigReaderNew.ReadJson<Dictionary<string, string>>(
+            jsonFileName);
+        if (configValues == null)
+        {
+            configValues = new Dictionary<string, string>();
+        }
 
         var dict = new Dictionary<string, string>();
 
@@ -77,9 +88,7 @@ public static partial class EndpointHelper
         {
             var part = item.Trim();
 
-            // -----------------------------
-            // CASE 1: key=value format
-            // -----------------------------
+            // CASE 1: key=value
             if (part.Contains('='))
             {
                 var kv = part.Split('=', 2);
@@ -89,9 +98,7 @@ public static partial class EndpointHelper
 
                 dict[key] = ResolveValue(value, configValues);
             }
-            // -----------------------------
-            // CASE 2: only key format
-            // -----------------------------
+            // CASE 2: key only
             else
             {
                 var key = part;
@@ -106,7 +113,9 @@ public static partial class EndpointHelper
         return dict;
     }
 
-    private static string ResolveValue(string value, Dictionary<string, string> configValues)
+    private static string ResolveValue(
+        string value,
+        Dictionary<string, string> configValues)
     {
         if (string.IsNullOrWhiteSpace(value))
             return string.Empty;
@@ -117,15 +126,16 @@ public static partial class EndpointHelper
         if (value.StartsWith("$", StringComparison.Ordinal))
             return ConfigReaderNew.GetValue(value[1..]);
 
-        // {key} -> use cached endpoint value
-        if (value.StartsWith("{", StringComparison.Ordinal) && value.EndsWith('}'))
+        // {key} -> cached value
+        if (value.StartsWith("{", StringComparison.Ordinal)
+            && value.EndsWith('}'))
         {
             var key = value[1..^1];
             return EndpointRequestHelper.GetCachedValue(key);
         }
 
-        // try configValues first, then treat as literal
-        if (configValues != null && configValues.TryGetValue(value, out var resolved))
+        // lookup in json data
+        if (configValues.TryGetValue(value, out var resolved))
             return resolved;
 
         return value;

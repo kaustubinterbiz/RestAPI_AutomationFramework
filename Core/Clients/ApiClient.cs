@@ -112,6 +112,7 @@ public sealed class ApiClient
         //var resolvedEndpoint1 = EndpointHelper.ResolvePlaceholdersFromJsonFiles( endpoint, JsonPath);
 
         object? body = options.BodyProvided ? options.Body : null;
+        EndpointHelper.BuildQueryParams(queryParam, "TestData/Request Endpoint/RequestEndPoint.json", "CacheId");
         
         var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
 
