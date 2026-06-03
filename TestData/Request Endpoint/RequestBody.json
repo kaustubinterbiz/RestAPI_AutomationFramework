@@ -14,7 +14,17 @@
 
     "content_type": "application/x-www-form-urlencoded",
     "cookie": "x-ms-cpim-geo=NA"
+  },
+
+  "getExistingUser": {
+
+    "businessUnitId": "string",
+    "memberId": "string",
+    "businessUnitRoleId": "string",
+    "desingation": "string",
+    "hasAcceptedLicense": true,
+    "isActive": true,
+    "tags": "string"
   }
 
-  "getExistingUser":  ""
 }

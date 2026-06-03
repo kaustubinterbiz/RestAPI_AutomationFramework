@@ -50,12 +50,12 @@ public class UserDriver
         return await _apiClient.GetAsync(endpoint, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-    public async Task<RestResponse> DynamicRequestPassMethod(string filename, string key, string header, string queryParam, Method method, string endpointKey = "get", ApiHost? host = null)
+    public async Task<RestResponse> DynamicRequestPassMethod(string filename, string? key, string targetValue, string header, string queryParam, Method method, string endpointKey = "get", ApiHost? host = null)
     {
         ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
         
-        return await _apiClient.SendRequestAsync(endpoint, filename, key, header, queryParam, method, null, host ?? ApiHost.Api);
+        return await _apiClient.SendRequestAsync(endpoint, filename, key, targetValue, header, queryParam, method, null, host ?? ApiHost.Api);
     }
 
     public async Task<RestResponse> PostFromConfigAsync(string endpointKey, string bodyFileKey, string bodyKey, ApiHost? host = null)

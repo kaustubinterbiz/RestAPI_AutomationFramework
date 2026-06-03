@@ -12,7 +12,7 @@ public static partial class EndpointHelper
     /// Resolves {id}, {access_token}, etc. from active config / TokenManager.
     /// Path placeholders use RestSharp url segments; query placeholders are inlined.
     /// </summary>
-    public static (string Endpoint, Dictionary<string, string> UrlSegments) ResolveEndpoint(string endpoint)
+    public static (string Endpoint,Dictionary<string, string> UrlSegments) ResolveEndpoint(string endpoint)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(endpoint);
 
@@ -23,25 +23,37 @@ public static partial class EndpointHelper
 
         if (!endpoint.Contains('{'))
         {
-            return (endpoint, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+            return (
+                endpoint,
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
         }
 
-        if (endpoint.Contains('?', StringComparison.Ordinal))
-        {
-            return (ReplacePlaceholders(endpoint), new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
-        }
-
-        var urlSegments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var urlSegments =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (Match match in UrlSegmentPattern.Matches(endpoint))
         {
             var key = match.Groups[1].Value;
+
             if (urlSegments.ContainsKey(key))
             {
                 continue;
             }
 
-            urlSegments[key] = EndpointRequestHelper.GetCachedValue(key);
+            var value = EndpointRequestHelper.GetCachedValue(key);
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                urlSegments[key] = value;
+            }
+        }
+
+        // Query string case -> replace directly
+        if (endpoint.Contains('?', StringComparison.Ordinal))
+        {
+            endpoint = ReplacePlaceholders(endpoint);
+
+            return (endpoint, urlSegments);
         }
 
         return (endpoint, urlSegments);
@@ -57,7 +69,11 @@ public static partial class EndpointHelper
         {
             var key = match.Groups[1].Value;
             var value = EndpointRequestHelper.GetCachedValue(key);
-            result = result.Replace(match.Value, Uri.EscapeDataString(value), StringComparison.Ordinal);
+            if (!string.IsNullOrEmpty(value))
+            {
+                value = Uri.UnescapeDataString(value);
+            }
+            result = result.Replace(match.Value, value, StringComparison.Ordinal);
         }
 
         return result;
@@ -179,7 +195,37 @@ public static partial class EndpointHelper
             });
     }
 
-    
+    public static string ResolveUrlPlaceholders(
+    string url,
+    Dictionary<string, string>? values = null,
+    string? targetKey = null)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return url;
+
+        return Regex.Replace(url, @"\{(.*?)\}", match =>
+        {
+            var placeholderKey = match.Groups[1].Value?.Trim();
+
+            if (string.IsNullOrWhiteSpace(placeholderKey))
+                return match.Value;
+
+            // Placeholder and targetKey must match
+            if (!string.IsNullOrWhiteSpace(targetKey) &&
+                placeholderKey.Equals(targetKey, StringComparison.OrdinalIgnoreCase))
+            {
+                // Use first available value from dictionary
+                var replacementValue = values?.Values.FirstOrDefault();
+
+                if (!string.IsNullOrWhiteSpace(replacementValue))
+                {
+                    return replacementValue;
+                }
+            }
+
+            return match.Value;
+        });
+    }
 
     [GeneratedRegex(@"\{(\w+)\}", RegexOptions.Compiled)]
     private static partial Regex UrlSegmentRegex();

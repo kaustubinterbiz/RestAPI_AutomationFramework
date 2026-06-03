@@ -85,9 +85,19 @@ public class UserSteps
     {
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
         SaveResponse(host == ApiHost.Api
-                ? await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CacheId", Method.Get, "getExistingUser")
-                : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, "CacheId", Method.Get,"getExistingUser"));
+                ? await _driver.DynamicRequestPassMethod("appsettings.json", null, null, "CacheId", null, Method.Get, "getExistingUser")
+                : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, null, "CacheId", Method.Get,"getExistingUser"));
     }
+
+    [Then("Confirm the Email logged_in user is exist {string}")]
+    public async Task ThenConfirmTheEmailLogged_InUserIsExist(string baseUrlType)
+    {
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        SaveResponse(host == ApiHost.Api
+               ? await _driver.DynamicRequestPassMethod("appsettings.json", "ValidateEmail", "EmailId", "CacheId", null, Method.Get, "getExistingUser")
+               : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, null, "CacheId", Method.Get, "getExistingUser"));
+    }
+
 
     [When(@"User sends POST request for feature ""(.*)""")]
     public async Task PostRequestForFeature(string featureName)

@@ -126,56 +126,5 @@ public class EnterpriseRestBuilder : IRestBuilder
         return request;
     }
 
-    private RestRequest DynamicRequestBuild(string endpoint, Method method, object? body = null,
-         Dictionary<string, string>? headers = null, Dictionary<string, string>? queryParams = null, Dictionary<string, string>? urlSegments = null,
-         bool authorizationRequired = true, string? explicitBearerToken = null, bool explicitBearerTokenProvided = false)
-    {
-        var request = new RestRequest(endpoint, method);
-        if (urlSegments != null)
-        {
-            foreach (var segment in urlSegments)
-            {
-                request.AddUrlSegment(segment.Key, segment.Value);
-            }
-        }
-
-        if (explicitBearerTokenProvided)
-        {
-            request.AddHeader("Authorization", $"Bearer {explicitBearerToken}");
-        }
-
-        else if (authorizationRequired && !string.IsNullOrEmpty(TokenManager.AccessToken))
-        {
-            request.AddHeader("Authorization", $"Bearer {TokenManager.AccessToken}");
-        }
-
-        if (headers != null)
-        {
-            foreach (var header in headers)
-            {
-                request.AddHeader(header.Key, header.Value);
-            }
-        }
-
-        if (queryParams != null)
-        {
-            foreach (var param in queryParams)
-            {
-                request.AddQueryParameter(param.Key, param.Value);
-            }
-        }
-
-        if (body != null)
-        {
-            if (body is string jsonBody && !string.IsNullOrWhiteSpace(jsonBody))
-            {
-                request.AddStringBody(jsonBody, ContentType.Json);
-            }
-            else
-            {
-                request.AddJsonBody(body);
-            }
-        }
-        return request;
-    }
+  
 }

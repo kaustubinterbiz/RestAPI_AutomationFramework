@@ -20,6 +20,7 @@ public sealed class ApiClient
 {
     private readonly RestClientFactory _clientFactory;
     private readonly RequestBuilder _requestBuilder;
+    private readonly EnterpriseRestBuilder _enterpriseRestBuilder;
 
     public ApiClient(RestClientFactory? clientFactory = null)
     {
@@ -102,18 +103,60 @@ public sealed class ApiClient
 
     
 
-    public async Task<RestResponse> SendRequestAsync(string endpoint,string? filename, string? key, string? header, string? queryParam, Method method, ApiGetRequestOptions? options, ApiHost host)
+    public async Task<RestResponse> SendRequestAsync(string endpoint,string? filename, string? key, string? targetValue, string? headerkey, 
+        string? quaryParamKey,
+        Method method, ApiGetRequestOptions? options, ApiHost host)
     {
+        string resolvedEndpoint;
+        Dictionary<string, string> urlSegments = new Dictionary<string, string>();
         options ??= ApiGetRequestOptions.Create();
         options.ValidateProvidedValues();
-        var (resolvedEndpoint, urlSegments) = EndpointHelper.ResolveEndpoint(endpoint);
         ConfigReaderNew.LoadConfig(filename);
-        var Params = ConfigReaderNew.GetValue(queryParam);
-        //var resolvedEndpoint1 = EndpointHelper.ResolvePlaceholdersFromJsonFiles( endpoint, JsonPath);
+        if (key != null)
+        {
+            var values = new Dictionary<string, string>{
+                             { key, ConfigReaderNew.GetValue(key) }
+                         };
+            resolvedEndpoint = EndpointHelper.ResolveUrlPlaceholders(
+                   endpoint,
+                   values,
+                   targetValue);
+        }
+        else
+        {
+            (resolvedEndpoint, urlSegments) =
+                EndpointHelper.ResolveEndpoint(endpoint);
+        }
 
-        object? body = options.BodyProvided ? options.Body : null;
-        EndpointHelper.BuildQueryParams(queryParam, "TestData/Request Endpoint/RequestEndPoint.json", "CacheId");
-        
+
+        Dictionary<string, string>? headerss = null;
+        if (headerkey != null)
+        {
+            var headerValue = ConfigReaderNew.GetValue(headerkey);
+            
+            if (!string.IsNullOrEmpty(headerkey) && headerValue != null)
+            {
+                headerss = new Dictionary<string, string> { [headerkey] = headerValue };
+            }
+        }
+
+        Dictionary<string, string>? queryParams = null;
+        if (quaryParamKey != null)
+        {
+            var paramValue = ConfigReaderNew.GetValue(quaryParamKey);
+            
+            if (!string.IsNullOrEmpty(quaryParamKey) && paramValue != null)
+            {
+                queryParams = new Dictionary<string, string> { [quaryParamKey] = paramValue };
+            }
+        }
+
+        object? body = null;
+        if (Method.Post == method || Method.Put == method || Method.Patch == method)
+        {
+            body = options.BodyProvided ? options.Body : null;
+        }
+
         var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
 
         var bearerTokenProvided = options.BearerTokenProvided;
@@ -133,17 +176,21 @@ public sealed class ApiClient
             }
         }
 
-        var request = _requestBuilder.BuildRequest(
+        var request = _requestBuilder.DynamicRequestBuild(
             resolvedEndpoint,
             method,
-            body, headers: null, queryParams: null,
-            urlSegments: urlSegments.Count > 0 ? urlSegments : null, 
+            body,
+            headers: headerss,
+            queryParams: null,
+            urlSegments: urlSegments.Count > 0 ? urlSegments : null,
             authorizationRequired: useCachedToken && !bearerTokenProvided,
             explicitBearerToken: bearerToken,
             explicitBearerTokenProvided: bearerTokenProvided);
 
         return await ExecuteAsync(host, request, resolvedEndpoint);
     }
+
+   
 
     private async Task<RestResponse> SendAsync(
         string endpoint,

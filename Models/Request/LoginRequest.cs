@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace EnterpriseApiAutomationFramework.Models.Request;
 
 public class LoginRequest
