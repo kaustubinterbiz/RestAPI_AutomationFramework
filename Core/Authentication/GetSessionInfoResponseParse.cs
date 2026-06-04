@@ -50,7 +50,7 @@ public static class GetSessionInfoResponseParse
     }
 
     public static IReadOnlyDictionary<string, string> ToPropertyDictionary(GetSessionInfo sessionInfo)
-    {
+    {  
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var property in typeof(GetSessionInfo).GetProperties(BindingFlags.Public | BindingFlags.Instance))

@@ -35,6 +35,7 @@ public static class SessionInfoStore
         if (updateEndpointId && !string.IsNullOrWhiteSpace(sessionInfo.CacheId))
         {
             UpdateEndpointCachedId(sessionInfo.CacheId, appSettingsFile);
+            //UpdateSessonInfoValuesInJsonFile("appsettings.json", "EndpointJson", "CacheId", sessionInfo.CacheId);
         }
 
         return sessionInfo;
@@ -73,7 +74,19 @@ public static class SessionInfoStore
             return;
         }
 
-        ConfigReaderNew.UpdateJsonValue(endpointFile, "id", cacheId);
         ConfigReaderNew.UpdateJsonValue(endpointFile, "CacheId", cacheId);
+    }
+
+    private static void UpdateSessonInfoValuesInJsonFile(string jsonFilePath, string Jsonkey, string updateOnKey, string storedValue)
+    {
+        ConfigReaderNew.LoadConfig(jsonFilePath);
+        var targetFilePath = ConfigReaderNew.GetValue(Jsonkey);
+        
+        if (string.IsNullOrWhiteSpace(targetFilePath))
+        {
+            return;
+        }
+
+        ConfigReaderNew.UpdateJsonValue(targetFilePath, updateOnKey, storedValue);
     }
 }
