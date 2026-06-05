@@ -80,6 +80,47 @@ public class UserSteps
                 : await _driver.PostFromConfigAsync("create_product","JsonBody","productCreateBody"));
     }
 
+    [When(@"User sends flexible GET request on ""(.*)"" base url for endpoint ""(.*)"" with headers ""(.*)""")]
+    public async Task FlexibleGetRequestWithHeaders(string baseUrlType, string endpointKey, string headerKeys)
+    {
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        SaveResponse(await _driver.SendFlexibleRequestAsync(
+            configFile: "appsettings.json",
+            urlPlaceholderKeys: null,
+            targetValue: null,
+            headerKeys: ToOptionalKey(headerKeys),
+            queryParamKeys: null,
+            urlSegmentKeys: null,
+            method: Method.Get,
+            endpointKey: endpointKey,
+            host: host));
+    }
+
+    [When(@"User sends flexible GET request on ""(.*)"" base url for endpoint ""(.*)"" with url placeholders ""(.*)"" target ""(.*)"" headers ""(.*)"" query params ""(.*)""")]
+    public async Task FlexibleGetRequestWithAllParts(
+        string baseUrlType,
+        string endpointKey,
+        string urlPlaceholderKeys,
+        string targetValue,
+        string headerKeys,
+        string queryParamKeys)
+    {
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        SaveResponse(await _driver.SendFlexibleRequestAsync(
+            configFile: "appsettings.json",
+            urlPlaceholderKeys: ToOptionalKey(urlPlaceholderKeys),
+            targetValue: ToOptionalKey(targetValue),
+            headerKeys: ToOptionalKey(headerKeys),
+            queryParamKeys: ToOptionalKey(queryParamKeys),
+            urlSegmentKeys: null,
+            method: Method.Get,
+            endpointKey: endpointKey,
+            host: host));
+    }
+
+    private static string? ToOptionalKey(string value) =>
+        string.IsNullOrWhiteSpace(value) || value == "-" ? null : value.Trim();
+
     [Then(@"Confirm the existing logged_in user is exist ""(.*)""")]
     public async Task ThenConfirmTheExistingLogged_InUserIsExist(string baseUrlType)
     {

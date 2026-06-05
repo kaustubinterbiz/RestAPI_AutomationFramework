@@ -77,6 +77,17 @@ Scenario:9.Verify DELETE User API
     When User sends DELETE request on "Api" base url
     Then Status code should be 204
 
+@Api @SuperAdmin @FlexibleRequest
+Scenario: 10.Verify flexible GET request retrieves existing user with dynamic headers
+    When User sends POST request on "Auth" base url with "SuperAdmin"
+    Then Status should be OK
+    And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
+    When User sends flexible GET request on "Api" base url for endpoint "getExistingUser" with headers "CacheId"
+    Then Status code should be 200
+
 @Api @Parameterized
 Scenario Outline: Verify GET API retrieves existing user successfully by Role
   When User sends POST request on "<BaseUrlType>" base url with "<Role>"
