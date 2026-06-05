@@ -77,7 +77,7 @@ public static class SessionInfoStore
         ConfigReaderNew.UpdateJsonValue(endpointFile, "CacheId", cacheId);
     }
 
-    private static void UpdateSessonInfoValuesInJsonFile(string jsonFilePath, string Jsonkey, string updateOnKey, string storedValue)
+    private static void UpdateResponseValuesInJsonFile(string jsonFilePath, string Jsonkey, string updateOnKey, string storedValue)
     {
         ConfigReaderNew.LoadConfig(jsonFilePath);
         var targetFilePath = ConfigReaderNew.GetValue(Jsonkey);

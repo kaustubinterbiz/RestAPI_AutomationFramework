@@ -96,8 +96,9 @@ public class UserSteps
             host: host));
     }
 
-    [When(@"User sends flexible GET request on ""(.*)"" base url for endpoint ""(.*)"" with url placeholders ""(.*)"" target ""(.*)"" headers ""(.*)"" query params ""(.*)""")]
+    [When(@"User sends flexible ""(.*)"" request on ""(.*)"" base url for endpoint ""(.*)"" with url placeholders ""(.*)"" target ""(.*)"" headers ""(.*)"" query params ""(.*)""")]
     public async Task FlexibleGetRequestWithAllParts(
+        Method methodType,
         string baseUrlType,
         string endpointKey,
         string urlPlaceholderKeys,
@@ -106,6 +107,7 @@ public class UserSteps
         string queryParamKeys)
     {
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        
         SaveResponse(await _driver.SendFlexibleRequestAsync(
             configFile: "appsettings.json",
             urlPlaceholderKeys: ToOptionalKey(urlPlaceholderKeys),
@@ -113,7 +115,7 @@ public class UserSteps
             headerKeys: ToOptionalKey(headerKeys),
             queryParamKeys: ToOptionalKey(queryParamKeys),
             urlSegmentKeys: null,
-            method: Method.Get,
+            method: methodType,
             endpointKey: endpointKey,
             host: host));
     }
@@ -139,6 +141,22 @@ public class UserSteps
                : await _driver.DynamicRequestPassMethod("appsettings.json", "EmailId", null, null, "CacheId", Method.Get, "getExistingUser"));
     }
 
+    [Then("Confirm the User exist in the Same Organization {string}")]
+    public async Task ThenConfirmTheUserExistInTheSameOrganization(string validateCheckExistingEmail)
+    {
+        var host = ApiHostStepHelper.ApplyBaseUrlType("Api");
+        
+        SaveResponse(await _driver.SendFlexibleRequestAsync(
+            configFile: "appsettings.json",
+            urlPlaceholderKeys: ToOptionalKey("-"),
+            targetValue: ToOptionalKey("-"),
+            headerKeys: ToOptionalKey("CacheId"),
+            queryParamKeys: ToOptionalKey($"{validateCheckExistingEmail}, ValidateBusinessUnitId"),
+            urlSegmentKeys: null,
+            method: Method.Get,
+            endpointKey: "getCheckAvability",
+            host: host));
+    }
 
     [When(@"User sends POST request for feature ""(.*)""")]
     public async Task PostRequestForFeature(string featureName)

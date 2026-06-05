@@ -63,8 +63,14 @@ Scenario: 7.Verify GET API retrieves user not exist by HospitalCredential
 	And Status should be NoContent
 
 @Api
-Scenario:8.Verify PUT User API
-    When User sends PUT request on "Api" base url
+Scenario: 8.Verify GET Request for cheking existing user in the same Oranization by HospitalCredential
+    When User sends POST request on "Auth" base url with "HospitalRole"
+    Then Status should be OK
+    And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
+    And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"
     Then Status code should be 200
 
 @Api
@@ -87,6 +93,32 @@ Scenario: 10.Verify flexible GET request retrieves existing user with dynamic he
     And session info from the last response is stored in appsettings
     When User sends flexible GET request on "Api" base url for endpoint "getExistingUser" with headers "CacheId"
     Then Status code should be 200
+
+@Api @FlexibleRequest
+Scenario: Get request with multiple headers and query params
+    When User sends POST request on "Auth" base url with "SuperAdmin"
+    Then Status should be OK
+    And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
+
+    # Multiple headers test
+    When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "-" target "-" headers "CacheId" query params "EmailId"
+    Then Status code should be 200
+
+    # URL placeholder + header test
+    When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "ValidateEmail" target "EmailId" headers "CacheId" query params "-"
+    Then Status should be NoContent
+
+@Api @FlexibleRequest
+Scenario:  "GET"Request with multiple headers and query params
+    When User sends POST request on "Auth" base url with "SuperAdmin"
+    Then Status should be OK
+    And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
 
 @Api @Parameterized
 Scenario Outline: Verify GET API retrieves existing user successfully by Role

@@ -170,4 +170,129 @@ public class RequestBuilder
 
         return dict.Count > 0 ? dict : null;
     }
+
+    public RestRequest BuildFlexibleDynamicRequest(
+    string endpoint,
+    Method method,
+    FlexibleRequestOptions? options = null)
+    {
+        options ??= new FlexibleRequestOptions();
+        var request = new RestRequest(endpoint, method);
+
+        // URL segments (optional)
+        if (options.UrlSegments is { Count: > 0 })
+        {
+            foreach (var segment in options.UrlSegments)
+            {
+                if (!string.IsNullOrWhiteSpace(segment.Key)
+                    && !string.IsNullOrWhiteSpace(segment.Value))
+                {
+                    request.AddUrlSegment(segment.Key, segment.Value);
+                }
+            }
+        }
+
+        // Token (optional)
+        if (options.BearerTokenProvided)
+        {
+            request.AddHeader("Authorization", $"Bearer {options.BearerToken}");
+        }
+        else if (options.AuthorizationRequired
+                 && !string.IsNullOrWhiteSpace(TokenManager.AccessToken))
+        {
+            request.AddHeader("Authorization", $"Bearer {TokenManager.AccessToken}");
+        }
+
+        // Multiple headers (optional)
+        if (options.Headers is { Count: > 0 })
+        {
+            foreach (var header in options.Headers)
+            {
+                if (!string.IsNullOrWhiteSpace(header.Key)
+                    && !string.IsNullOrWhiteSpace(header.Value))
+                {
+                    request.AddHeader(header.Key, header.Value);
+                }
+            }
+        }
+
+        // Multiple query params (optional)
+        if (options.QueryParams is { Count: > 0 })
+        {
+            foreach (var param in options.QueryParams)
+            {
+                if (!string.IsNullOrWhiteSpace(param.Key)
+                    && !string.IsNullOrWhiteSpace(param.Value))
+                {
+                    request.AddQueryParameter(param.Key, param.Value);
+                }
+            }
+        }
+
+        // Body (optional — sirf ek)
+        if (options.Body != null)
+        {
+            if (options.Body is string jsonBody && !string.IsNullOrWhiteSpace(jsonBody))
+            {
+                request.AddStringBody(jsonBody, ContentType.Json);
+            }
+            else
+            {
+                request.AddJsonBody(options.Body);
+            }
+        }
+
+        return request;
+    }
+
+    /// <summary>
+    /// Builds dictionary from comma-separated keys.
+    /// Formats:
+    ///   null/empty        -> null (skip)
+    ///   "EmailId,CacheId" -> { EmailId: value, CacheId: value }
+    ///   "emailId=EmailId,cacheId=CacheId" -> param/header name alag, config key alag
+    /// </summary>
+    public static Dictionary<string, string>? ResolvePartsFromConfig(
+        string? keys,
+        string configFile = "appsettings.json",
+        bool useCachedValues = true)
+    {
+        if (string.IsNullOrWhiteSpace(keys))
+            return null;
+
+        ConfigReaderNew.LoadConfig(configFile);
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var item in keys.Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var part = item.Trim();
+            if (string.IsNullOrWhiteSpace(part))
+                continue;
+
+            string mapKey;
+            string configKey;
+
+            // emailId=EmailId  OR  sirf EmailId
+            if (part.Contains('='))
+            {
+                var kv = part.Split('=', 2);
+                mapKey = kv[0].Trim();
+                configKey = kv[1].Trim();
+            }
+            else
+            {
+                mapKey = part;
+                configKey = part;
+            }
+
+            var value = useCachedValues
+                ? Core.Helpers.EndpointRequestHelper.GetCachedValue(configKey)
+                : ConfigReaderNew.GetValue(configKey);
+
+            if (!string.IsNullOrWhiteSpace(value))
+                dict[mapKey] = value;
+        }
+
+        return dict.Count > 0 ? dict : null;
+    }
 }

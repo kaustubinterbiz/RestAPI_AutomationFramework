@@ -64,4 +64,21 @@ public static class GetSessionInfoResponseParse
 
         return result;
     }
+
+    public static CheckExistingUser_ResponseModel? TryGetExistingUserInfoInfo(string? responseContent)
+    {
+        if (string.IsNullOrWhiteSpace(responseContent))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<CheckExistingUser_ResponseModel>(responseContent, JsonOptions);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }
