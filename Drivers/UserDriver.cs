@@ -58,6 +58,38 @@ public class UserDriver
         return await _apiClient.SendRequestAsync(endpoint, filename, key, targetValue, header, queryParam, method, null, host ?? ApiHost.Api);
     }
 
+    /// <summary>
+    /// Flexible dynamic request — multiple headers, query params, url segments from comma-separated config keys.
+    /// Pass null for any part to skip it.
+    /// </summary>
+    public async Task<RestResponse> SendFlexibleRequestAsync(
+        string? configFile,
+        string? urlPlaceholderKeys,
+        string? targetValue,
+        string? headerKeys,
+        string? queryParamKeys,
+        string? urlSegmentKeys,
+        Method method,
+        string endpointKey = "get",
+        ApiGetRequestOptions? options = null,
+        ApiHost? host = null)
+    {
+        ApiAuth.LoadTokenFromAppSettings();
+        var endpoint = EndpointConfig.GetEndpoint(endpointKey);
+
+        return await _apiClient.SendFlexibleRequestAsync(
+            endpoint,
+            configFile,
+            urlPlaceholderKeys,
+            targetValue,
+            headerKeys,
+            queryParamKeys,
+            urlSegmentKeys,
+            method,
+            options,
+            host ?? ApiHost.Api);
+    }
+
     public async Task<RestResponse> PostFromConfigAsync(string endpointKey, string bodyFileKey, string bodyKey, ApiHost? host = null)
     {
         await ApiAuth.EnsureReadyAsync(_apiClient);

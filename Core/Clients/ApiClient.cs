@@ -190,7 +190,109 @@ public sealed class ApiClient
         return await ExecuteAsync(host, request, resolvedEndpoint);
     }
 
-   
+    /// <summary>
+    /// Sends a request with optional dynamic headers, query params, url segments, and body.
+    /// Each part is resolved from config only when its comma-separated key string is provided; otherwise skipped.
+    /// </summary>
+    public async Task<RestResponse> SendFlexibleRequestAsync(
+        string endpoint,
+        string? configFile,
+        string? urlPlaceholderKeys,
+        string? targetValue,
+        string? headerKeys,
+        string? queryParamKeys,
+        string? urlSegmentKeys,
+        Method method,
+        ApiGetRequestOptions? options,
+        ApiHost host)
+    {
+        options ??= ApiGetRequestOptions.Create();
+        options.ValidateProvidedValues();
+
+        var config = configFile ?? "appsettings.json";
+        string resolvedEndpoint;
+        Dictionary<string, string>? urlSegments = null;
+
+        if (!string.IsNullOrWhiteSpace(urlPlaceholderKeys))
+        {
+            var placeholderValues = RequestBuilder.ResolvePartsFromConfig(urlPlaceholderKeys, config);
+            resolvedEndpoint = placeholderValues != null
+                ? EndpointHelper.ResolveUrlPlaceholders(endpoint, placeholderValues, targetValue)
+                : endpoint;
+        }
+        else
+        {
+            var (resolved, endpointSegments) = EndpointHelper.ResolveEndpoint(endpoint);
+            resolvedEndpoint = resolved;
+            if (endpointSegments.Count > 0)
+            {
+                urlSegments = endpointSegments;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(urlSegmentKeys))
+        {
+            var configSegments = RequestBuilder.ResolvePartsFromConfig(urlSegmentKeys, config);
+            if (configSegments != null)
+            {
+                urlSegments ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var segment in configSegments)
+                {
+                    urlSegments[segment.Key] = segment.Value;
+                }
+            }
+        }
+
+        Dictionary<string, string>? headers = null;
+        if (!string.IsNullOrWhiteSpace(headerKeys))
+        {
+            headers = RequestBuilder.ResolvePartsFromConfig(headerKeys, config);
+        }
+
+        Dictionary<string, string>? queryParams = null;
+        if (!string.IsNullOrWhiteSpace(queryParamKeys))
+        {
+            queryParams = RequestBuilder.ResolvePartsFromConfig(queryParamKeys, config);
+        }
+
+        object? body = null;
+        if (method is Method.Post or Method.Put or Method.Patch)
+        {
+            body = options.BodyProvided ? options.Body : null;
+        }
+
+        var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
+        var bearerTokenProvided = options.BearerTokenProvided;
+        var bearerToken = options.BearerToken;
+
+        if (useCachedToken && !bearerTokenProvided)
+        {
+            if (!TokenManager.HasToken)
+            {
+                TokenManager.InitializeFromConfig();
+            }
+
+            if (TokenManager.HasToken)
+            {
+                bearerToken = TokenManager.AccessToken;
+                bearerTokenProvided = true;
+            }
+        }
+
+        var flexibleOptions = new FlexibleRequestOptions
+        {
+            Headers = headers,
+            QueryParams = queryParams,
+            UrlSegments = urlSegments,
+            Body = body,
+            AuthorizationRequired = useCachedToken && !bearerTokenProvided,
+            BearerToken = bearerToken,
+            BearerTokenProvided = bearerTokenProvided
+        };
+
+        var request = _requestBuilder.BuildFlexibleDynamicRequest(resolvedEndpoint, method, flexibleOptions);
+        return await ExecuteAsync(host, request, resolvedEndpoint);
+    }
 
     private async Task<RestResponse> SendAsync(
         string endpoint,
@@ -233,4 +335,6 @@ public sealed class ApiClient
 
         return response;
     }
+
+    
 }
