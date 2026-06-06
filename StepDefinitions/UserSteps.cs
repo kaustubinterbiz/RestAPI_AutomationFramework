@@ -1,7 +1,9 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Clients;
+using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
+using NUnit.Framework;
 using Reqnroll;
 using RestSharp;
 using static Reqnroll.Analytics.ReqnrollFeatureUseEvent;
@@ -156,6 +158,31 @@ public class UserSteps
             method: Method.Get,
             endpointKey: "getCheckAvability",
             host: host));
+
+        var response = TokenContext.GetLastResponse(_context);
+        StoreInfo.SaveExistingUserFromResponse(response.Content);
+        ConfigReaderNew.LoadConfig("appsettings.json");
+        string value1 = ConfigReaderNew.GetValue("IsAvailableUserEmail");
+        bool b1 = bool.TryParse(value1, out bool result1);
+        string value2 = ConfigReaderNew.GetValue("IsSameBusinessUnitMemebr");
+        bool b2 = bool.TryParse(value2, out bool result2);
+        if (b1 == false && b2 == false)
+        {
+            _context["IsAvailableUserEmail"] = result1;
+            _context["IsSameBusinessUnitMemebr"] = result2;
+            Assert.That(result1, Is.True,
+                      $"Expected IsAvailableUserEmail to be false but found '{value1}'.");
+        }
+        else if(b1 == true && b2 == false)
+        {
+            _context["IsAvailableUserEmail"] = result1;
+            _context["IsSameBusinessUnitMemebr"] = result2;
+            Assert.That(result1, Is.True,
+                      $"Expected IsAvailableUserEmail to be false but found '{value1}'.");
+        }
+
+
+       
     }
 
     [When(@"User sends POST request for feature ""(.*)""")]

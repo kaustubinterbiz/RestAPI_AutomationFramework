@@ -31,6 +31,14 @@ public class LoginSteps
         SessionInfoStore.SaveFromResponse(response.Content);
     }
 
+    [Then("existingUser info from the last response is stored in appsettings")]
+    public void ThenExistingUserInfoFromTheLastResponseIsStoredInAppsettings()
+    {
+        var response = TokenContext.GetLastResponse(_context);
+        StoreInfo.SaveExistingUserFromResponse(response.Content);
+    }
+
+
     [When(@"User sends POST request on ""(.*)"" base url using stored access token")]
     public async Task WhenUserSendsPostOnAuthUsingStoredAccessToken(string baseUrlType)
     {

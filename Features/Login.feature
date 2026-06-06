@@ -71,6 +71,7 @@ Scenario: 8.Verify GET Request for cheking existing user in the same Oranization
     Then Status code should be 200
     And session info from the last response is stored in appsettings
     And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"
+    #And existingUser info from the last response is stored in appsettings
     Then Status code should be 200
 
 @Api
@@ -119,6 +120,8 @@ Scenario:  "GET"Request with multiple headers and query params
     When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
     And session info from the last response is stored in appsettings
+    When User sends flexible "Get" request on "Api" base url for endpoint "CheckExistingUserAvailabilityInfo" with url placeholders "-" target "-" headers "CacheId" query params "EmailId"
+    Then Status code should be 200
 
 @Api @Parameterized
 Scenario Outline: Verify GET API retrieves existing user successfully by Role
