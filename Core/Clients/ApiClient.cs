@@ -194,17 +194,135 @@ public sealed class ApiClient
     /// Sends a request with optional dynamic headers, query params, url segments, and body.
     /// Each part is resolved from config only when its comma-separated key string is provided; otherwise skipped.
     /// </summary>
+    //public async Task<RestResponse> SendFlexibleRequestAsync(
+    //    string endpoint,
+    //    string? configFile,
+    //    string? urlPlaceholderKeys,
+    //    string? targetValue,
+    //    string? headerKeys,
+    //    string? queryParamKeys,
+    //    string? urlSegmentKeys,
+    //    Method method,
+    //    ApiGetRequestOptions? options,
+    //    ApiHost host)
+    //{
+    //    options ??= ApiGetRequestOptions.Create();
+    //    options.ValidateProvidedValues();
+
+    //    var config = configFile ?? "appsettings.json";
+    //    string resolvedEndpoint = endpoint;
+    //    Dictionary<string, string>? urlSegments = null;
+
+    //    if (!string.IsNullOrWhiteSpace(urlSegmentKeys))
+    //    {
+    //        urlSegments = RequestBuilder.ResolvePartsFromConfig(urlSegmentKeys, config);
+    //        if (!string.IsNullOrWhiteSpace(targetValue) && urlSegments != null)
+    //        {
+    //            var value = urlSegments.Values.FirstOrDefault()
+    //            ?? EndpointRequestHelper.GetCachedValue(targetValue);
+    //            urlSegments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    //            {
+    //                [targetValue] = value
+    //            };
+    //            resolvedEndpoint = endpoint;   
+    //        }
+    //            var configSegments = RequestBuilder.ResolvePartsFromConfig(urlSegmentKeys, config);
+    //        if (configSegments != null)
+    //        {
+    //            urlSegments ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    //            foreach (var segment in configSegments)
+    //            {
+    //                urlSegments[segment.Key] = segment.Value;
+    //            }
+    //        }
+    //    }
+
+    //    Dictionary<string, string>? headers = null;
+    //    if (!string.IsNullOrWhiteSpace(headerKeys))
+    //    {
+    //        headers = RequestBuilder.ResolvePartsFromConfig(headerKeys, config);
+    //    }
+
+    //    Dictionary<string, string>? queryParams = null;
+    //    if (!string.IsNullOrWhiteSpace(queryParamKeys))
+    //    {
+    //        queryParams = RequestBuilder.ResolvePartsFromConfig(queryParamKeys, config);
+    //    }
+
+    //    object? body = null;
+    //    if (method is Method.Post or Method.Put or Method.Patch)
+    //    {
+    //        body = options.BodyProvided ? options.Body : null;
+    //    }
+
+    //    var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;
+    //    var bearerTokenProvided = options.BearerTokenProvided;
+    //    var bearerToken = options.BearerToken;
+
+    //    if (useCachedToken && !bearerTokenProvided)
+    //    {
+    //        if (!TokenManager.HasToken)
+    //        {
+    //            TokenManager.InitializeFromConfig();
+    //        }
+
+    //        if (TokenManager.HasToken)
+    //        {
+    //            bearerToken = TokenManager.AccessToken;
+    //            bearerTokenProvided = true;
+    //        }
+    //    }
+
+    //    var flexibleOptions = new FlexibleRequestOptions
+    //    {
+    //        Headers = headers,
+    //        QueryParams = queryParams,
+    //        UrlSegments = urlSegments,
+    //        Body = body,
+    //        AuthorizationRequired = useCachedToken && !bearerTokenProvided,
+    //        BearerToken = bearerToken,
+    //        BearerTokenProvided = bearerTokenProvided
+    //    };
+
+    //    if (!string.IsNullOrWhiteSpace(urlPlaceholderKeys))
+    //    {
+    //        var placeholderValues = RequestBuilder.ResolvePartsFromConfig(urlPlaceholderKeys, config);
+    //        resolvedEndpoint = placeholderValues != null
+    //            ? EndpointHelper.ResolveUrlPlaceholders(endpoint, placeholderValues, targetValue)
+    //            : endpoint;
+    //    }
+    //    else
+    //    {
+    //        var (resolved, endpointSegments) = EndpointHelper.ResolveEndpoint(endpoint);
+    //        resolvedEndpoint = resolved;
+    //        if (endpointSegments.Count > 0)
+    //        {
+    //            urlSegments = endpointSegments;
+    //        }
+    //    }
+
+    //    var request = _requestBuilder.BuildFlexibleDynamicRequest(resolvedEndpoint, method, flexibleOptions);
+    //    return await ExecuteAsync(host, request, resolvedEndpoint);
+    //}
+    private static string GetEndpointBasePath(string endpoint)
+    {
+        if (string.IsNullOrWhiteSpace(endpoint))
+            return endpoint;
+        var queryIndex = endpoint.IndexOf('?', StringComparison.Ordinal);
+        return queryIndex >= 0 ? endpoint[..queryIndex] : endpoint;
+    }
+
     public async Task<RestResponse> SendFlexibleRequestAsync(
-        string endpoint,
-        string? configFile,
-        string? urlPlaceholderKeys,
-        string? targetValue,
-        string? headerKeys,
-        string? queryParamKeys,
-        string? urlSegmentKeys,
-        Method method,
-        ApiGetRequestOptions? options,
-        ApiHost host)
+    string endpoint,
+    string? configFile,
+    string? urlPlaceholderKeys,
+    string? targetValue,
+    string? headerKeys,
+    string? queryParamKeys,
+    string? urlSegmentKeys,
+    Method method,
+    ApiGetRequestOptions? options,
+    ApiHost host)
     {
         options ??= ApiGetRequestOptions.Create();
         options.ValidateProvidedValues();
@@ -212,9 +330,55 @@ public sealed class ApiClient
         var config = configFile ?? "appsettings.json";
         string resolvedEndpoint;
         Dictionary<string, string>? urlSegments = null;
+        Dictionary<string, string>? queryParams = null;
 
-        if (!string.IsNullOrWhiteSpace(urlPlaceholderKeys))
+        if (!string.IsNullOrWhiteSpace(urlSegmentKeys))
         {
+            // MODE 1: URL segments only
+            urlSegments = RequestBuilder.ResolvePartsFromConfig(urlSegmentKeys, config);
+
+            if (!string.IsNullOrWhiteSpace(targetValue) && urlSegments is { Count: > 0 })
+            {
+                var segmentKey = targetValue.Trim();
+                string segmentValue;
+
+                if (urlSegments.TryGetValue(segmentKey, out var found))
+                {
+                    segmentValue = found;
+                }
+                else
+                {
+                    segmentValue = urlSegments.Values.First();
+                }
+
+                urlSegments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [segmentKey] = segmentValue
+                };
+            }
+
+            resolvedEndpoint = endpoint;
+        }
+        else if (!string.IsNullOrWhiteSpace(queryParamKeys))
+        {
+            // MODE 2: Sirf {} values replace — EmailID/BusinessUnitID keys same
+            var placeholderValues = RequestBuilder.ResolvePartsFromConfig(queryParamKeys, config);
+
+            if (endpoint.Contains('{', StringComparison.Ordinal))
+            {
+                resolvedEndpoint = EndpointHelper.ResolveEndpointPlaceholders(endpoint, placeholderValues);
+                queryParams = null;
+            }
+            else
+            {
+                // Plain path (bina ?) → normal AddQueryParameter
+                queryParams = placeholderValues;
+                resolvedEndpoint = endpoint;
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(urlPlaceholderKeys))
+        {
+            // MODE 3a: Targeted placeholder replace
             var placeholderValues = RequestBuilder.ResolvePartsFromConfig(urlPlaceholderKeys, config);
             resolvedEndpoint = placeholderValues != null
                 ? EndpointHelper.ResolveUrlPlaceholders(endpoint, placeholderValues, targetValue)
@@ -222,6 +386,7 @@ public sealed class ApiClient
         }
         else
         {
+            // MODE 3b: Auto — saare {} cache/email se
             var (resolved, endpointSegments) = EndpointHelper.ResolveEndpoint(endpoint);
             resolvedEndpoint = resolved;
             if (endpointSegments.Count > 0)
@@ -230,29 +395,10 @@ public sealed class ApiClient
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(urlSegmentKeys))
-        {
-            var configSegments = RequestBuilder.ResolvePartsFromConfig(urlSegmentKeys, config);
-            if (configSegments != null)
-            {
-                urlSegments ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var segment in configSegments)
-                {
-                    urlSegments[segment.Key] = segment.Value;
-                }
-            }
-        }
-
         Dictionary<string, string>? headers = null;
         if (!string.IsNullOrWhiteSpace(headerKeys))
         {
             headers = RequestBuilder.ResolvePartsFromConfig(headerKeys, config);
-        }
-
-        Dictionary<string, string>? queryParams = null;
-        if (!string.IsNullOrWhiteSpace(queryParamKeys))
-        {
-            queryParams = RequestBuilder.ResolvePartsFromConfig(queryParamKeys, config);
         }
 
         object? body = null;

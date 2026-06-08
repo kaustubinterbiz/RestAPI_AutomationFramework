@@ -31,7 +31,7 @@ public static partial class EndpointHelper
         var urlSegments =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (Match match in UrlSegmentPattern.Matches(endpoint))
+          foreach (Match match in UrlSegmentPattern.Matches(endpoint))
         {
             var key = match.Groups[1].Value;
 
@@ -224,6 +224,48 @@ public static partial class EndpointHelper
             }
 
             return match.Value;
+        });
+    }
+
+    /// <summary>
+    /// Replaces only {placeholderKey} values in URL.
+    /// Query param names (EmailID, BusinessUnitID) stay unchanged.
+    /// </summary>
+    /// <summary>
+    /// Replaces only {placeholderKey} values in the URL.
+    /// Query param names (EmailID, BusinessUnitID, emailId) stay unchanged.
+    /// placeholderValues keys = config keys inside {}, e.g. ValidateCheckExistingEmail.
+    /// </summary>
+    public static string ResolveEndpointPlaceholders(
+        string endpoint,
+        Dictionary<string, string>? placeholderValues)
+    {
+        if (string.IsNullOrWhiteSpace(endpoint))
+            return endpoint;
+
+        return UrlSegmentPattern.Replace(endpoint, match =>
+        {
+            var placeholderKey = match.Groups[1].Value;
+
+            string? value = null;
+            if (placeholderValues != null
+                && placeholderValues.TryGetValue(placeholderKey, out var fromDict)
+                && !string.IsNullOrWhiteSpace(fromDict))
+            {
+                value = fromDict;
+            }
+            else
+            {
+                value = EndpointRequestHelper.GetCachedValue(placeholderKey);
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+                return match.Value;
+            
+            if (value.Contains('%'))
+                value = Uri.UnescapeDataString(value);
+
+            return value;
         });
     }
 

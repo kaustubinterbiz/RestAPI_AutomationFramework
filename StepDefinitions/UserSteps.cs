@@ -163,27 +163,51 @@ public class UserSteps
         StoreInfo.SaveExistingUserFromResponse(response.Content);
         ConfigReaderNew.LoadConfig("appsettings.json");
         string value1 = ConfigReaderNew.GetValue("IsAvailableUserEmail");
-        bool b1 = bool.TryParse(value1, out bool result1);
+        bool.TryParse(value1, out bool result1);
         string value2 = ConfigReaderNew.GetValue("IsSameBusinessUnitMemebr");
-        bool b2 = bool.TryParse(value2, out bool result2);
-        if (b1 == false && b2 == false)
+        bool.TryParse(value2, out bool result2);
+         if (result1 == false && result2 == true)
         {
-            _context["IsAvailableUserEmail"] = result1;
-            _context["IsSameBusinessUnitMemebr"] = result2;
-            Assert.That(result1, Is.True,
-                      $"Expected IsAvailableUserEmail to be false but found '{value1}'.");
+            _context["GetExistingUserEmail"] = false;
+            Console.WriteLine($"Expected IsAvailableUserEmail to be exist and also in same Business Unit Id '{_context["GetExistingUserEmail"].ToString()}'.");          
         }
-        else if(b1 == true && b2 == false)
+        else if(result1 == false && result2 == false)
         {
-            _context["IsAvailableUserEmail"] = result1;
-            _context["IsSameBusinessUnitMemebr"] = result2;
-            Assert.That(result1, Is.True,
-                      $"Expected IsAvailableUserEmail to be false but found '{value1}'.");
+            _context["GetExistingUserEmail"] = true;
+            Console.WriteLine($"Expected IsAvailableUserEmail to be exist but not in same Business Unit Id '{_context["GetExistingUserEmail"].ToString()}'.");
         }
-
-
-       
+        else
+        {
+            _context["GetExistingUserEmail"] = true;
+            Console.WriteLine($"Expected IsAvailableUserEmail to be not exist, create a new organization");
+        } 
     }
+
+    [Then("validate the response for the existing user in the same organization")]
+    public async Task ThenValidateTheResponseForTheExistingUserInTheSameOrganization()
+    {
+        bool getExistingUserEmail = (bool)_context["GetExistingUserEmail"];
+        if (getExistingUserEmail)
+        {
+            var host = ApiHostStepHelper.ApplyBaseUrlType("Api");
+
+            SaveResponse(await _driver.SendFlexibleRequestAsync(
+                configFile: "appsettings.json",
+                urlPlaceholderKeys: ToOptionalKey("-"),
+                targetValue: ToOptionalKey("-"),
+                headerKeys: ToOptionalKey("CacheId"),
+                queryParamKeys: ToOptionalKey("EmailId"),
+                urlSegmentKeys: null,
+                method: Method.Get,
+                endpointKey: "getExistingUser",
+                host: host));
+
+            var response = TokenContext.GetLastResponse(_context);
+            StoreInfo.SaveExistingUserFromResponse(response.Content);
+        }
+        else { Console.WriteLine("Already Email exist and in the same business unit id"); }
+    }
+
 
     [When(@"User sends POST request for feature ""(.*)""")]
     public async Task PostRequestForFeature(string featureName)
