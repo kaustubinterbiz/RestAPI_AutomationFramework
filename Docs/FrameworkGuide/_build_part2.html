@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Framework Guide — Part 2: ApiHost & RestClientFactory</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 11pt; line-height: 1.55; color: #1f2933; margin: 0; }
+  h1 { font-size: 23pt; color: #0b5fff; margin: 0 0 4px; }
+  h2 { font-size: 16pt; color: #0b5fff; border-bottom: 2px solid #d6e4ff; padding-bottom: 5px; margin-top: 30px; }
+  h3 { font-size: 12.5pt; color: #15324f; margin-top: 20px; }
+  h4 { font-size: 11pt; color: #2b3a4a; margin: 14px 0 4px; }
+  p { margin: 8px 0; }
+  code { font-family: "Cascadia Code", Consolas, monospace; font-size: 9.5pt; background: #f0f3f7; padding: 1.5px 5px; border-radius: 4px; color: #b1003e; }
+  pre { background: #1e2733; color: #e6edf3; padding: 12px 14px; border-radius: 8px; font-family: "Cascadia Code", Consolas, monospace; font-size: 9pt; line-height: 1.45; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 9pt; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 9.8pt; }
+  th, td { border: 1px solid #cdd8e3; padding: 6px 9px; text-align: left; vertical-align: top; }
+  th { background: #0b5fff; color: #fff; }
+  tr:nth-child(even) td { background: #f5f8fc; }
+  blockquote { border-left: 4px solid #0b5fff; background: #f0f6ff; margin: 12px 0; padding: 8px 14px; color: #243b53; border-radius: 0 6px 6px 0; }
+  hr { border: none; border-top: 1px solid #d6e4ff; margin: 26px 0; }
+  .cover { text-align: center; padding: 80px 0 40px; }
+  .cover h1 { font-size: 30pt; }
+  .cover .sub { font-size: 13pt; color: #52606d; margin-top: 8px; }
+  .cover .stack { font-size: 10pt; color: #7b8794; margin-top: 24px; }
+  .badge { display:inline-block; background:#d6e4ff; color:#0b5fff; border-radius: 12px; padding: 2px 12px; font-size: 9pt; margin-top: 14px; }
+  .pagebreak { page-break-before: always; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  .note { font-size: 10pt; }
+  .filepath { font-size: 9.5pt; color: #52606d; margin-bottom: 6px; }
+  .alert { border-left: 4px solid #f7c948; background: #fffbea; margin: 12px 0; padding: 8px 14px; color: #3d2c00; border-radius: 0 6px 6px 0; }
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <h1>📚 Framework Guide</h1>
+  <div class="sub">RestAPI Automation Framework — Layer by Layer</div>
+  <div class="badge">PART 2 — ApiHost &amp; RestClientFactory</div>
+  <div class="stack">C# (.NET 8) · RestSharp · Reqnroll (SpecFlow) · FluentAssertions · ExtentReports</div>
+</div>
+<hr>
+
+<!-- ===== INTRO ===== -->
+<blockquote>
+  <b>Goal:</b> Samajhna ki framework <b>kaunse server pe</b> request bhejta hai, woh decision
+  kaise hota hai, aur <code>RestClient</code> (actual HTTP client) kaise banta aur cache hota hai.
+</blockquote>
+<p>Yeh layer "traffic director" hai — har request se pehle decide hota hai:
+<b>Auth server (B2C login) pe jaao ya App API server pe?</b></p>
+
+<!-- ===== 2.1 ===== -->
+<h2>2.1 — ApiHost enum (do servers, do names)</h2>
+<p class="filepath">📄 Core/Clients/ApiHost.cs</p>
+<pre><code>public enum ApiHost
+{
+    Auth,   // Azure AD B2C → login/token calls
+    Api     // Application server → actual data APIs
+}</code></pre>
+<p>Bas do options. Har HTTP call ke saath yeh enum pass hota hai taaki correct base URL use ho.</p>
+<p><code>appsettings.json</code> mein mapping:</p>
+<pre><code>"ApiUrls": {
+  "AuthBaseUrl": "https://testRovicare.b2clogin.com/",
+  "ApiBaseUrl":  "https://as-rc-test-api.azurewebsites.net/"
+}</code></pre>
+<table>
+  <tr><th>ApiHost value</th><th>Base URL used</th><th>Kab use</th></tr>
+  <tr><td><code>ApiHost.Auth</code></td><td>AuthBaseUrl</td><td>Sirf login/token calls (B2C)</td></tr>
+  <tr><td><code>ApiHost.Api</code></td><td>ApiBaseUrl</td><td>Login ke baad ki saari API calls</td></tr>
+</table>
+
+<!-- ===== 2.2 ===== -->
+<div class="pagebreak"></div>
+<h2>2.2 — RestClientFactory (client banane + cache karne ki machine)</h2>
+<p class="filepath">📄 Core/Clients/RestClientFactory.cs</p>
+<pre><code>public sealed class RestClientFactory
+{
+    private readonly ApiEnvironmentSettings _settings;
+    private readonly ConcurrentDictionary&lt;ApiHost, RestClient&gt; _clients = new();
+
+    public RestClient GetClient(ApiHost host) =&gt;
+        _clients.GetOrAdd(host, CreateClient);   // cache hit → same client
+}</code></pre>
+
+<h3>Kaam kaise karta hai</h3>
+<ul>
+  <li><code>GetClient(ApiHost.Api)</code> call aaya.</li>
+  <li>Dictionary mein check — client pehle se hai? <b>Hai</b> → wahi return. <b>Nahi</b> → naya banao, cache karo.</li>
+  <li><b>Thread-safe</b> — <code>ConcurrentDictionary</code> ke wajah se parallel scenarios mein race condition nahi.</li>
+</ul>
+
+<h3>CreateClient — andar kya hota hai</h3>
+<pre><code>private RestClient CreateClient(ApiHost host)
+{
+    var baseUrl = host switch
+    {
+        ApiHost.Auth =&gt; _settings.AuthBaseUrl,   // B2C URL
+        ApiHost.Api  =&gt; _settings.ApiBaseUrl,    // App URL
+        _ =&gt; throw new ArgumentOutOfRangeException(...)
+    };
+
+    var options = new RestClientOptions(baseUrl.TrimEnd('/') + "/")
+    {
+        Timeout = TimeSpan.FromMilliseconds(_settings.TimeoutMilliseconds) // default 30s
+    };
+
+    return new RestClient(options);
+}</code></pre>
+<blockquote class="note">🧠 <b>Insight:</b> BaseUrl ke end mein <code>/</code> ensure hota hai — taaki endpoint ke saath
+join karte waqt double-slash ya missing-slash ki problem na aaye.</blockquote>
+
+<!-- ===== 2.3 ===== -->
+<h2>2.3 — ApiHostContext (scenario ke liye current host store karta hai)</h2>
+<p class="filepath">📄 Core/Clients/ApiHostContext.cs</p>
+<pre><code>public static class ApiHostContext
+{
+    private static readonly AsyncLocal&lt;ApiHost?&gt; Current = new();
+
+    public static ApiHost CurrentOrDefault =&gt; Current.Value ?? ApiHost.Api;  // default = Api
+    public static bool HasValue            =&gt; Current.Value.HasValue;
+
+    public static void Set(ApiHost host)   =&gt; Current.Value = host;
+    public static void Clear()             =&gt; Current.Value = null;
+}</code></pre>
+
+<h3>AsyncLocal — kyun important hai</h3>
+<p><code>AsyncLocal&lt;T&gt;</code> matlab har async chain ka apna independent value. Parallel mein
+chalte 10 scenarios mein se ek <code>Auth</code> set kare, doosre pe koi asar nahi:</p>
+<pre><code>Scenario A (async)  → ApiHostContext.Set(ApiHost.Auth)  → sirf A ko dikhta hai
+Scenario B (async)  → ApiHostContext.Set(ApiHost.Api)   → sirf B ko dikhta hai</code></pre>
+<table>
+  <tr><th>Member</th><th>Kaam</th></tr>
+  <tr><td><code>CurrentOrDefault</code></td><td>Agar koi set nahi, safe fallback = <code>ApiHost.Api</code></td></tr>
+  <tr><td><code>Set(host)</code></td><td>Current scenario ka host store karo</td></tr>
+  <tr><td><code>Clear()</code></td><td><code>AfterScenario</code> mein call — scenario khatam, value reset</td></tr>
+  <tr><td><code>HasValue</code></td><td>Check — koi host set hai ya nahi</td></tr>
+</table>
+
+<!-- ===== 2.4 ===== -->
+<div class="pagebreak"></div>
+<h2>2.4 — ApiHostResolver (string → ApiHost)</h2>
+<p class="filepath">📄 Core/Clients/ApiHostResolver.cs</p>
+<p>Feature files mein step likhte ho: <code>"Auth" base url</code>. Yeh <code>"Auth"</code> string hai.
+<code>ApiHostResolver</code> isko <code>ApiHost.Auth</code> mein convert karta hai.</p>
+<table>
+  <tr><th>Alias string</th><th>Maps to</th></tr>
+  <tr><td><code>Auth, B2C, Login, Token, Identity, AuthBaseUrl</code></td><td><code>ApiHost.Auth</code></td></tr>
+  <tr><td><code>Api, App, Application, ApiBaseUrl, Rovicare</code></td><td><code>ApiHost.Api</code></td></tr>
+</table>
+<pre><code>// String → ApiHost (throw karta hai agar unknown)
+ApiHost host = ApiHostResolver.ResolveFromKey("Auth");   // → ApiHost.Auth
+ApiHost host = ApiHostResolver.ResolveFromKey("B2C");    // → ApiHost.Auth (alias)
+ApiHost host = ApiHostResolver.ResolveFromKey("App");    // → ApiHost.Api
+
+// Try pattern (throw nahi karta)
+if (ApiHostResolver.TryResolveFromKey("Auth", out var host)) { ... }
+
+// Tags se resolve (feature/scenario ke @Tags padhke)
+ApiHost? host = ApiHostResolver.ResolveFromTags(new[] { "Auth", "SuperAdmin" });
+// → ApiHost.Auth (sirf Auth/Api aliases match, baaki ignore)</code></pre>
+<div class="alert">⚠️ <b>Conflict protection:</b> Agar scenario pe dono <code>@Auth</code> aur <code>@Api</code> lage ho → <code>InvalidOperationException</code>. <code>@Auth @SuperAdmin</code> → OK, <code>SuperAdmin</code> koi host alias nahi hai.</div>
+
+<!-- ===== 2.5 ===== -->
+<h2>2.5 — FeatureBaseUrlResolver (feature name → ApiHost)</h2>
+<p class="filepath">📄 Core/Clients/FeatureBaseUrlResolver.cs</p>
+<p>Kuch steps mein feature naam pass karte ho:</p>
+<pre><code>When User sends GET request for feature "User API Testing"</code></pre>
+<p>Resolver teen-step logic chalata hai:</p>
+<pre><code>public static ApiHost Resolve(string featureOrBaseUrlName)
+{
+    // Step 1: appsettings.json ke FeatureBaseUrlMap mein dhoondo
+    if (AppConfiguration.FeatureBaseUrlMap.TryGetValue(name, out var mappedTypeKey))
+        return ApiHostResolver.ResolveFromKey(mappedTypeKey);  // "Api" → ApiHost.Api
+
+    // Step 2: Direct alias hai kya? ("Auth" / "Api")
+    if (ApiHostResolver.TryResolveFromKey(name, out var host))
+        return host;
+
+    // Step 3: Kuch nahi mila → throw
+    throw new InvalidOperationException(...);
+}</code></pre>
+<p><code>appsettings.json</code> mein map:</p>
+<pre><code>"FeatureBaseUrlMap": {
+  "User API Testing": "Api",
+  "Login":            "Auth",
+  "Login and Logout": "Auth",
+  "TokenRefresh":     "Api"
+}</code></pre>
+<blockquote>🧠 Naya feature add karte waqt bas <code>FeatureBaseUrlMap</code> mein entry daalo — code change nahi karna.</blockquote>
+
+<!-- ===== 2.6 ===== -->
+<div class="pagebreak"></div>
+<h2>2.6 — ApiHostHooks (har scenario se pehle host auto-set)</h2>
+<p class="filepath">📄 Hooks/ApiHostHooks.cs</p>
+<pre><code>[BeforeScenario(Order = 1)]
+public void ApplyBaseUrlTypeFromFeatureTags()
+{
+    var scenarioTags = _scenarioContext.ScenarioInfo.Tags;
+    var featureTags  = _featureContext.FeatureInfo.Tags;
+
+    // pehle scenario tags, phir feature tags
+    var host =
+        ApiHostResolver.ResolveFromTags(scenarioTags)
+        ?? ApiHostResolver.ResolveFromTags(featureTags);
+
+    if (host.HasValue)
+        ApiHostContext.Set(host.Value);    // → AsyncLocal mein store
+}
+
+[AfterScenario(Order = 9999)]
+public void ClearBaseUrlType() =&gt; ApiHostContext.Clear();  // clean up</code></pre>
+<blockquote>🧠 <b>Matlab:</b> Agar tumne scenario ya feature pe <code>@Auth</code> ya <code>@Api</code> tag lagaya hai,
+toh <b>step mein base URL manually set karne ki zaroorat nahi</b> — hook automatically kar deta hai.</blockquote>
+
+<!-- ===== 2.7 ===== -->
+<h2>2.7 — ApiHostStepHelper (steps ke liye shortcut)</h2>
+<p class="filepath">📄 StepDefinitions/ApiHostStepHelper.cs</p>
+<pre><code>internal static class ApiHostStepHelper
+{
+    // Step mein string aata hai → resolve → set → return
+    public static ApiHost ApplyBaseUrlType(string baseUrlType)
+    {
+        var host = ApiHostResolver.ResolveFromKey(baseUrlType);
+        ApiHostHooks.SetHost(host);       // ApiHostContext.Set
+        return host;
+    }
+
+    // Feature name se set karo
+    public static ApiHost ApplyFeatureName(string featureName)
+    {
+        var host = FeatureBaseUrlResolver.Resolve(featureName);
+        ApiHostHooks.SetHost(host);
+        return host;
+    }
+}</code></pre>
+<p>Steps isko call karte hain:</p>
+<pre><code>[When(@"User sends GET request for feature ""(.*)""")]
+public async Task GetRequestForFeature(string featureName)
+{
+    ApiHostStepHelper.ApplyFeatureName(featureName);  // host set
+    SaveResponse(await _driver.GetAsync());           // correct server pe call
+}</code></pre>
+
+<!-- ===== 2.8 FLOW ===== -->
+<div class="pagebreak"></div>
+<h2>2.8 — Poora flow ek saath</h2>
+<pre><code>Feature file tag @Auth  ──→  ApiHostHooks.BeforeScenario
+                                  └→ ApiHostResolver.ResolveFromTags(["Auth"])
+                                  └→ ApiHostContext.Set(ApiHost.Auth)
+
+     ── YA ──
+
+Step: "Auth" base url  ──→  ApiHostStepHelper.ApplyBaseUrlType("Auth")
+                                  └→ ApiHostResolver.ResolveFromKey("Auth")
+                                  └→ ApiHostContext.Set(ApiHost.Auth)
+
+     ── YA ──
+
+Step: feature "User API Testing"  ──→  ApiHostStepHelper.ApplyFeatureName(...)
+                                           └→ FeatureBaseUrlResolver.Resolve(...)
+                                           └→ appsettings FeatureBaseUrlMap lookup
+                                           └→ ApiHostContext.Set(ApiHost.Api)
+
+                        ↓ (host set ho gaya)
+
+ApiClient.GetAsync(endpoint, host: ApiHostContext.CurrentOrDefault)
+     └→ RestClientFactory.GetClient(ApiHost.Api)  ← cached client milta hai
+     └→ RestSharp → HTTP call → response</code></pre>
+
+<hr>
+
+<!-- ===== SUMMARY ===== -->
+<h2>✅ Part 2 Summary</h2>
+<table>
+  <tr><th>Class</th><th>Role</th></tr>
+  <tr><td><code>ApiHost</code></td><td>Enum — <code>Auth</code> ya <code>Api</code>, bas do choices</td></tr>
+  <tr><td><code>RestClientFactory</code></td><td><code>RestClient</code> banata + <code>ConcurrentDictionary</code> mein cache karta</td></tr>
+  <tr><td><code>ApiHostContext</code></td><td><code>AsyncLocal</code> — current scenario ka active host store</td></tr>
+  <tr><td><code>ApiHostResolver</code></td><td>String alias → <code>ApiHost</code> convert (<code>"B2C"</code> → <code>Auth</code>)</td></tr>
+  <tr><td><code>FeatureBaseUrlResolver</code></td><td>Feature name → appsettings map → <code>ApiHost</code></td></tr>
+  <tr><td><code>ApiHostHooks</code></td><td><code>BeforeScenario</code> mein tags se auto-set, <code>AfterScenario</code> mein clear</td></tr>
+  <tr><td><code>ApiHostStepHelper</code></td><td>Steps ke liye one-liner — resolve + set ek saath</td></tr>
+</table>
+<blockquote><b>Key takeaway:</b> Host ka decision <b>teen jagah</b> ho sakta hai —
+(1) feature/scenario tags se auto, (2) step mein string se, (3) feature naam se.
+Teeno ultimately <code>ApiHostContext.Set()</code> tak pohonchte hain, aur
+<code>RestClientFactory</code> wahan se sahi client deta hai.</blockquote>
+<p class="note">➡️ <b>Next:</b> Part 3 — Authentication — token kaise milta hai, kahan rehta hai, aur khud-ba-khud request mein kaise lagta hai.</p>
+
+</body>
+</html>

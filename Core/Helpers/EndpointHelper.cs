@@ -236,6 +236,160 @@ public static partial class EndpointHelper
     /// Query param names (EmailID, BusinessUnitID, emailId) stay unchanged.
     /// placeholderValues keys = config keys inside {}, e.g. ValidateCheckExistingEmail.
     /// </summary>
+    //public static string ResolveEndpointPlaceholders(
+    //    string endpoint,
+    //    Dictionary<string, string>? placeholderValues)
+    //{
+    //    if (string.IsNullOrWhiteSpace(endpoint))
+    //        return endpoint;
+
+    //    return UrlSegmentPattern.Replace(endpoint, match =>
+    //    {
+    //        var placeholderKey = match.Groups[1].Value;
+
+    //        string? value = null;
+    //        if (placeholderValues != null
+    //            && placeholderValues.TryGetValue(placeholderKey, out var fromDict)
+    //            && !string.IsNullOrWhiteSpace(fromDict))
+    //        {
+    //            value = fromDict;
+    //        }
+    //        else
+    //        {
+    //            value = EndpointRequestHelper.GetCachedValue(placeholderKey);
+    //        }
+
+    //        if (string.IsNullOrWhiteSpace(value))
+    //            return match.Value;
+
+    //        if (value.Contains('%'))
+    //            value = Uri.UnescapeDataString(value);
+
+    //        return value;
+    //    });
+    //}
+
+    /// <summary>
+    /// Comma-separated target aur value keys se ordered map banata hai.
+    /// valueKeys[0] → targetKeys[0], valueKeys[1] → targetKeys[1], ...
+    /// </summary>
+    private static Dictionary<string, string> BuildSequentialPlaceholderMap(
+    Dictionary<string, string>? values,
+    string? valueKeys,
+    string? targetKeys)
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (values is not { Count: > 0 })
+            return map;
+
+        var valueKeyList = string.IsNullOrWhiteSpace(valueKeys)
+            ? values.Keys.ToList()
+            : valueKeys.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(k => k.Trim())
+                .Where(k => !string.IsNullOrWhiteSpace(k))
+                .ToList();
+
+        if (string.IsNullOrWhiteSpace(targetKeys))
+        {
+            foreach (var kvp in values)
+            {
+                if (!string.IsNullOrWhiteSpace(kvp.Value))
+                    map[kvp.Key] = kvp.Value;
+            }
+            return map;
+        }
+
+        var targetKeyList = targetKeys
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(k => k.Trim())
+            .Where(k => !string.IsNullOrWhiteSpace(k))
+            .ToList();
+
+        var count = Math.Min(valueKeyList.Count, targetKeyList.Count);
+        for (var i = 0; i < count; i++)
+        {
+            var configKey = valueKeyList[i];
+            var targetKey = targetKeyList[i];
+
+            if (!values.TryGetValue(configKey, out var value)
+                || string.IsNullOrWhiteSpace(value))
+            {
+                continue;
+            }
+
+            // configKey = endpoint {} name (ValidateBusinessUnitId) — hamesha map karo
+            map[configKey] = value;
+
+            // target alag ho to alias bhi add karo (BusinessUnitId)
+            if (!targetKey.Equals(configKey, StringComparison.OrdinalIgnoreCase))
+            {
+                map[targetKey] = value;
+            }
+        }
+
+        return map;
+    }
+
+    private static string ApplyPlaceholderMap(string url, Dictionary<string, string> replacementMap)
+    {
+        if (string.IsNullOrWhiteSpace(url) || replacementMap.Count == 0)
+            return url;
+
+        return Regex.Replace(url, @"\{(.*?)\}", match =>
+        {
+            var placeholderKey = match.Groups[1].Value?.Trim();
+            if (string.IsNullOrWhiteSpace(placeholderKey))
+                return match.Value;
+
+            if (!replacementMap.TryGetValue(placeholderKey, out var value)
+                || string.IsNullOrWhiteSpace(value))
+            {
+                return match.Value;
+            }
+
+            if (value.Contains('%'))
+                value = Uri.UnescapeDataString(value);
+
+            return value;
+        });
+    }
+
+    /// <summary>
+    /// Replaces endpoint {placeholders} using sequence mapping.
+    /// valueKeys  = config keys (appsettings) — comma separated
+    /// targetKeys = endpoint placeholder names — comma separated
+    /// Example:
+    ///   valueKeys  = "ValidateCheckExistingEmail_OtherBusinessUnitId, ValidateBusinessUnitId"
+    ///   targetKeys = "ValidateCheckExistingEmail_OtherBusinessUnitId, ValidateBusinessUnitId"
+    /// </summary>
+    public static string ResolveUrlPlaceholders(
+        string url,
+        Dictionary<string, string>? values = null,
+        string? targetKeys = null,
+        string? valueKeys = null)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return url;
+
+        var map = BuildSequentialPlaceholderMap(values, valueKeys, targetKeys);
+
+        // Backward compatible: single target + single value dict
+        if (map.Count == 0
+            && values is { Count: 1 }
+            && !string.IsNullOrWhiteSpace(targetKeys)
+            && !targetKeys.Contains(','))
+        {
+            var onlyValue = values.Values.FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(onlyValue))
+                map[targetKeys.Trim()] = onlyValue;
+        }
+
+        return ApplyPlaceholderMap(url, map);
+    }
+
+    /// <summary>
+    /// Replaces {placeholderKey} values — dict key = placeholder name (query param mode).
+    /// </summary>
     public static string ResolveEndpointPlaceholders(
         string endpoint,
         Dictionary<string, string>? placeholderValues)
@@ -243,30 +397,10 @@ public static partial class EndpointHelper
         if (string.IsNullOrWhiteSpace(endpoint))
             return endpoint;
 
-        return UrlSegmentPattern.Replace(endpoint, match =>
-        {
-            var placeholderKey = match.Groups[1].Value;
+        if (placeholderValues is not { Count: > 0 })
+            return endpoint;
 
-            string? value = null;
-            if (placeholderValues != null
-                && placeholderValues.TryGetValue(placeholderKey, out var fromDict)
-                && !string.IsNullOrWhiteSpace(fromDict))
-            {
-                value = fromDict;
-            }
-            else
-            {
-                value = EndpointRequestHelper.GetCachedValue(placeholderKey);
-            }
-
-            if (string.IsNullOrWhiteSpace(value))
-                return match.Value;
-            
-            if (value.Contains('%'))
-                value = Uri.UnescapeDataString(value);
-
-            return value;
-        });
+        return ApplyPlaceholderMap(endpoint, placeholderValues);
     }
 
     [GeneratedRegex(@"\{(\w+)\}", RegexOptions.Compiled)]

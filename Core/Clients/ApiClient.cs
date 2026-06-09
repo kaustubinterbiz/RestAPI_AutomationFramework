@@ -118,9 +118,10 @@ public sealed class ApiClient
                              { key, ConfigReaderNew.GetValue(key) }
                          };
             resolvedEndpoint = EndpointHelper.ResolveUrlPlaceholders(
-                   endpoint,
-                   values,
-                   targetValue);
+                              endpoint,
+                              values,
+                              targetKeys: targetValue,
+                              valueKeys: key);
         }
         else
         {
@@ -378,10 +379,13 @@ public sealed class ApiClient
         }
         else if (!string.IsNullOrWhiteSpace(urlPlaceholderKeys))
         {
-            // MODE 3a: Targeted placeholder replace
             var placeholderValues = RequestBuilder.ResolvePartsFromConfig(urlPlaceholderKeys, config);
             resolvedEndpoint = placeholderValues != null
-                ? EndpointHelper.ResolveUrlPlaceholders(endpoint, placeholderValues, targetValue)
+                ? EndpointHelper.ResolveUrlPlaceholders(
+                    endpoint,
+                    placeholderValues,
+                    targetKeys: targetValue,
+                    valueKeys: urlPlaceholderKeys)   
                 : endpoint;
         }
         else

@@ -71,7 +71,7 @@ Scenario: 8.Verify GET Request for checking existing user in the same Oranizatio
     Then Status code should be 200
     And session info from the last response is stored in appsettings
     And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"
-	And validate the response for the existing user in the same organization
+	And validate the response for the existing user in the same organization "ValidateCheckExistingEmail" and "ValidateCheckExistingEmail"
     Then Status code should be 200
 
 @Api
@@ -82,8 +82,8 @@ Scenario:9.Verify GET Request for checking existing user not in the same Oraniza
     When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
     And session info from the last response is stored in appsettings
-    And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail_OtherBusinessUnitId"
-	And validate the response for the existing user in the same organization
+    When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_OtherBusinessUnitId, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-"
+	Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_OtherBusinessUnitId" and "ValidateCheckExistingEmail"
     Then Status code should be 200
 
 @Api
@@ -95,7 +95,7 @@ Scenario:10.Verify GET Request for checking new user in the same Oranization by 
     Then Status code should be 200
     And session info from the last response is stored in appsettings
     And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail_Incorrect"
-	And validate the response for the existing user in the same organization
+	Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_OtherBusinessUnitId" and "ValidateCheckExistingEmail"
     Then Status code should be 200
 
 @Api
@@ -135,7 +135,7 @@ Scenario: Get request with multiple headers and query params
     Then Status code should be 200
 
     # URL placeholder + header test
-    When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "ValidateEmail" target "EmailId" headers "CacheId" query params "-"
+    When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "ValidateCheckExistingEmail" target "EmailId" headers "CacheId" query params "-"
     Then Status should be NoContent
 
 @Api @FlexibleRequest

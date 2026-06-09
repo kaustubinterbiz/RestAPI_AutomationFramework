@@ -183,9 +183,31 @@ public class UserSteps
         } 
     }
 
-    [Then("validate the response for the existing user in the same organization")]
-    public async Task ThenValidateTheResponseForTheExistingUserInTheSameOrganization()
+    [Then("validate the response for the existing user in the same organization {string} and {string}")]
+    public async Task ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd(string placeholder, string target)
     {
+        var response = TokenContext.GetLastResponse(_context);
+        StoreInfo.SaveExistingUserFromResponse(response.Content);
+        ConfigReaderNew.LoadConfig("appsettings.json");
+        string value1 = ConfigReaderNew.GetValue("IsAvailableUserEmail");
+        bool.TryParse(value1, out bool result1);
+        string value2 = ConfigReaderNew.GetValue("IsSameBusinessUnitMemebr");
+        bool.TryParse(value2, out bool result2);
+        if (result1 == false && result2 == true)
+        {
+            _context["GetExistingUserEmail"] = false;
+            Console.WriteLine($"Expected IsAvailableUserEmail to be exist and also in same Business Unit Id '{_context["GetExistingUserEmail"].ToString()}'.");
+        }
+        else if (result1 == false && result2 == false)
+        {
+            _context["GetExistingUserEmail"] = true;
+            Console.WriteLine($"Expected IsAvailableUserEmail to be exist but not in same Business Unit Id '{_context["GetExistingUserEmail"].ToString()}'.");
+        }
+        else
+        {
+            _context["GetExistingUserEmail"] = true;
+            Console.WriteLine($"Expected IsAvailableUserEmail to be not exist, create a new organization");
+        }
         bool getExistingUserEmail = (bool)_context["GetExistingUserEmail"];
         if (getExistingUserEmail)
         {
@@ -193,21 +215,20 @@ public class UserSteps
 
             SaveResponse(await _driver.SendFlexibleRequestAsync(
                 configFile: "appsettings.json",
-                urlPlaceholderKeys: ToOptionalKey("-"),
-                targetValue: ToOptionalKey("-"),
+                urlPlaceholderKeys: ToOptionalKey(placeholder),
+                targetValue: ToOptionalKey(target),
                 headerKeys: ToOptionalKey("CacheId"),
-                queryParamKeys: ToOptionalKey("EmailId"),
+                queryParamKeys: ToOptionalKey("-"),
                 urlSegmentKeys: null,
                 method: Method.Get,
-                endpointKey: "getExistingUser",
+                endpointKey: "getExistingUser1",
                 host: host));
 
-            var response = TokenContext.GetLastResponse(_context);
+            response = TokenContext.GetLastResponse(_context);
             StoreInfo.SaveExistingUserFromResponse(response.Content);
         }
         else { Console.WriteLine("Already Email exist and in the same business unit id"); }
     }
-
 
     [When(@"User sends POST request for feature ""(.*)""")]
     public async Task PostRequestForFeature(string featureName)

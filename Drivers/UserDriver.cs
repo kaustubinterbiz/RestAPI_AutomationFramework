@@ -74,7 +74,7 @@ public class UserDriver
         ApiGetRequestOptions? options = null,
         ApiHost? host = null)
     {
-        ApiAuth.LoadTokenFromAppSettings();
+           ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
 
         return await _apiClient.SendFlexibleRequestAsync(

@@ -482,7 +482,8 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
     await testRunner.AndAsync("Confirm the User exist in the Same Organization \"ValidateCheckExistingEmail\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 74
- await testRunner.AndAsync("validate the response for the existing user in the same organization", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+ await testRunner.AndAsync("validate the response for the existing user in the same organization \"ValidateChe" +
+                        "ckExistingEmail\" and \"ValidateCheckExistingEmail\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 75
     await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
@@ -534,11 +535,11 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
     await testRunner.AndAsync("session info from the last response is stored in appsettings", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 85
-    await testRunner.AndAsync("Confirm the User exist in the Same Organization \"ValidateCheckExistingEmail_Other" +
-                        "BusinessUnitId\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.WhenAsync(@"User sends flexible ""Get"" request on ""Api"" base url for endpoint ""getCheckAvability"" with url placeholders ""ValidateCheckExistingEmail_OtherBusinessUnitId, BusinessUnitMemberId"" target ""ValidateCheckExistingEmail, ValidateBusinessUnitId"" headers ""CacheId"" query params ""-""", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 86
- await testRunner.AndAsync("validate the response for the existing user in the same organization", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+ await testRunner.ThenAsync("validate the response for the existing user in the same organization \"ValidateChe" +
+                        "ckExistingEmail_OtherBusinessUnitId\" and \"ValidateCheckExistingEmail\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 87
     await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
@@ -594,7 +595,8 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
                         "rect\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 98
- await testRunner.AndAsync("validate the response for the existing user in the same organization", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+ await testRunner.ThenAsync("validate the response for the existing user in the same organization \"ValidateChe" +
+                        "ckExistingEmail_OtherBusinessUnitId\" and \"ValidateCheckExistingEmail\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 99
     await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
@@ -762,8 +764,8 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
 #line 138
     await testRunner.WhenAsync("User sends flexible \"Get\" request on \"Api\" base url for endpoint \"getExistingUser" +
-                        "\" with url placeholders \"ValidateEmail\" target \"EmailId\" headers \"CacheId\" query" +
-                        " params \"-\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+                        "\" with url placeholders \"ValidateCheckExistingEmail\" target \"EmailId\" headers \"C" +
+                        "acheId\" query params \"-\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 139
     await testRunner.ThenAsync("Status should be NoContent", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");

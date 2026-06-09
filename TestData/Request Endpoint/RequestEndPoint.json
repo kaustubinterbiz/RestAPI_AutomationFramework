@@ -1,11 +1,14 @@
 {
   "get": "api/v2/Session/GetSessionInfo/",
   "getExistingUser": "api/Account/ExistingUser?emailId={EmailId}",
+  "getExistingUser1": "api/Account/ExistingUser?emailId={ValidateCheckExistingEmail}",
   "getCheckAvability": "api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}\u0026BusinessUnitID={ValidateBusinessUnitId}",
+  "getCheckAvability1": "api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail_OtherBusinessUnitId}\u0026BusinessUnitID={ValidateBusinessUnitId}",
+  "getCheckAvability2": "api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail_Incorrect}\u0026BusinessUnitID={ValidateBusinessUnitId}",
   "putExistingUser": "api/Account/ExistingUser?emailId={EmailId}",
   "post": "testRovicare.onmicrosoft.com/B2C_1_ROPC_Test/oauth2/v2.0/token",
   "id": "aca81f11-4fed-4eb1-8ffa-786a7c8a68eb",
   "create_product": "/Product/Create",
-  "CacheId": "ceaca2be-ece0-4802-b7a8-f43b0d4d996c",
-  "MemberId": "46867269-f480-49b0-9459-06a9586250fc"
+  "CacheId": "e5bb318d-1be4-4c50-833c-27efdfed3bfb",
+  "MemberId": "ddec0310-e177-4547-a895-db83da9589d2"
 }
