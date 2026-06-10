@@ -159,28 +159,6 @@ public class UserSteps
             endpointKey: "getCheckAvability",
             host: host));
 
-        var response = TokenContext.GetLastResponse(_context);
-        StoreInfo.SaveExistingUserFromResponse(response.Content);
-        ConfigReaderNew.LoadConfig("appsettings.json");
-        string value1 = ConfigReaderNew.GetValue("IsAvailableUserEmail");
-        bool.TryParse(value1, out bool result1);
-        string value2 = ConfigReaderNew.GetValue("IsSameBusinessUnitMemebr");
-        bool.TryParse(value2, out bool result2);
-         if (result1 == false && result2 == true)
-        {
-            _context["GetExistingUserEmail"] = false;
-            Console.WriteLine($"Expected IsAvailableUserEmail to be exist and also in same Business Unit Id '{_context["GetExistingUserEmail"].ToString()}'.");          
-        }
-        else if(result1 == false && result2 == false)
-        {
-            _context["GetExistingUserEmail"] = true;
-            Console.WriteLine($"Expected IsAvailableUserEmail to be exist but not in same Business Unit Id '{_context["GetExistingUserEmail"].ToString()}'.");
-        }
-        else
-        {
-            _context["GetExistingUserEmail"] = true;
-            Console.WriteLine($"Expected IsAvailableUserEmail to be not exist, create a new organization");
-        } 
     }
 
     [Then("validate the response for the existing user in the same organization {string} and {string}")]
@@ -225,7 +203,7 @@ public class UserSteps
                 host: host));
 
             response = TokenContext.GetLastResponse(_context);
-            StoreInfo.SaveExistingUserFromResponse(response.Content);
+           //StoreInfo.SaveExistingUserFromResponse(response.Content);
         }
         else { Console.WriteLine("Already Email exist and in the same business unit id"); }
     }

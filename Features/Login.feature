@@ -2,17 +2,17 @@ Feature: API Testing
   Pass base URL type or feature name in steps (Auth = B2C, Api = application).
 
 @Auth @SuperAdmin @LoginByAdmin
-Scenario:1.Verify POST User API generates token successfully for SuperAdmin role through valid login
+Scenario:01.Verify POST User API generates token successfully for SuperAdmin role through valid login
     When User sends POST request on "Auth" base url with "SuperAdmin"
     Then Status should be OK
 
 @Auth @Env @LoginByEnv
-Scenario:2.Verify POST User API generates token successfully for role through valid login
+Scenario:02.Verify POST User API generates token successfully for role through valid login
     When User sends POST request on "Auth" base url
     Then Status should be OK
 
 @Api @SuperAdmin @LoginByAdmin
-Scenario:3.Verify GET API retrieves Cached_ID successfully using SuperAdmin role
+Scenario:03.Verify GET API retrieves Cached_ID successfully using SuperAdmin role
     When User sends POST request on "Auth" base url with "SuperAdmin"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -21,7 +21,7 @@ Scenario:3.Verify GET API retrieves Cached_ID successfully using SuperAdmin role
     And session info from the last response is stored in appsettings
 
 @Api @Env @LoginByEnv
-Scenario:4.Verify GET API retrieves Cached_ID successfully using role
+Scenario:04.Verify GET API retrieves Cached_ID successfully using role
     When User sends POST request on "Auth" base url
     Then Status should be OK
     And the access token is stored from the last login response
@@ -30,7 +30,7 @@ Scenario:4.Verify GET API retrieves Cached_ID successfully using role
     And session info from the last response is stored in appsettings
 
 @Api @SuperAdmin @LoginByAdmin
-Scenario: 5.Verify GET API retrieves existing user successfully by Admin role
+Scenario:05.Verify GET API retrieves existing user successfully by Admin role
     When User sends POST request on "Auth" base url with "SuperAdmin"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -41,7 +41,7 @@ Scenario: 5.Verify GET API retrieves existing user successfully by Admin role
     Then Status code should be 200
 
 @Api @HospitalRole 
-Scenario: 6.Verify GET API retrieves existing user successfully by HospitalCredential
+Scenario:06.Verify GET API retrieves existing user successfully by HospitalCredential
     When User sends POST request on "Auth" base url with "HospitalRole"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -52,7 +52,7 @@ Scenario: 6.Verify GET API retrieves existing user successfully by HospitalCrede
     Then Status code should be 200
 
 @Api @HospitalRole
-Scenario: 7.Verify GET API retrieves user not exist by HospitalCredential
+Scenario:07.Verify GET API retrieves user not exist by HospitalCredential
     When User sends POST request on "Auth" base url with "HospitalRole"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -63,7 +63,7 @@ Scenario: 7.Verify GET API retrieves user not exist by HospitalCredential
 	And Status should be NoContent
 
 @Api
-Scenario: 8.Verify GET Request for checking existing user in the same Oranization by HospitalCredential
+Scenario:08.Verify GET Request for checking existing user in the same Oranization by HospitalCredential
     When User sends POST request on "Auth" base url with "HospitalRole"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -75,7 +75,7 @@ Scenario: 8.Verify GET Request for checking existing user in the same Oranizatio
     Then Status code should be 200
 
 @Api
-Scenario:9.Verify GET Request for checking existing user not in the same Oranization by HospitalCredential
+Scenario:09.Verify GET Request for checking existing user not in the same Oranization by HospitalCredential
      When User sends POST request on "Auth" base url with "HospitalRole"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -94,12 +94,12 @@ Scenario:10.Verify GET Request for checking new user in the same Oranization by 
     When User sends GET request for feature "User API Testing" with cached id
     Then Status code should be 200
     And session info from the last response is stored in appsettings
-    And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail_Incorrect"
-	Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_OtherBusinessUnitId" and "ValidateCheckExistingEmail"
-    Then Status code should be 200
+    When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-"
+	Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"
+    And Status should be NoContent
 
 @Api
-Scenario: 11.Verify existing user in the same Organization by HospitalCredential
+Scenario:11.Verify existing user in the same Organization by HospitalCredential
      When User sends POST request on "Auth" base url with "HospitalRole"
     Then Status should be OK
     And the access token is stored from the last login response
@@ -111,7 +111,7 @@ Scenario: 11.Verify existing user in the same Organization by HospitalCredential
     Then Status code should be 200
 
 @Api @SuperAdmin @FlexibleRequest
-Scenario: 12.Verify flexible GET request retrieves existing user with dynamic headers
+Scenario:12.Verify flexible GET request retrieves existing user with dynamic headers
     When User sends POST request on "Auth" base url with "SuperAdmin"
     Then Status should be OK
     And the access token is stored from the last login response
