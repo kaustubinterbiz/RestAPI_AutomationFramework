@@ -323,7 +323,8 @@ public sealed class ApiClient
     string? urlSegmentKeys,
     Method method,
     ApiGetRequestOptions? options,
-    ApiHost host)
+    ApiHost host,
+    string? bodyKey = null)
     {
         options ??= ApiGetRequestOptions.Create();
         options.ValidateProvidedValues();
@@ -408,7 +409,15 @@ public sealed class ApiClient
         object? body = null;
         if (method is Method.Post or Method.Put or Method.Patch)
         {
-            body = options.BodyProvided ? options.Body : null;
+            var bodyJson = RequestBuilder.ResolveBodyFromConfig(bodyKey, config);
+            if (bodyJson != null)
+            {
+                body = bodyJson;
+            }
+            else if (options.BodyProvided)
+            {
+                body = options.Body;
+            }
         }
 
         var useCachedToken = options.UseCachedTokenWhenTokenNotProvided && !options.BearerTokenProvided;

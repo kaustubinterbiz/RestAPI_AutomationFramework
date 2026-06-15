@@ -98,7 +98,7 @@ public class UserSteps
             host: host));
     }
 
-    [When(@"User sends flexible ""(.*)"" request on ""(.*)"" base url for endpoint ""(.*)"" with url placeholders ""(.*)"" target ""(.*)"" headers ""(.*)"" query params ""(.*)""")]
+    [When(@"User sends flexible ""(.*)"" request on ""(.*)"" base url for endpoint ""(.*)"" with url placeholders ""(.*)"" target ""(.*)"" headers ""(.*)"" query params ""(.*)"" body ""(.*)""")]
     public async Task FlexibleGetRequestWithAllParts(
         Method methodType,
         string baseUrlType,
@@ -106,10 +106,11 @@ public class UserSteps
         string urlPlaceholderKeys,
         string targetValue,
         string headerKeys,
-        string queryParamKeys)
+        string queryParamKeys,
+        string body)
     {
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
-        
+
         SaveResponse(await _driver.SendFlexibleRequestAsync(
             configFile: "appsettings.json",
             urlPlaceholderKeys: ToOptionalKey(urlPlaceholderKeys),
@@ -119,7 +120,8 @@ public class UserSteps
             urlSegmentKeys: null,
             method: methodType,
             endpointKey: endpointKey,
-            host: host));
+            host: host,
+            bodyKey: ToOptionalKey(body)));
     }
 
     private static string? ToOptionalKey(string value) =>
@@ -157,7 +159,7 @@ public class UserSteps
             urlSegmentKeys: null,
             method: Method.Get,
             endpointKey: "getCheckAvability",
-            host: host));
+            host: host, bodyKey: null));
 
     }
 
@@ -200,7 +202,8 @@ public class UserSteps
                 urlSegmentKeys: null,
                 method: Method.Get,
                 endpointKey: "getExistingUser1",
-                host: host));
+                host: host, bodyKey: null
+                ));
 
             response = TokenContext.GetLastResponse(_context);
            //StoreInfo.SaveExistingUserFromResponse(response.Content);

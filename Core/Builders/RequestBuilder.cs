@@ -381,4 +381,46 @@ public class RequestBuilder
 
         return dict.Count > 0 ? dict : null;
     }
+
+    /// <summary>
+    /// Loads request body JSON from RequestBody.json (path from appsettings JsonBody).
+    /// Formats:
+    ///   null/empty/"-"              -> null (skip body)
+    ///   "register_Body"             -> appsettings JsonBody file + key
+    ///   "TestData/.../RequestBody.json:register_Body" -> explicit file + key
+    /// </summary>
+    public static string? ResolveBodyFromConfig(
+        string? bodySpec,
+        string configFile = "appsettings.json",
+        string bodyFileConfigKey = "JsonBody")
+    {
+        if (string.IsNullOrWhiteSpace(bodySpec) || bodySpec.Trim() == "-")
+            return null;
+
+        ConfigReaderNew.LoadConfig(configFile);
+        bodySpec = bodySpec.Trim();
+
+        string bodyFilePath;
+        string jsonKey;
+
+        var colonIndex = bodySpec.IndexOf(':');
+        if (colonIndex > 0)
+        {
+            bodyFilePath = bodySpec[..colonIndex].Trim();
+            jsonKey = bodySpec[(colonIndex + 1)..].Trim();
+        }
+        else
+        {
+            jsonKey = bodySpec;
+            bodyFilePath = ConfigReaderNew.GetValue(bodyFileConfigKey);
+            if (string.IsNullOrWhiteSpace(bodyFilePath))
+            {
+                throw new InvalidOperationException(
+                    $"'{bodyFileConfigKey}' is not configured in '{configFile}'. Cannot load body key '{jsonKey}'.");
+            }
+        }
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(jsonKey);
+        return ConfigReaderNew.GetJsonBody(bodyFilePath, jsonKey);
+    }
 }

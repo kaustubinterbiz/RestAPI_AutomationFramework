@@ -195,47 +195,6 @@ public static partial class EndpointHelper
             });
     }
 
-    public static string ResolveUrlPlaceholders(
-    string url,
-    Dictionary<string, string>? values = null,
-    string? targetKey = null)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return url;
-
-        return Regex.Replace(url, @"\{(.*?)\}", match =>
-        {
-            var placeholderKey = match.Groups[1].Value?.Trim();
-
-            if (string.IsNullOrWhiteSpace(placeholderKey))
-                return match.Value;
-
-            // Placeholder and targetKey must match
-            if (!string.IsNullOrWhiteSpace(targetKey) &&
-                placeholderKey.Equals(targetKey, StringComparison.OrdinalIgnoreCase))
-            {
-                // Use first available value from dictionary
-                var replacementValue = values?.Values.FirstOrDefault();
-
-                if (!string.IsNullOrWhiteSpace(replacementValue))
-                {
-                    return replacementValue;
-                }
-            }
-
-            return match.Value;
-        });
-    }
-
-    /// <summary>
-    /// Replaces only {placeholderKey} values in URL.
-    /// Query param names (EmailID, BusinessUnitID) stay unchanged.
-    /// </summary>
-    /// <summary>
-    /// Replaces only {placeholderKey} values in the URL.
-    /// Query param names (EmailID, BusinessUnitID, emailId) stay unchanged.
-    /// placeholderValues keys = config keys inside {}, e.g. ValidateCheckExistingEmail.
-    /// </summary>
     //public static string ResolveEndpointPlaceholders(
     //    string endpoint,
     //    Dictionary<string, string>? placeholderValues)

@@ -59,8 +59,8 @@ public class UserDriver
     }
 
     /// <summary>
-    /// Flexible dynamic request — multiple headers, query params, url segments from comma-separated config keys.
-    /// Pass null for any part to skip it.
+    /// Flexible dynamic request — headers, query params, url segments, and optional body.
+    /// bodyKey: JSON key in RequestBody.json (appsettings JsonBody), or "file.json:key".
     /// </summary>
     public async Task<RestResponse> SendFlexibleRequestAsync(
         string? configFile,
@@ -72,9 +72,10 @@ public class UserDriver
         Method method,
         string endpointKey = "get",
         ApiGetRequestOptions? options = null,
-        ApiHost? host = null)
+        ApiHost? host = null,
+        string? bodyKey = null)
     {
-           ApiAuth.LoadTokenFromAppSettings();
+        ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
 
         return await _apiClient.SendFlexibleRequestAsync(
@@ -87,7 +88,8 @@ public class UserDriver
             urlSegmentKeys,
             method,
             options,
-            host ?? ApiHost.Api);
+            host ?? ApiHost.Api,
+            bodyKey);
     }
 
     public async Task<RestResponse> PostFromConfigAsync(string endpointKey, string bodyFileKey, string bodyKey, ApiHost? host = null)
