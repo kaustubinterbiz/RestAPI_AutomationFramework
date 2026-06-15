@@ -2,6 +2,7 @@ using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
+using EnterpriseApiAutomationFramework.Models.Request;
 using RestSharp;
 
 namespace EnterpriseApiAutomationFramework.Drivers;
@@ -78,7 +79,7 @@ public class UserDriver
         ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
 
-        return await _apiClient.SendFlexibleRequestAsync(
+         return await _apiClient.SendFlexibleRequestAsync(
             endpoint,
             configFile,
             urlPlaceholderKeys,
@@ -90,6 +91,17 @@ public class UserDriver
             options,
             host ?? ApiHost.Api,
             bodyKey);
+    }
+
+    /// <summary>
+    /// Generic file upload. Resolves endpoint from RequestEndPoint.json, ensures auth,
+    /// then delegates to <see cref="ApiClient.UploadFileAsync"/>.
+    /// </summary>
+    public async Task<RestResponse> UploadFileAsync(FileUploadRequest uploadRequest, ApiHost? host = null)
+    {
+        await ApiAuth.EnsureReadyAsync(_apiClient);
+        uploadRequest.Endpoint = EndpointConfig.GetEndpoint(uploadRequest.Endpoint);
+        return await _apiClient.UploadFileAsync(uploadRequest, host ?? ApiHostContext.CurrentOrDefault);
     }
 
     public async Task<RestResponse> PostFromConfigAsync(string endpointKey, string bodyFileKey, string bodyKey, ApiHost? host = null)

@@ -10,6 +10,26 @@
     "CompanyBusinessUnitId": "3d7dd73e-e50b-4656-bcb8-8ab92f9e510d",
     "UserName": "UserTesting@yopmail.com"
   },
+  "AddMultipleMemberByExcel_Body": {
+    "MemberList": [
+      {
+        "SerialNumber": 1,
+        "FirstName": "Sample",
+        "MiddleName": "Test",
+        "LastName": "Member",
+        "RoleName": "Organization Admin",
+        "WorkNumber": 1111111111,
+        "FaxNumber": 2222222222,
+        "MobileNumber": 3333333333,
+        "IsPrimaryMember": "Yes",
+        "IsSecondaryMember": "No",
+        "Email": "sampletestmember@rovicare.com",
+        "Designation": "CEO"
+      }
+    ],
+    "BusinessUnitID": "fcd60fa9-a973-4faa-8f3d-d43da360473d",
+    "AddExistingUser": false
+  },
 
   "login_body": {
 

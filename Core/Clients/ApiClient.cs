@@ -453,6 +453,31 @@ public sealed class ApiClient
         return await ExecuteAsync(host, request, resolvedEndpoint);
     }
 
+    /// <summary>
+    /// Multipart file upload to any endpoint.
+    /// Attaches bearer token from <see cref="TokenManager"/> when available.
+    /// </summary>
+    public async Task<RestResponse> UploadFileAsync(FileUploadRequest uploadRequest, ApiHost host = ApiHost.Api)
+    {
+        var request = new RestRequest(uploadRequest.Endpoint, Method.Post);
+
+        // Bearer token from TokenManager (same pattern as the rest of the client)
+        if (TokenManager.HasToken)
+            request.AddHeader("Authorization", $"Bearer {TokenManager.AccessToken}");
+
+        if (uploadRequest.Headers != null)
+            foreach (var header in uploadRequest.Headers)
+                request.AddHeader(header.Key, header.Value);
+
+        if (uploadRequest.FormFields != null)
+            foreach (var field in uploadRequest.FormFields)
+                request.AddParameter(field.Key, field.Value);
+
+        request.AddFile(uploadRequest.FileParameterName, uploadRequest.FilePath);
+
+        return await ExecuteAsync(host, request, uploadRequest.Endpoint);
+    }
+
     private async Task<RestResponse> SendAsync(
         string endpoint,
         Method method,

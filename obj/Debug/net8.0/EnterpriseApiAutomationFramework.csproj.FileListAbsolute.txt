@@ -1536,3 +1536,11 @@ C:\Users\kaust\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\refint\
 C:\Users\kaust\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.pdb
 C:\Users\kaust\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.genruntimeconfig.cache
 C:\Users\kaust\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\ref\EnterpriseApiAutomationFramework.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\ClosedXML.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\ClosedXML.Parser.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\DocumentFormat.OpenXml.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\DocumentFormat.OpenXml.Framework.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\ExcelNumberFormat.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\RBush.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\SixLabors.Fonts.dll
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\System.IO.Packaging.dll
