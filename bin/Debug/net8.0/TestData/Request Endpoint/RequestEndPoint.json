@@ -3,10 +3,13 @@
   "getExistingUser": "api/Account/ExistingUser?emailId={EmailId}",
   "getExistingUser1": "api/Account/ExistingUser?emailId={ValidateCheckExistingEmail}",
   "getCheckAvability": "api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}\u0026BusinessUnitID={ValidateBusinessUnitId}",
+  "checkMemberLimit": "api/businessunitmember/CheckAddMemberLimit?bussinesUnitId={BusinessUnitId}",
+  "addMember": "api/Account/Register",
+  "post_Register": "api/Account/Register",
   "putExistingUser": "api/Account/ExistingUser?emailId={EmailId}",
   "post": "testRovicare.onmicrosoft.com/B2C_1_ROPC_Test/oauth2/v2.0/token",
   "id": "aca81f11-4fed-4eb1-8ffa-786a7c8a68eb",
   "create_product": "/Product/Create",
-  "CacheId": "7fdbc7e7-9595-4c20-b58b-d4486badfad2",
+  "CacheId": "f4cf2e54-b7ea-4362-9901-689ea1af3855",
   "MemberId": "ddec0310-e177-4547-a895-db83da9589d2"
 }

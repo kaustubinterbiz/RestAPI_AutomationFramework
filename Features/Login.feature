@@ -121,6 +121,19 @@ Scenario:12.Verify flexible GET request retrieves existing user with dynamic hea
     When User sends flexible GET request on "Api" base url for endpoint "getExistingUser" with headers "CacheId"
     Then Status code should be 200
 
+@Api
+Scenario:13.Verify POST Request for checking new user in the same Oranization by HospitalCredential
+     When User sends POST request on "Auth" base url with "HospitalRole"
+    Then Status should be OK
+    And the access token is stored from the last login response
+    When User sends GET request for feature "User API Testing" with cached id
+    Then Status code should be 200
+    And session info from the last response is stored in appsettings
+    When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"
+	Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"
+    And Status should be NoContent
+    When User sends flexible "Post" request on "Api" base url for endpoint "post_Register" with url placeholders "-" target "-" headers "CacheId" query params "-" body "register_Body"
+
 @Api @FlexibleRequest
 Scenario: Get request with multiple headers and query params
     When User sends POST request on "Auth" base url with "SuperAdmin"

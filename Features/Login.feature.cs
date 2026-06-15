@@ -105,7 +105,7 @@ namespace EnterpriseApiAutomationFramework.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Login.feature.ndjson", 18);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Login.feature.ndjson", 19);
         }
         
         [global::NUnit.Framework.TestAttribute()]
@@ -715,17 +715,17 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Get request with multiple headers and query params")]
+        [global::NUnit.Framework.DescriptionAttribute("13.Verify POST Request for checking new user in the same Oranization by HospitalC" +
+            "redential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
-        [global::NUnit.Framework.CategoryAttribute("FlexibleRequest")]
-        public async global::System.Threading.Tasks.Task GetRequestWithMultipleHeadersAndQueryParams()
+        public async global::System.Threading.Tasks.Task _13_VerifyPOSTRequestForCheckingNewUserInTheSameOranizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api",
-                    "FlexibleRequest"};
+                    "Api"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "12";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Get request with multiple headers and query params", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("13.Verify POST Request for checking new user in the same Oranization by HospitalC" +
+                    "redential", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 125
@@ -739,7 +739,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             {
                 await this.ScenarioStartAsync();
 #line 126
-    await testRunner.WhenAsync("User sends POST request on \"Auth\" base url with \"SuperAdmin\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+     await testRunner.WhenAsync("User sends POST request on \"Auth\" base url with \"HospitalRole\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 127
     await testRunner.ThenAsync("Status should be OK", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
@@ -756,19 +756,80 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 131
     await testRunner.AndAsync("session info from the last response is stored in appsettings", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
+#line 132
+    await testRunner.WhenAsync(@"User sends flexible ""Get"" request on ""Api"" base url for endpoint ""getCheckAvability"" with url placeholders ""ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId"" target ""ValidateCheckExistingEmail, ValidateBusinessUnitId"" headers ""CacheId"" query params ""-"" body ""-""", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 133
+ await testRunner.ThenAsync("validate the response for the existing user in the same organization \"ValidateChe" +
+                        "ckExistingEmail_Incorrect\" and \"ValidateCheckExistingEmail\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
 #line 134
+    await testRunner.AndAsync("Status should be NoContent", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 135
+    await testRunner.WhenAsync("User sends flexible \"Post\" request on \"Api\" base url for endpoint \"post_Register\"" +
+                        " with url placeholders \"-\" target \"-\" headers \"CacheId\" query params \"-\" body \"r" +
+                        "egister_Body\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::NUnit.Framework.TestAttribute()]
+        [global::NUnit.Framework.DescriptionAttribute("Get request with multiple headers and query params")]
+        [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("FlexibleRequest")]
+        public async global::System.Threading.Tasks.Task GetRequestWithMultipleHeadersAndQueryParams()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "Api",
+                    "FlexibleRequest"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "13";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Get request with multiple headers and query params", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 138
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 139
+    await testRunner.WhenAsync("User sends POST request on \"Auth\" base url with \"SuperAdmin\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 140
+    await testRunner.ThenAsync("Status should be OK", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 141
+    await testRunner.AndAsync("the access token is stored from the last login response", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 142
+    await testRunner.WhenAsync("User sends GET request for feature \"User API Testing\" with cached id", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 143
+    await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 144
+    await testRunner.AndAsync("session info from the last response is stored in appsettings", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 147
     await testRunner.WhenAsync("User sends flexible \"Get\" request on \"Api\" base url for endpoint \"getExistingUser" +
                         "\" with url placeholders \"-\" target \"-\" headers \"CacheId\" query params \"EmailId\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 135
+#line 148
     await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 138
+#line 151
     await testRunner.WhenAsync("User sends flexible \"Get\" request on \"Api\" base url for endpoint \"getExistingUser" +
                         "\" with url placeholders \"ValidateCheckExistingEmail\" target \"EmailId\" headers \"C" +
                         "acheId\" query params \"-\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 139
+#line 152
     await testRunner.ThenAsync("Status should be NoContent", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -785,11 +846,11 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
                     "Api",
                     "FlexibleRequest"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "13";
+            string pickleIndex = "14";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("\"GET\"Request with multiple headers and query params", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 142
+#line 155
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -799,30 +860,30 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 143
+#line 156
     await testRunner.WhenAsync("User sends POST request on \"Auth\" base url with \"SuperAdmin\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 144
+#line 157
     await testRunner.ThenAsync("Status should be OK", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 145
+#line 158
     await testRunner.AndAsync("the access token is stored from the last login response", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 146
+#line 159
     await testRunner.WhenAsync("User sends GET request for feature \"User API Testing\" with cached id", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 147
+#line 160
     await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 148
+#line 161
     await testRunner.AndAsync("session info from the last response is stored in appsettings", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 149
+#line 162
     await testRunner.WhenAsync("User sends flexible \"Get\" request on \"Api\" base url for endpoint \"CheckExistingUs" +
                         "erAvailabilityInfo\" with url placeholders \"-\" target \"-\" headers \"CacheId\" query" +
                         " params \"EmailId\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 150
+#line 163
     await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -833,8 +894,8 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
         [global::NUnit.Framework.DescriptionAttribute("Verify GET API retrieves existing user successfully by Role")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("Parameterized")]
-        [global::NUnit.Framework.TestCaseAttribute("Api", "SuperAdmin", "User API Testing", "OK", "200", "14", null)]
-        [global::NUnit.Framework.TestCaseAttribute("Api", "HospitalRole", "User API Testing", "OK", "200", "15", null)]
+        [global::NUnit.Framework.TestCaseAttribute("Api", "SuperAdmin", "User API Testing", "OK", "200", "15", null)]
+        [global::NUnit.Framework.TestCaseAttribute("Api", "HospitalRole", "User API Testing", "OK", "200", "16", null)]
         public async global::System.Threading.Tasks.Task VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(string baseUrlType, string role, string aPI, string status, string statusCode, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -855,7 +916,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Verify GET API retrieves existing user successfully by Role", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 153
+#line 166
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -865,28 +926,28 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 154
+#line 167
   await testRunner.WhenAsync(string.Format("User sends POST request on \"{0}\" base url with \"{1}\"", baseUrlType, role), ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 155
+#line 168
   await testRunner.ThenAsync("Status should be OK", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 156
+#line 169
   await testRunner.AndAsync("the access token is stored from the last login response", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 157
+#line 170
   await testRunner.WhenAsync(string.Format("User sends GET request for feature \"{0}\" with cached id", aPI), ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 158
+#line 171
   await testRunner.ThenAsync(string.Format("Status code should be {0}", statusCode), ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 159
+#line 172
   await testRunner.AndAsync("session info from the last response is stored in appsettings", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 160
+#line 173
   await testRunner.AndAsync(string.Format("Confirm the existing logged_in user is exist \"{0}\"", aPI), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 161
+#line 174
   await testRunner.ThenAsync(string.Format("Status code should be {0}", statusCode), ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
