@@ -824,7 +824,7 @@ namespace EnterpriseApiAutomationFramework.Features
 #line 146
         await testRunner.WhenAsync("User sends flexible \"Post\" request on \"Api\" base url for endpoint \"addMultipleMem" +
                         "berByExcel\" with url placeholders \"-\" target \"-\" headers \"CacheId\" query params " +
-                        "\"-\" body \"AddMultipleMemberByExcel_Body\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+                        "\"-\" body \"-\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 147
         await testRunner.ThenAsync("Status code should be 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");

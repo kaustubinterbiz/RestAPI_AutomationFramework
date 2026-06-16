@@ -143,7 +143,7 @@
         When User sends GET request for feature "User API Testing" with cached id
         Then Status code should be 200
         And session info from the last response is stored in appsettings
-        When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "AddMultipleMemberByExcel_Body"
+        When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"
         Then Status code should be 200
 
     @Api @FlexibleRequest
