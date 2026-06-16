@@ -30,7 +30,6 @@
     <Folder Include="Reports\Parallel\Consolidated\" />
     <Folder Include="Reports\Parallel\Workers\" />
     <Folder Include="scripts\" />
-    <Folder Include="TestData\UploadFiles\" />
     <None Include="Reports\Html\.gitkeep" />
     <None Include="Reports\Parallel\Consolidated\.gitkeep" />
     <None Include="Reports\Parallel\Workers\.gitkeep" />

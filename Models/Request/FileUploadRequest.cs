@@ -1,4 +1,4 @@
-namespace EnterpriseApiAutomationFramework.Models.Request;
+  namespace EnterpriseApiAutomationFramework.Models.Request;
 
 public class FileUploadRequest
 {

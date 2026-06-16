@@ -13,20 +13,34 @@
   "AddMultipleMemberByExcel_Body": {
     "MemberList": [
       {
-        "SerialNumber": 1,
-        "FirstName": "Sample",
-        "MiddleName": "Test",
-        "LastName": "Member",
-        "RoleName": "Organization Admin",
-        "WorkNumber": 1111111111,
-        "FaxNumber": 2222222222,
-        "MobileNumber": 3333333333,
-        "IsPrimaryMember": "Yes",
-        "IsSecondaryMember": "No",
-        "Email": "sampletestmember@rovicare.com",
-        "Designation": "CEO"
-      }
-    ],
+        {
+          "SerialNumber": 1,
+          "FirstName": "Sample",
+          "MiddleName": "Test",
+          "LastName": "Member",
+          "RoleName": "Organization Admin",
+          "WorkNumber": 1111111111,
+          "FaxNumber": 2222222222,
+          "MobileNumber": 3333333333,
+          "IsPrimaryMember": "Yes",
+          "IsSecondaryMember": "No",
+          "Email": "sample2test2member@rovicare.com",
+          "Designation": "CEO"
+        },
+        {
+          "SerialNumber": 2,
+          "FirstName": "Sample1",
+          "MiddleName": "Test1",
+          "LastName": "Member",
+          "RoleName": "Organization Admin",
+          "WorkNumber": 1111111111,
+          "FaxNumber": 2222222222,
+          "MobileNumber": 3333333333,
+          "IsPrimaryMember": "Yes",
+          "IsSecondaryMember": "No",
+          "Email": "sample1test1member@rovicare.com",
+          "Designation": "CEO"
+        }],
     "BusinessUnitID": "fcd60fa9-a973-4faa-8f3d-d43da360473d",
     "AddExistingUser": false
   },
