@@ -1,4 +1,5 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
+using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Validators;
@@ -110,6 +111,21 @@ public class UserSteps
         string body)
     {
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        ApiGetRequestOptions? options = null;
+        var bodyKey = ToOptionalKey(body);
+
+        if (string.Equals(endpointKey, "addMultipleMemberByExcel", StringComparison.OrdinalIgnoreCase))
+        {
+            ConfigReaderNew.LoadConfig("appsettings.json");
+            var excelBody = AddMultipleMemberByExcelBuilder.BuildFromExcel(
+                fileName: "Sample_File_Member.xlsx",
+                sheetName: "Sheet1",
+                businessUnitId: ConfigReaderNew.GetValue("BusinessUnitId"),
+                addExistingUser: false);
+
+            options = ApiGetRequestOptions.Create().SetBody(excelBody);
+            bodyKey = null;
+        }
 
         SaveResponse(await _driver.SendFlexibleRequestAsync(
             configFile: "appsettings.json",
@@ -121,7 +137,8 @@ public class UserSteps
             method: methodType,
             endpointKey: endpointKey,
             host: host,
-            bodyKey: ToOptionalKey(body)));
+            options: options,
+            bodyKey: bodyKey));
     }
 
     private static string? ToOptionalKey(string value) =>

@@ -36,7 +36,7 @@ public static class ExcelReader
 
             var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             for (int c = 0; c < headers.Count; c++)
-                dict[headers[c]] = dataRow.Cell(c + 1).GetString().Trim();
+                dict[headers[c]] = GetCellValue(dataRow.Cell(c + 1));
 
             rows.Add(dict);
         }
@@ -58,6 +58,11 @@ public static class ExcelReader
         return rows[rowIndex - 1];
     }
 
+    private static string GetCellValue(IXLCell cell)
+    {
+        if (cell.IsEmpty()) return string.Empty;
+        return cell.Value.ToString()?.Trim() ?? string.Empty;
+    }
     /// <summary>
     /// Returns all values from a single column by header name.
     /// </summary>
@@ -252,8 +257,10 @@ public static class ExcelReader
         return sheet;
     }
 
+   
+
     private static List<string> ReadHeaders(IXLRange range) =>
         Enumerable.Range(1, range.Row(1).CellCount())
-                  .Select(c => range.Row(1).Cell(c).GetString().Trim())
+                  .Select(c => GetCellValue(range.Row(1).Cell(c)))
                   .ToList();
 }
