@@ -1,5 +1,6 @@
 ﻿using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Models.Request;
+using Newtonsoft.Json;
 using System.Globalization;
 
 namespace EnterpriseApiAutomationFramework.Core.Builders;
@@ -32,6 +33,20 @@ public static class AddMultipleMemberByExcelBuilder
             MemberList = rows.Select(MapRow(defaultFaxNumber)).ToList()
         };
     }
+
+    /// <summary>
+    /// Serializes the Excel-built request as PascalCase JSON (API contract).
+    /// Use this string body instead of passing the object to RestSharp AddJsonBody,
+    /// which defaults to camelCase and causes 400 from this endpoint.
+    /// </summary>
+    public static string BuildJsonFromExcel(
+        string fileName,
+        string sheetName,
+        string businessUnitId,
+        bool addExistingUser = false,
+        long defaultFaxNumber = 2222222222)
+        => JsonConvert.SerializeObject(
+            BuildFromExcel(fileName, sheetName, businessUnitId, addExistingUser, defaultFaxNumber));
 
     private static Func<Dictionary<string, string>, MemberItem> MapRow(long defaultFaxNumber) =>
         row => new MemberItem

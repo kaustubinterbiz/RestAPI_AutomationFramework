@@ -2,6 +2,7 @@ using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
+using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
 using NUnit.Framework;
@@ -117,13 +118,13 @@ public class UserSteps
         if (string.Equals(endpointKey, "addMultipleMemberByExcel", StringComparison.OrdinalIgnoreCase))
         {
             ConfigReaderNew.LoadConfig("appsettings.json");
-            var excelBody = AddMultipleMemberByExcelBuilder.BuildFromExcel(
+            var excelBodyJson = AddMultipleMemberByExcelBuilder.BuildJsonFromExcel(
                 fileName: "Sample_File_Member.xlsx",
                 sheetName: "Sheet1",
-                businessUnitId: ConfigReaderNew.GetValue("BusinessUnitId"),
+                businessUnitId: EndpointRequestHelper.GetCachedValue("BusinessUnitId"),
                 addExistingUser: false);
 
-            options = ApiGetRequestOptions.Create().SetBody(excelBody);
+            options = ApiGetRequestOptions.Create().SetBody(excelBodyJson);
             bodyKey = null;
         }
 
