@@ -10,7 +10,7 @@
         "projectUniqueName": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
         "projectName": "EnterpriseApiAutomationFramework",
         "projectPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
-        "packagesPath": "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\4ff96cda36eeef1c493a9503dcdfddf7\\nuget",
+        "packagesPath": "C:\\Users\\ibz\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [

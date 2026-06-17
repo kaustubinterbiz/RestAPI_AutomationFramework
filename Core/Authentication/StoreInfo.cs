@@ -63,7 +63,7 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             return existingUserInfo;
         }
 
-        public static IList<AddMultipleMemberByExcel_ResponseModel> SaveAddMultiMemberByExcelFromResponse(
+        public static IList<AddMultipleMemberByExcel_ResponseModel>? SaveAddMultiMemberByExcelFromResponse(
             string? responseContent,
             string appSettingsFile = AppSettingsFile,
             bool updateEndpointId = true,
