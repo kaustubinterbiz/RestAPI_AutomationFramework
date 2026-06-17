@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EnterpriseApiAutomationFramework.Core.Authentication
@@ -13,7 +14,8 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
     {
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString
         };
 
         public static GetSessionInfo? TryGetSessionInfo(string? responseContent)
@@ -48,6 +50,44 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             {
                 return null;
             }
+        }
+
+        public static IList<AddMultipleMemberByExcel_ResponseModel>? TryAddMultipleMemberByExcelList(
+            string? responseContent)
+        {
+            if (string.IsNullOrWhiteSpace(responseContent))
+                return null;
+
+            try
+            {
+                var list = JsonSerializer.Deserialize<List<AddMultipleMemberByExcel_ResponseModel>>(
+                    responseContent, JsonOptions);
+
+                if (list is { Count: > 0 })
+                    return list;
+            }
+            catch
+            {
+                // fall through — try single object
+            }
+
+            try
+            {
+                var single = JsonSerializer.Deserialize<AddMultipleMemberByExcel_ResponseModel>(
+                    responseContent, JsonOptions);
+
+                return single == null ? null : new List<AddMultipleMemberByExcel_ResponseModel> { single };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static AddMultipleMemberByExcel_ResponseModel? TryAddMultipleMemberByExcelInfo(string? responseContent)
+        {
+            var list = TryAddMultipleMemberByExcelList(responseContent);
+            return list is { Count: > 0 } ? list[0] : null;
         }
 
         public static string? TryGetSessionInfoValue(string? responseContent, string propertyName)
@@ -123,5 +163,28 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
 
             return result;
         }
+
+        public static IReadOnlyDictionary<string, string> ToAddMultiMemberByExcelPropertyDictionary(
+            AddMultipleMemberByExcel_ResponseModel multipleMemberInfo,
+            bool includeEmpty = false)
+        {
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var property in typeof(AddMultipleMemberByExcel_ResponseModel)
+                         .GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var value = property.GetValue(multipleMemberInfo)?.ToString() ?? string.Empty;
+                if (includeEmpty || !string.IsNullOrWhiteSpace(value))
+                    result[property.Name] = value;
+            }
+
+            return result;
+        }
+
+        public static IReadOnlyList<string> GetAddMultipleMemberByExcelPropertyNames() =>
+            typeof(AddMultipleMemberByExcel_ResponseModel)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(p => p.Name)
+                .ToList();
     }
 }

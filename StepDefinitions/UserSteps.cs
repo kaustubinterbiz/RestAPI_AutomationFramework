@@ -1,3 +1,4 @@
+using AventStack.ExtentReports;
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Clients;
@@ -119,8 +120,8 @@ public class UserSteps
         {
             ConfigReaderNew.LoadConfig("appsettings.json");
             var excelBodyJson = AddMultipleMemberByExcelBuilder.BuildJsonFromExcel(
-                fileName: "Sample_File_Member.xlsx",
-                sheetName: "Sheet1",
+                fileName: AddMultipleMemberByExcelDefaults.FileName,
+                sheetName: AddMultipleMemberByExcelDefaults.InputSheetName,
                 businessUnitId: EndpointRequestHelper.GetCachedValue("BusinessUnitId"),
                 addExistingUser: false);
 
@@ -289,4 +290,29 @@ public class UserSteps
     [Then("Status should be (.*)")]
     public void ThenStatusShouldBe(string status) =>
         ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
+
+    [Then("Status for AddMultipleMemberByExcel should be {string}")]
+    public void ThenStatusForAddMultipleMemberByExcelShouldBe(string status)
+    {
+        if(string.IsNullOrWhiteSpace(status).Equals("User exists in same organization"))
+        {
+            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
+            Console.WriteLine("Member already exist");
+        }
+        else if(string.IsNullOrWhiteSpace(status).Equals("User exists in different organization"))
+        {
+            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
+            Console.WriteLine("Member already exist in different organization");
+        }
+        
+        if (string.IsNullOrWhiteSpace(status).Equals("Success! Member information added."))
+        {
+            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
+        }
+        else
+        {
+            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
+        }
+    }
+
 }

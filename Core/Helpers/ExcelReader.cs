@@ -186,6 +186,85 @@ public static class ExcelReader
         workbook.Save();
     }
 
+    /// <summary>
+    /// Replaces all data rows on a sheet (keeps row 1 headers).
+    /// Uses existing header row when present; adds any missing columns from <paramref name="columnOrder"/> or row data.
+    /// Creates the worksheet when it does not exist.
+    /// </summary>
+    public static void ReplaceSheetData(
+        string fileName,
+        string sheetName,
+        IReadOnlyList<Dictionary<string, string>> rowsData,
+        IReadOnlyList<string>? columnOrder = null)
+    {
+        var filePath = FileUploadHelper.GetFilePath(fileName);
+        using var workbook = new XLWorkbook(filePath);
+
+        if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+            sheet = workbook.AddWorksheet(sheetName);
+
+        var range = sheet.RangeUsed();
+        List<string> headers;
+
+        if (range == null || IsHeaderRowEmpty(sheet))
+        {
+            headers = columnOrder?.ToList()
+                ?? (rowsData.Count > 0
+                    ? rowsData[0].Keys.ToList()
+                    : throw new InvalidOperationException(
+                        $"Sheet '{sheetName}' has no headers and no row data was provided."));
+
+            for (int c = 0; c < headers.Count; c++)
+                sheet.Cell(1, c + 1).Value = headers[c];
+        }
+        else
+        {
+            headers = ReadHeaders(range);
+            EnsureHeaders(sheet, headers, columnOrder ?? headers);
+            EnsureHeaders(sheet, headers, rowsData.SelectMany(r => r.Keys));
+        }
+
+        ClearDataRows(sheet, headers.Count);
+
+        for (int r = 0; r < rowsData.Count; r++)
+        {
+            for (int c = 0; c < headers.Count; c++)
+            {
+                var value = rowsData[r].TryGetValue(headers[c], out var v) ? v : string.Empty;
+                sheet.Cell(r + 2, c + 1).Value = value;
+            }
+        }
+
+        workbook.Save();
+    }
+
+    private static bool IsHeaderRowEmpty(IXLWorksheet sheet)
+    {
+        var firstRow = sheet.Row(1);
+        return firstRow.IsEmpty() || firstRow.CellsUsed().All(c => string.IsNullOrWhiteSpace(GetCellValue(c)));
+    }
+
+    private static void EnsureHeaders(IXLWorksheet sheet, List<string> headers, IEnumerable<string> columnNames)
+    {
+        foreach (var column in columnNames.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (headers.Any(h => string.Equals(h, column, StringComparison.OrdinalIgnoreCase)))
+                continue;
+
+            headers.Add(column);
+            sheet.Cell(1, headers.Count).Value = column;
+        }
+    }
+
+    private static void ClearDataRows(IXLWorksheet sheet, int columnCount)
+    {
+        var lastRow = sheet.LastRowUsed()?.RowNumber() ?? 1;
+        if (lastRow <= 1)
+            return;
+
+        sheet.Range(2, 1, lastRow, Math.Max(columnCount, 1)).Clear(XLClearOptions.Contents);
+    }
+
     // =========================================================================
     //  ADD
     // =========================================================================

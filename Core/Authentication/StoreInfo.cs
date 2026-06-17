@@ -1,18 +1,15 @@
 ﻿using EnterpriseApiAutomationFramework.Core.Configurations;
+using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Models.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EnterpriseApiAutomationFramework.Core.Authentication
 {
-    public class StoreInfo
+    public static class StoreInfo
     {
         public const string AppSettingsFile = "appsettings.json";
         public const string SessionInfoSection = "SessionInfo";
         public const string CheckExistingUserInfoSection = "CheckExistingUserAvailabilityInfo";
+        public const string AddMultipleMemberByExcelInfoSection = "AddMultipleMemberByExcelInfo";
 
         //Session Info 
         public static GetSessionInfo SaveSessionInfoFromResponse(
@@ -20,11 +17,11 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
         string appSettingsFile = AppSettingsFile,
         bool updateEndpointId = true)
         {
-            var sessionInfo = GetSessionInfoResponseParse.TryGetSessionInfo(responseContent)
+            var sessionInfo = InfoResponseParse.TryGetSessionInfo(responseContent)
                 ?? throw new InvalidOperationException(
                     "Could not parse GetSessionInfo from the last API response.");
 
-            var properties = GetSessionInfoResponseParse.ToPropertyDictionary(sessionInfo);
+            var properties = InfoResponseParse.ToGetSessionPropertyDictionary(sessionInfo);
             ConfigReaderNew.UpdateJsonSection(appSettingsFile, SessionInfoSection, properties);
 
             foreach (var (key, value) in properties)
@@ -64,6 +61,55 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             }
 
             return existingUserInfo;
+        }
+
+        public static IList<AddMultipleMemberByExcel_ResponseModel> SaveAddMultiMemberByExcelFromResponse(
+            string? responseContent,
+            string appSettingsFile = AppSettingsFile,
+            bool updateEndpointId = true,
+            string excelFileName = AddMultipleMemberByExcelDefaults.FileName,
+            string responseSheetName = AddMultipleMemberByExcelDefaults.ResponseSheetName)
+        {
+            var members = InfoResponseParse.TryAddMultipleMemberByExcelList(responseContent)
+                ?? throw new InvalidOperationException(
+                    "Could not parse AddMultipleMemberByExcel response. Expected a JSON array.");
+
+            var rows = members
+                .Select(m => InfoResponseParse
+                    .ToAddMultiMemberByExcelPropertyDictionary(m, includeEmpty: true)
+                    .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+
+            ExcelReader.ReplaceSheetData(
+                excelFileName,
+                responseSheetName,
+                rows,
+                InfoResponseParse.GetAddMultipleMemberByExcelPropertyNames());
+
+            var sectionValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["MemberCount"] = members.Count.ToString()
+            };
+
+            if (members.Count > 0)
+            {
+                var firstMemberProperties = InfoResponseParse.ToAddMultiMemberByExcelPropertyDictionary(members[0]);
+                foreach (var (key, value) in firstMemberProperties)
+                    sectionValues[key] = value;
+            }
+
+            ConfigReaderNew.UpdateJsonSection(appSettingsFile, AddMultipleMemberByExcelInfoSection, sectionValues);
+
+            foreach (var (key, value) in sectionValues)
+                ConfigReaderNew.UpdateJsonValue(appSettingsFile, key, value);
+
+            if (updateEndpointId && members.Count > 0
+                && !string.IsNullOrWhiteSpace(members[0].MemberId))
+            {
+                UpdateResponseValuesInJsonFile(appSettingsFile, "EndpointJson", "MemberId", members[0].MemberId);
+            }
+
+            return members;
         }
 
         //Dynamic Response Handler
@@ -127,5 +173,7 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             var flatValue = ConfigReaderNew.GetJsonValue(appSettingsFile, key);
             return string.IsNullOrWhiteSpace(flatValue) ? null : flatValue;
         }
+
+       
     }
 }
