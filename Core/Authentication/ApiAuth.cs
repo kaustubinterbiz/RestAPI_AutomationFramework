@@ -53,7 +53,7 @@ public static class ApiAuth
     // key: CacheId, BusinessUnitMemberId, CompanyBusinessUnitId, BusinessUnitId, EmailId, UserName, MemberId
     public static void SaveId_GetSessionInfo(ScenarioContext context, string? getSessionInfoBody, string? key)
     {
-        var value = GetSessionInfoResponseParse.TryGetSessionInfoValue(getSessionInfoBody, key);
+        var value = InfoResponseParse.TryGetSessionInfoValue(getSessionInfoBody, key);
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidOperationException($"GetSessionInfo response did not contain {key}");

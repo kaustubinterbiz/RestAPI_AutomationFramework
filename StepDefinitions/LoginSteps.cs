@@ -28,8 +28,16 @@ public class LoginSteps
     public void ThenSessionInfoFromLastResponseIsStoredInAppSettings()
     {
         var response = TokenContext.GetLastResponse(_context);
-        SessionInfoStore.SaveFromResponse(response.Content);
+        StoreInfo.SaveSessionInfoFromResponse(response.Content);
     }
+
+    [Then("Store the info for AddMultipleMemberByExcel")]
+    public void ThenStoreTheInfoForAddMultipleMemberByExcel()
+    {
+        var response = TokenContext.GetLastResponse(_context);
+        StoreInfo.SaveAddMultiMemberByExcelFromResponse(response.Content);
+    }
+
 
     [Then("existingUser info from the last response is stored in appsettings")]
     public void ThenExistingUserInfoFromTheLastResponseIsStoredInAppsettings()

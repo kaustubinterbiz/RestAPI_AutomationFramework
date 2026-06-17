@@ -26,7 +26,7 @@ public static class EndpointRequestHelper
             return RequireValue(key, TokenManager.AccessToken);
         }
 
-        var fromAppSettings = SessionInfoStore.GetCachedValue(key);
+        var fromAppSettings = StoreInfo.GetCachedValue(key);
         if (!string.IsNullOrWhiteSpace(fromAppSettings))
         {
             return fromAppSettings;

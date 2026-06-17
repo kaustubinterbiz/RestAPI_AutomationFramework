@@ -145,6 +145,8 @@
         And session info from the last response is stored in appsettings
         When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"
         Then Status code should be 200
+        And Store the info for AddMultipleMemberByExcel
+        #Then Status for AddMultipleMemberByExcel should be "User exists in same organization"
 
     @Api @FlexibleRequest
     Scenario: Get request with multiple headers and query params
