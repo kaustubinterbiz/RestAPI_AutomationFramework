@@ -63,10 +63,8 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             return existingUserInfo;
         }
 
-        public static IList<AddMultipleMemberByExcel_ResponseModel>? SaveAddMultiMemberByExcelFromResponse(
+        public static IList<AddMultipleMemberByExcel_ResponseModel>? SaveAddMultiMemberByExcelResponseToExcel(
             string? responseContent,
-            string appSettingsFile = AppSettingsFile,
-            bool updateEndpointId = true,
             string excelFileName = AddMultipleMemberByExcelDefaults.FileName,
             string responseSheetName = AddMultipleMemberByExcelDefaults.ResponseSheetName)
         {
@@ -85,6 +83,18 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
                 responseSheetName,
                 rows,
                 InfoResponseParse.GetAddMultipleMemberByExcelPropertyNames());
+
+            return members;
+        }
+
+        public static IList<AddMultipleMemberByExcel_ResponseModel>? SaveAddMultiMemberByExcelFromResponse(
+            string? responseContent,
+            string appSettingsFile = AppSettingsFile,
+            bool updateEndpointId = true)
+        {
+            var members = InfoResponseParse.TryAddMultipleMemberByExcelList(responseContent)
+                ?? throw new InvalidOperationException(
+                    "Could not parse AddMultipleMemberByExcel response. Expected a JSON array.");
 
             var sectionValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {

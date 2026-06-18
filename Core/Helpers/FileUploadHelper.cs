@@ -1,3 +1,4 @@
+using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Models.Request;
 
 namespace EnterpriseApiAutomationFramework.Core.Helpers;
@@ -5,20 +6,12 @@ namespace EnterpriseApiAutomationFramework.Core.Helpers;
 
 public static class FileUploadHelper
 {
-    private static readonly string UploadFilesFolder =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "UploadFiles");
-
-   
     public static string GetFilePath(string fileName)
     {
-        var fullPath = Path.Combine(UploadFilesFolder, fileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
 
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException(
-                $"Upload file '{fileName}' not found. " +
-                $"Place the file in: TestData/UploadFiles/  (resolved to: {fullPath})");
-
-        return fullPath;
+        var relativePath = Path.Combine("TestData", "UploadFiles", fileName);
+        return ConfigReaderNew.ResolvePathForRead(relativePath);
     }
 
     /// <summary>

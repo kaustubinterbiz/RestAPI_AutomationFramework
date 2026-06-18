@@ -35,6 +35,7 @@ public class LoginSteps
     public void ThenStoreTheInfoForAddMultipleMemberByExcel()
     {
         var response = TokenContext.GetLastResponse(_context);
+        StoreInfo.SaveAddMultiMemberByExcelResponseToExcel(response.Content);
         StoreInfo.SaveAddMultiMemberByExcelFromResponse(response.Content);
     }
 
