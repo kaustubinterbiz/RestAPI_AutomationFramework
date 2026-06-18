@@ -24,7 +24,7 @@ public static class AuthService
     public static Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient, bool forceRefresh = true) =>
         SharedTokenProvider.LoginAndStoreTokenAsync(apiClient, FetchTokenFromApiAsync, forceRefresh);
 
-    public static Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient, string? roleType= "AdminRole", bool forceRefresh = true) =>
+    public static Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient, string roleType = "AdminRole", bool forceRefresh = true) =>
         SharedTokenProvider.LoginAndStoreTokenAsync(apiClient, client => FetchTokenFromCredentialRoleType_ApiAsync(client, roleType), forceRefresh);
    
     public static Task EnsureAuthenticatedAsync(ApiClient apiClient) =>

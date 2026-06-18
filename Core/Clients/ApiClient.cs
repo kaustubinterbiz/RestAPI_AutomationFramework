@@ -4,7 +4,6 @@ using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Reporting;
 using EnterpriseApiAutomationFramework.Models.Request;
-using Microsoft.CodeAnalysis;
 using RestSharp;
 using System.Diagnostics;
 using System.Net;
@@ -20,7 +19,6 @@ public sealed class ApiClient
 {
     private readonly RestClientFactory _clientFactory;
     private readonly RequestBuilder _requestBuilder;
-    private readonly EnterpriseRestBuilder _enterpriseRestBuilder;
 
     public ApiClient(RestClientFactory? clientFactory = null)
     {
@@ -111,7 +109,7 @@ public sealed class ApiClient
         Dictionary<string, string> urlSegments = new Dictionary<string, string>();
         options ??= ApiGetRequestOptions.Create();
         options.ValidateProvidedValues();
-        ConfigReaderNew.LoadConfig(filename);
+        ConfigReaderNew.LoadConfig(filename ?? "appsettings.json");
         if (key != null)
         {
             var values = new Dictionary<string, string>{

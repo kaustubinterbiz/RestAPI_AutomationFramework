@@ -1,0 +1,965 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="64e57d94-9100-42c9-bcc1-93647017c0f9" name="ibz@DESKTOP-4MS79L1 2026-06-18 13:53:09" runUser="DESKTOP-4MS79L1\ibz" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-06-18T13:53:09.8115399+05:30" queuing="2026-06-18T13:53:09.8115400+05:30" start="2026-06-18T13:53:06.5737836+05:30" finish="2026-06-18T13:53:51.4654443+05:30" />
+  <TestSettings name="default" id="0edf0bc8-aa37-4111-877c-5ee55f2421c9">
+    <Deployment runDeploymentRoot="ibz_DESKTOP-4MS79L1_2026-06-18_13_53_09" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="be9c59ce-2880-4c25-9b52-d0223dcff03b" testId="fc5db330-b4a8-8577-de82-594062d6cfe6" testName="_06_VerifyGETAPIRetrievesExistingUserSuccessfullyByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.8416540" startTime="2026-06-18T13:53:20.6714595+05:30" endTime="2026-06-18T13:53:23.5131125+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="be9c59ce-2880-4c25-9b52-d0223dcff03b">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.6s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the existing logged_in user is exist "Api"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheExistingLogged_InUserIsExist("Api") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="778f480d-ae33-4437-8333-36efd112a62b" testId="0decf63e-8f52-84d6-379b-5c5ddde3683b" testName="_04_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingRole" computerName="DESKTOP-4MS79L1" duration="00:00:02.5202040" startTime="2026-06-18T13:53:15.0352201+05:30" endTime="2026-06-18T13:53:17.5554234+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="778f480d-ae33-4437-8333-36efd112a62b">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url&#xD;
+-&gt; done: UserSteps.PostRequestOnBaseUrl("Auth") (1.7s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.9s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a4eb4568-f43c-4284-9475-eaa79b08ebc3" testId="f53bcaa1-864a-6423-0199-435f2eb55e68" testName="_03_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingSuperAdminRole" computerName="DESKTOP-4MS79L1" duration="00:00:02.7108520" startTime="2026-06-18T13:53:12.3243444+05:30" endTime="2026-06-18T13:53:15.0351961+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a4eb4568-f43c-4284-9475-eaa79b08ebc3">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.9s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d3e461f6-3f30-4205-ab6a-3752a5247c32" testId="567d839c-0ec4-8645-9780-36c0d7331af9" testName="_14_VerifyPOSTRequestForUploadingMultipleUserByExcelFileInTheSameOranizationByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.6487800" startTime="2026-06-18T13:53:41.8951133+05:30" endTime="2026-06-18T13:53:44.5438939+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d3e461f6-3f30-4205-ab6a-3752a5247c32">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Post, "Api", "addMultipleMember...", "-", "-", "CacheId", "-", "-") (0.7s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And Store the info for AddMultipleMemberByExcel&#xD;
+-&gt; done: LoginSteps.ThenStoreTheInfoForAddMultipleMemberByExcel() (0.1s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1de8fe8f-745e-4abb-bc59-6738b88c983a" testId="03c82e56-7393-914c-9005-c2226df140ff" testName="_12_VerifyFlexibleGETRequestRetrievesExistingUserWithDynamicHeaders" computerName="DESKTOP-4MS79L1" duration="00:00:02.6144759" startTime="2026-06-18T13:53:36.6945257+05:30" endTime="2026-06-18T13:53:39.3090011+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1de8fe8f-745e-4abb-bc59-6738b88c983a">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.2s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (1.1s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible GET request on "Api" base url for endpoint "getExistingUser" with headers "CacheId"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithHeaders("Api", "getExistingUser", "CacheId") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ed5a8686-1fe6-4003-9cc8-1d7d5325e5c3" testId="09a14533-4ea0-8b8d-a0c1-89ce4f3d2940" testName="GETRequestWithMultipleHeadersAndQueryParams" computerName="DESKTOP-4MS79L1" duration="00:00:02.6616530" startTime="2026-06-18T13:53:46.9290958+05:30" endTime="2026-06-18T13:53:49.5907491+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ed5a8686-1fe6-4003-9cc8-1d7d5325e5c3">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.6s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "CheckExistingUserAvailabilityInfo" with url placeholders "-" target "-" headers "CacheId" query params "EmailId" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "CheckExistingUser...", "-", "-", "CacheId", "EmailId", "-") (0.2s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; error: Expected ((int)response.StatusCode) to be 200, but found 404 (difference of 204). (0.0s)</StdOut>
+        <ErrorInfo>
+          <Message>Expected ((int)response.StatusCode) to be 200, but found 404 (difference of 204).</Message>
+          <StackTrace>   at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Numeric.NumericAssertions`2.Be(T expected, String because, Object[] becauseArgs)&#xD;
+   at EnterpriseApiAutomationFramework.Core.Validators.ResponseValidator.ValidateStatusCode(RestResponse response, Int32 expectedStatusCode) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Validators\ResponseValidator.cs:line 11&#xD;
+   at EnterpriseApiAutomationFramework.StepDefinitions.UserSteps.ValidateStatusCode(Int32 statusCode) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\StepDefinitions\UserSteps.cs:line 288&#xD;
+   at InvokeStub_Action`2.Invoke(Object, Span`1)&#xD;
+
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3b51f9bf-f946-4a53-8643-946241adea87" testId="c350a97c-a745-852f-ec51-0dbd43d775d8" testName="_13_VerifyPOSTRequestForCheckingNewUserInTheSameOranizationByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.5860540" startTime="2026-06-18T13:53:39.3090339+05:30" endTime="2026-06-18T13:53:41.8950874+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3b51f9bf-f946-4a53-8643-946241adea87">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (1.1s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getCheckAvability", "ValidateCheckExis...", "ValidateCheckExis...", "CacheId", "-", "-") (0.3s)&#xD;
+Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be not exist, create a new organization&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.3s)&#xD;
+And Status should be NoContent&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("NoContent") (0.0s)&#xD;
+When User sends flexible "Post" request on "Api" base url for endpoint "post_Register" with url placeholders "-" target "-" headers "CacheId" query params "-" body "register_Body"&#xD;
+-&gt; error: '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8. (0.0s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors</StdOut>
+        <ErrorInfo>
+          <Message>System.Text.Json.JsonReaderException : '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8.</Message>
+          <StackTrace>   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader&amp; json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)&#xD;
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()&#xD;
+   at System.Text.Json.JsonDocument.Parse(ReadOnlySpan`1 utf8JsonSpan, JsonReaderOptions readerOptions, MetadataDb&amp; database, StackRowStack&amp; stack)&#xD;
+   at System.Text.Json.JsonDocument.ParseUnrented(ReadOnlyMemory`1 utf8Json, JsonReaderOptions readerOptions, JsonTokenType tokenType)&#xD;
+   at System.Text.Json.JsonDocument.ParseValue(ReadOnlyMemory`1 json, JsonDocumentOptions options)&#xD;
+   at System.Text.Json.Nodes.JsonNode.Parse(String json, Nullable`1 nodeOptions, JsonDocumentOptions documentOptions)&#xD;
+   at EnterpriseApiAutomationFramework.Core.Configurations.ConfigReaderNew.ReadJson(String filePath) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Configurations\ConfigReaderNew.cs:line 222&#xD;
+   at EnterpriseApiAutomationFramework.Core.Configurations.ConfigReaderNew.GetJsonBody(String filePath, String key) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Configurations\ConfigReaderNew.cs:line 347&#xD;
+   at EnterpriseApiAutomationFramework.Core.Builders.RequestBuilder.ResolveBodyFromConfig(String bodySpec, String configFile, String bodyFileConfigKey) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Builders\RequestBuilder.cs:line 424&#xD;
+   at EnterpriseApiAutomationFramework.Core.Clients.ApiClient.SendFlexibleRequestAsync(String endpoint, String configFile, String urlPlaceholderKeys, String targetValue, String headerKeys, String queryParamKeys, String urlSegmentKeys, Method method, ApiGetRequestOptions options, ApiHost host, String bodyKey) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Clients\ApiClient.cs:line 410&#xD;
+   at EnterpriseApiAutomationFramework.Drivers.UserDriver.SendFlexibleRequestAsync(String configFile, String urlPlaceholderKeys, String targetValue, String headerKeys, String queryParamKeys, String urlSegmentKeys, Method method, String endpointKey, ApiGetRequestOptions options, Nullable`1 host, String bodyKey) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Drivers\UserDriver.cs:line 82&#xD;
+   at EnterpriseApiAutomationFramework.StepDefinitions.UserSteps.FlexibleGetRequestWithAllParts(Method methodType, String baseUrlType, String endpointKey, String urlPlaceholderKeys, String targetValue, String headerKeys, String queryParamKeys, String body) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\StepDefinitions\UserSteps.cs:line 132&#xD;
+   at Reqnroll.Bindings.AsyncMethodHelper.ConvertTaskOfT(Task task, Boolean getValue)&#xD;
+   at Reqnroll.Bindings.BindingDelegateInvoker.InvokeDelegateAsync(Delegate bindingDelegate, Object[] invokeArgs, ExecutionContextHolder executionContext)&#xD;
+   at Reqnroll.Bindings.BindingInvoker.InvokeBindingAsync(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.&lt;&gt;c__DisplayClass57_0.&lt;&lt;ExecuteStepAsync&gt;b__7&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.&lt;&gt;c__DisplayClass57_0.&lt;&lt;ExecuteStepAsync&gt;g__HandleStepExecutionExceptions|0&gt;d.MoveNext()&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.OnAfterLastStepAsync()&#xD;
+   at Reqnroll.TestRunner.CollectScenarioErrorsAsync()&#xD;
+   at EnterpriseApiAutomationFramework.Features.APITestingFeature.ScenarioCleanupAsync()&#xD;
+   at EnterpriseApiAutomationFramework.Features.APITestingFeature._13_VerifyPOSTRequestForCheckingNewUserInTheSameOranizationByHospitalCredential() in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Features\Login.feature:line 136&#xD;
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()&#xD;
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)&#xD;
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)&#xD;
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)&#xD;
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)&#xD;
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()&#xD;
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="45d06639-61d2-48d0-8ba6-b668a988352d" testId="c5d8be1d-c072-a9b1-2f78-a36b5f30e838" testName="_07_VerifyGETAPIRetrievesUserNotExistByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.1751140" startTime="2026-06-18T13:53:23.5131757+05:30" endTime="2026-06-18T13:53:25.6882892+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="45d06639-61d2-48d0-8ba6-b668a988352d">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.1s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the Email logged_in user is exist "Api"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheEmailLogged_InUserIsExist("Api") (0.3s)&#xD;
+And Status should be NoContent&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("NoContent") (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="e3ed72e8-45e8-4fde-96c5-2ad01884390c" testId="df664544-4cd1-8ee0-09ac-010fef214b8c" testName="_02_VerifyPOSTUserAPIGeneratesTokenSuccessfullyForRoleThroughValidLogin" computerName="DESKTOP-4MS79L1" duration="00:00:01.2923100" startTime="2026-06-18T13:53:11.0319942+05:30" endTime="2026-06-18T13:53:12.3243040+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e3ed72e8-45e8-4fde-96c5-2ad01884390c">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url&#xD;
+-&gt; done: UserSteps.PostRequestOnBaseUrl("Auth") (1.3s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2279b3cc-74bf-4324-a391-70c32816fc49" testId="8c18f31b-3c56-de95-47f8-cd1c135a5289" testName="_05_VerifyGETAPIRetrievesExistingUserSuccessfullyByAdminRole" computerName="DESKTOP-4MS79L1" duration="00:00:03.1159500" startTime="2026-06-18T13:53:17.5554478+05:30" endTime="2026-06-18T13:53:20.6713976+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2279b3cc-74bf-4324-a391-70c32816fc49">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.9s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.9s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the existing logged_in user is exist "Api"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheExistingLogged_InUserIsExist("Api") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="7a4008cd-44e2-481a-823a-b8716089407a" testId="50abe67e-adce-44fd-59a7-870e0a7ba27c" testName="_01_VerifyPOSTUserAPIGeneratesTokenSuccessfullyForSuperAdminRoleThroughValidLogin" computerName="DESKTOP-4MS79L1" duration="00:00:01.3531600" startTime="2026-06-18T13:53:09.6788064+05:30" endTime="2026-06-18T13:53:11.0319654+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7a4008cd-44e2-481a-823a-b8716089407a">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.3s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f29cac27-d398-4629-a811-cd7633ca6114" testId="453db77f-86ec-dc2f-9c31-6573a0d69bd4" testName="_08_VerifyGETRequestForCheckingExistingUserInTheSameOranizationByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.5034250" startTime="2026-06-18T13:53:25.6883163+05:30" endTime="2026-06-18T13:53:28.1917404+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f29cac27-d398-4629-a811-cd7633ca6114">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.4s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheUserExistInTheSameOrganization("ValidateCheckExis...") (0.3s)&#xD;
+And validate the response for the existing user in the same organization "ValidateCheckExistingEmail" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be exist and also in same Business Unit Id 'False'.&#xD;
+Already Email exist and in the same business unit id&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.0s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="5d9a4bce-a125-4264-9b91-39609421e4fe" testId="54d20ba9-cfe0-5d91-083e-834b32778c12" testName="VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(&quot;Api&quot;,&quot;SuperAdmin&quot;,&quot;User API Testing&quot;,&quot;OK&quot;,&quot;200&quot;,&quot;16&quot;,null)" computerName="DESKTOP-4MS79L1" duration="00:00:00.0031620" startTime="2026-06-18T13:53:49.5908263+05:30" endTime="2026-06-18T13:53:49.5939879+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d9a4bce-a125-4264-9b91-39609421e4fe">
+      <Output>
+        <StdOut>When User sends POST request on "Api" base url with "SuperAdmin"&#xD;
+-&gt; error: '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8. (0.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; skipped because of previous errors&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; skipped because of previous errors&#xD;
+And Confirm the existing logged_in user is exist "User API Testing"&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors</StdOut>
+        <ErrorInfo>
+          <Message>System.Text.Json.JsonReaderException : '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8.</Message>
+          <StackTrace>   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader&amp; json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)&#xD;
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()&#xD;
+   at System.Text.Json.JsonDocument.Parse(ReadOnlySpan`1 utf8JsonSpan, JsonReaderOptions readerOptions, MetadataDb&amp; database, StackRowStack&amp; stack)&#xD;
+   at System.Text.Json.JsonDocument.ParseUnrented(ReadOnlyMemory`1 utf8Json, JsonReaderOptions readerOptions, JsonTokenType tokenType)&#xD;
+   at System.Text.Json.JsonDocument.ParseValue(ReadOnlyMemory`1 json, JsonDocumentOptions options)&#xD;
+   at System.Text.Json.Nodes.JsonNode.Parse(String json, Nullable`1 nodeOptions, JsonDocumentOptions documentOptions)&#xD;
+   at EnterpriseApiAutomationFramework.Core.Configurations.ConfigReaderNew.ReadJson(String filePath) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Configurations\ConfigReaderNew.cs:line 222&#xD;
+   at EnterpriseApiAutomationFramework.Core.Configurations.ConfigReaderNew.GetJsonBody(String filePath, String key) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Configurations\ConfigReaderNew.cs:line 347&#xD;
+   at EnterpriseApiAutomationFramework.Drivers.UserDriver.PostFromConfigAsync(String endpointKey, String bodyFileKey, String bodyKey, Nullable`1 host) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Drivers\UserDriver.cs:line 114&#xD;
+   at EnterpriseApiAutomationFramework.StepDefinitions.UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith(String baseUrlType, String loginRoleKey) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\StepDefinitions\UserSteps.cs:line 83&#xD;
+   at Reqnroll.Bindings.AsyncMethodHelper.ConvertTaskOfT(Task task, Boolean getValue)&#xD;
+   at Reqnroll.Bindings.BindingDelegateInvoker.InvokeDelegateAsync(Delegate bindingDelegate, Object[] invokeArgs, ExecutionContextHolder executionContext)&#xD;
+   at Reqnroll.Bindings.BindingInvoker.InvokeBindingAsync(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.&lt;&gt;c__DisplayClass57_0.&lt;&lt;ExecuteStepAsync&gt;b__7&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.&lt;&gt;c__DisplayClass57_0.&lt;&lt;ExecuteStepAsync&gt;g__HandleStepExecutionExceptions|0&gt;d.MoveNext()&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.OnAfterLastStepAsync()&#xD;
+   at Reqnroll.TestRunner.CollectScenarioErrorsAsync()&#xD;
+   at EnterpriseApiAutomationFramework.Features.APITestingFeature.ScenarioCleanupAsync()&#xD;
+   at EnterpriseApiAutomationFramework.Features.APITestingFeature.VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(String baseUrlType, String role, String aPI, String status, String statusCode, String __pickleIndex, String[] exampleTags) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Features\Login.feature:line 188&#xD;
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()&#xD;
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)&#xD;
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)&#xD;
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)&#xD;
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()&#xD;
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b3818da9-ea11-40ea-a934-c1b6067add05" testId="8c7d6465-320a-22c5-22b7-cb7d21269e2d" testName="RunAllModulesInParallel_WithConsolidatedReport" computerName="DESKTOP-4MS79L1" duration="00:00:00.0001930" startTime="2026-06-18T13:53:49.5966248+05:30" endTime="2026-06-18T13:53:49.5968174+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b3818da9-ea11-40ea-a934-c1b6067add05">
+      <Output>
+        <StdOut>Runs parallel execution via out-of-process ParallelTestRunner host.</StdOut>
+        <ErrorInfo>
+          <Message>Runs parallel execution via out-of-process ParallelTestRunner host.</Message>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c52860c6-36d2-4e17-beb1-5fd0b321e930" testId="dec51265-f825-6da8-5d00-669fd0505231" testName="_10_VerifyGETRequestForCheckingNewUserInTheSameOranizationByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.9692890" startTime="2026-06-18T13:53:31.1498224+05:30" endTime="2026-06-18T13:53:34.1191100+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c52860c6-36d2-4e17-beb1-5fd0b321e930">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.7s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getCheckAvability", "ValidateCheckExis...", "ValidateCheckExis...", "CacheId", "-", "-") (0.3s)&#xD;
+Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be not exist, create a new organization&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.3s)&#xD;
+And Status should be NoContent&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("NoContent") (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="42b6c8d3-9a00-4969-9815-ac2a77bea1ca" testId="9bf24e8b-d2a7-f123-1dc4-0bf2bcb8a421" testName="VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(&quot;Api&quot;,&quot;HospitalRole&quot;,&quot;User API Testing&quot;,&quot;OK&quot;,&quot;200&quot;,&quot;17&quot;,null)" computerName="DESKTOP-4MS79L1" duration="00:00:00.0020070" startTime="2026-06-18T13:53:49.5940091+05:30" endTime="2026-06-18T13:53:49.5960162+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="42b6c8d3-9a00-4969-9815-ac2a77bea1ca">
+      <Output>
+        <StdOut>When User sends POST request on "Api" base url with "HospitalRole"&#xD;
+-&gt; error: '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8. (0.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; skipped because of previous errors&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; skipped because of previous errors&#xD;
+And Confirm the existing logged_in user is exist "User API Testing"&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors</StdOut>
+        <ErrorInfo>
+          <Message>System.Text.Json.JsonReaderException : '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8.</Message>
+          <StackTrace>   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader&amp; json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)&#xD;
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()&#xD;
+   at System.Text.Json.JsonDocument.Parse(ReadOnlySpan`1 utf8JsonSpan, JsonReaderOptions readerOptions, MetadataDb&amp; database, StackRowStack&amp; stack)&#xD;
+   at System.Text.Json.JsonDocument.ParseUnrented(ReadOnlyMemory`1 utf8Json, JsonReaderOptions readerOptions, JsonTokenType tokenType)&#xD;
+   at System.Text.Json.JsonDocument.ParseValue(ReadOnlyMemory`1 json, JsonDocumentOptions options)&#xD;
+   at System.Text.Json.Nodes.JsonNode.Parse(String json, Nullable`1 nodeOptions, JsonDocumentOptions documentOptions)&#xD;
+   at EnterpriseApiAutomationFramework.Core.Configurations.ConfigReaderNew.ReadJson(String filePath) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Configurations\ConfigReaderNew.cs:line 222&#xD;
+   at EnterpriseApiAutomationFramework.Core.Configurations.ConfigReaderNew.GetJsonBody(String filePath, String key) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Configurations\ConfigReaderNew.cs:line 347&#xD;
+   at EnterpriseApiAutomationFramework.Drivers.UserDriver.PostFromConfigAsync(String endpointKey, String bodyFileKey, String bodyKey, Nullable`1 host) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Drivers\UserDriver.cs:line 114&#xD;
+   at EnterpriseApiAutomationFramework.StepDefinitions.UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith(String baseUrlType, String loginRoleKey) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\StepDefinitions\UserSteps.cs:line 83&#xD;
+   at Reqnroll.Bindings.AsyncMethodHelper.ConvertTaskOfT(Task task, Boolean getValue)&#xD;
+   at Reqnroll.Bindings.BindingDelegateInvoker.InvokeDelegateAsync(Delegate bindingDelegate, Object[] invokeArgs, ExecutionContextHolder executionContext)&#xD;
+   at Reqnroll.Bindings.BindingInvoker.InvokeBindingAsync(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.&lt;&gt;c__DisplayClass57_0.&lt;&lt;ExecuteStepAsync&gt;b__7&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.&lt;&gt;c__DisplayClass57_0.&lt;&lt;ExecuteStepAsync&gt;g__HandleStepExecutionExceptions|0&gt;d.MoveNext()&#xD;
+   at Reqnroll.Infrastructure.TestExecutionEngine.OnAfterLastStepAsync()&#xD;
+   at Reqnroll.TestRunner.CollectScenarioErrorsAsync()&#xD;
+   at EnterpriseApiAutomationFramework.Features.APITestingFeature.ScenarioCleanupAsync()&#xD;
+   at EnterpriseApiAutomationFramework.Features.APITestingFeature.VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(String baseUrlType, String role, String aPI, String status, String statusCode, String __pickleIndex, String[] exampleTags) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Features\Login.feature:line 188&#xD;
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()&#xD;
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)&#xD;
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)&#xD;
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)&#xD;
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()&#xD;
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="509359b1-f434-4d56-aecc-b320f71e260b" testId="33522d9a-39b2-df89-60f4-87d65a06f245" testName="_11_VerifyExistingUserInTheSameOrganizationByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.5753240" startTime="2026-06-18T13:53:34.1191793+05:30" endTime="2026-06-18T13:53:36.6945033+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="509359b1-f434-4d56-aecc-b320f71e260b">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.5s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheUserExistInTheSameOrganization("ValidateCheckExis...") (0.3s)&#xD;
+And existingUser info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenExistingUserInfoFromTheLastResponseIsStoredInAppsettings() (0.0s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2ef1a773-8603-46fb-bdcc-31ef1f0e79ac" testId="19fe57ed-f64c-75fa-851d-cb9bc1450df7" testName="_09_VerifyGETRequestForCheckingExistingUserNotInTheSameOranizationByHospitalCredential" computerName="DESKTOP-4MS79L1" duration="00:00:02.9580110" startTime="2026-06-18T13:53:28.1917648+05:30" endTime="2026-06-18T13:53:31.1497748+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2ef1a773-8603-46fb-bdcc-31ef1f0e79ac">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.1s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (1.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_OtherBusinessUnitId, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getCheckAvability", "ValidateCheckExis...", "ValidateCheckExis...", "CacheId", "-", "-") (0.3s)&#xD;
+Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_OtherBusinessUnitId" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be exist but not in same Business Unit Id 'True'.&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="15e65459-dc5e-4126-9d4c-5326479b715e" testId="7780849d-1cd6-408c-51fa-6603372e7d87" testName="GetRequestWithMultipleHeadersAndQueryParams" computerName="DESKTOP-4MS79L1" duration="00:00:02.3850980" startTime="2026-06-18T13:53:44.5439674+05:30" endTime="2026-06-18T13:53:46.9290647+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="15e65459-dc5e-4126-9d4c-5326479b715e">
+      <Output>
+        <StdOut>When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "-" target "-" headers "CacheId" query params "EmailId" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getExistingUser", "-", "-", "CacheId", "EmailId", "-") (0.2s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "ValidateCheckExistingEmail" target "EmailId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getExistingUser", "ValidateCheckExis...", "EmailId", "CacheId", "-", "-") (0.3s)&#xD;
+Then Status should be NoContent&#xD;
+-&gt; error: Expected response.StatusCode.ToString() to be "NoContent" with a length of 9, but "OK" has a length of 2, differs near "OK" (index 0). (0.0s)</StdOut>
+        <ErrorInfo>
+          <Message>Expected response.StatusCode.ToString() to be "NoContent" with a length of 9, but "OK" has a length of 2, differs near "OK" (index 0).</Message>
+          <StackTrace>   at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Primitives.StringEqualityValidator.ValidateAgainstLengthDifferences()&#xD;
+   at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+   at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+   at EnterpriseApiAutomationFramework.Core.Validators.ResponseValidator.ValidateStatus(RestResponse response, String expectedStatus) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Validators\ResponseValidator.cs:line 18&#xD;
+   at EnterpriseApiAutomationFramework.StepDefinitions.UserSteps.ThenStatusShouldBe(String status) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\StepDefinitions\UserSteps.cs:line 292&#xD;
+   at InvokeStub_Action`2.Invoke(Object, Span`1)&#xD;
+
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c1ee3729-f79f-4406-8764-d051ec4b39bc" testId="cf59f219-5f52-eaa9-cbd5-b17aa85de66d" testName="ExpiredTokenReturnsErrorAndRefreshRestoresAccess" computerName="DESKTOP-4MS79L1" duration="00:00:02.6910090" startTime="2026-06-18T13:53:06.9844905+05:30" endTime="2026-06-18T13:53:09.6754684+05:30" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c1ee3729-f79f-4406-8764-d051ec4b39bc">
+      <Output>
+        <StdOut>Given User has a valid access token on "Auth" base url&#xD;
+-&gt; done: TokenSteps.GivenUserHasAValidAccessTokenOnBaseUrl("Auth") (1.7s)&#xD;
+When User applies an expired access token&#xD;
+-&gt; done: TokenSteps.WhenUserAppliesAnExpiredAccessToken() (0.0s)&#xD;
+When User sends GET request on "Api" base url with current token only&#xD;
+-&gt; done: TokenSteps.WhenUserSendsGetRequestOnBaseUrlWithCurrentTokenOnly("Api") (0.9s)&#xD;
+Then the API status code should be 401&#xD;
+-&gt; error: Expected ((int)response.StatusCode) to be 401, but found 200 (difference of -201). (0.0s)&#xD;
+And Response should indicate token error "expired"&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User refreshes the access token on "Auth" base url&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User sends GET request for feature "Access Token Refresh"&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then the API status code should be 200&#xD;
+-&gt; skipped because of previous errors</StdOut>
+        <ErrorInfo>
+          <Message>Expected ((int)response.StatusCode) to be 401, but found 200 (difference of -201).</Message>
+          <StackTrace>   at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+   at FluentAssertions.Numeric.NumericAssertions`2.Be(T expected, String because, Object[] becauseArgs)&#xD;
+   at EnterpriseApiAutomationFramework.Core.Validators.ResponseValidator.ValidateStatusCode(RestResponse response, Int32 expectedStatusCode) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\Core\Validators\ResponseValidator.cs:line 11&#xD;
+   at EnterpriseApiAutomationFramework.StepDefinitions.TokenSteps.ThenTheApiStatusCodeShouldBe(Int32 statusCode) in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\StepDefinitions\TokenSteps.cs:line 107&#xD;
+
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="_11_VerifyExistingUserInTheSameOrganizationByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="33522d9a-39b2-df89-60f4-87d65a06f245">
+      <Execution id="509359b1-f434-4d56-aecc-b320f71e260b" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_11_VerifyExistingUserInTheSameOrganizationByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="_04_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingRole" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="0decf63e-8f52-84d6-379b-5c5ddde3683b">
+      <Execution id="778f480d-ae33-4437-8333-36efd112a62b" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_04_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingRole" />
+    </UnitTest>
+    <UnitTest name="_08_VerifyGETRequestForCheckingExistingUserInTheSameOranizationByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="453db77f-86ec-dc2f-9c31-6573a0d69bd4">
+      <Execution id="f29cac27-d398-4629-a811-cd7633ca6114" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_08_VerifyGETRequestForCheckingExistingUserInTheSameOranizationByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="ExpiredTokenReturnsErrorAndRefreshRestoresAccess" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="cf59f219-5f52-eaa9-cbd5-b17aa85de66d">
+      <Execution id="c1ee3729-f79f-4406-8764-d051ec4b39bc" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.AccessTokenRefreshFeature" name="ExpiredTokenReturnsErrorAndRefreshRestoresAccess" />
+    </UnitTest>
+    <UnitTest name="_05_VerifyGETAPIRetrievesExistingUserSuccessfullyByAdminRole" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="8c18f31b-3c56-de95-47f8-cd1c135a5289">
+      <Execution id="2279b3cc-74bf-4324-a391-70c32816fc49" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_05_VerifyGETAPIRetrievesExistingUserSuccessfullyByAdminRole" />
+    </UnitTest>
+    <UnitTest name="RunAllModulesInParallel_WithConsolidatedReport" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="8c7d6465-320a-22c5-22b7-cb7d21269e2d">
+      <Execution id="b3818da9-ea11-40ea-a934-c1b6067add05" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.ParallelExecution.ParallelOrchestratorTests" name="RunAllModulesInParallel_WithConsolidatedReport" />
+    </UnitTest>
+    <UnitTest name="_14_VerifyPOSTRequestForUploadingMultipleUserByExcelFileInTheSameOranizationByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="567d839c-0ec4-8645-9780-36c0d7331af9">
+      <Execution id="d3e461f6-3f30-4205-ab6a-3752a5247c32" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_14_VerifyPOSTRequestForUploadingMultipleUserByExcelFileInTheSameOranizationByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="GetRequestWithMultipleHeadersAndQueryParams" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="7780849d-1cd6-408c-51fa-6603372e7d87">
+      <Execution id="15e65459-dc5e-4126-9d4c-5326479b715e" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="GetRequestWithMultipleHeadersAndQueryParams" />
+    </UnitTest>
+    <UnitTest name="_12_VerifyFlexibleGETRequestRetrievesExistingUserWithDynamicHeaders" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="03c82e56-7393-914c-9005-c2226df140ff">
+      <Execution id="1de8fe8f-745e-4abb-bc59-6738b88c983a" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_12_VerifyFlexibleGETRequestRetrievesExistingUserWithDynamicHeaders" />
+    </UnitTest>
+    <UnitTest name="VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(&quot;Api&quot;,&quot;HospitalRole&quot;,&quot;User API Testing&quot;,&quot;OK&quot;,&quot;200&quot;,&quot;17&quot;,null)" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="9bf24e8b-d2a7-f123-1dc4-0bf2bcb8a421">
+      <Execution id="42b6c8d3-9a00-4969-9815-ac2a77bea1ca" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(&quot;Api&quot;,&quot;HospitalRole&quot;,&quot;User API Testing&quot;,&quot;OK&quot;,&quot;200&quot;,&quot;17&quot;,null)" />
+    </UnitTest>
+    <UnitTest name="_09_VerifyGETRequestForCheckingExistingUserNotInTheSameOranizationByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="19fe57ed-f64c-75fa-851d-cb9bc1450df7">
+      <Execution id="2ef1a773-8603-46fb-bdcc-31ef1f0e79ac" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_09_VerifyGETRequestForCheckingExistingUserNotInTheSameOranizationByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="_03_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingSuperAdminRole" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="f53bcaa1-864a-6423-0199-435f2eb55e68">
+      <Execution id="a4eb4568-f43c-4284-9475-eaa79b08ebc3" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_03_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingSuperAdminRole" />
+    </UnitTest>
+    <UnitTest name="_10_VerifyGETRequestForCheckingNewUserInTheSameOranizationByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="dec51265-f825-6da8-5d00-669fd0505231">
+      <Execution id="c52860c6-36d2-4e17-beb1-5fd0b321e930" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_10_VerifyGETRequestForCheckingNewUserInTheSameOranizationByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="_07_VerifyGETAPIRetrievesUserNotExistByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="c5d8be1d-c072-a9b1-2f78-a36b5f30e838">
+      <Execution id="45d06639-61d2-48d0-8ba6-b668a988352d" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_07_VerifyGETAPIRetrievesUserNotExistByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="GETRequestWithMultipleHeadersAndQueryParams" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="09a14533-4ea0-8b8d-a0c1-89ce4f3d2940">
+      <Execution id="ed5a8686-1fe6-4003-9cc8-1d7d5325e5c3" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="GETRequestWithMultipleHeadersAndQueryParams" />
+    </UnitTest>
+    <UnitTest name="_02_VerifyPOSTUserAPIGeneratesTokenSuccessfullyForRoleThroughValidLogin" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="df664544-4cd1-8ee0-09ac-010fef214b8c">
+      <Execution id="e3ed72e8-45e8-4fde-96c5-2ad01884390c" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_02_VerifyPOSTUserAPIGeneratesTokenSuccessfullyForRoleThroughValidLogin" />
+    </UnitTest>
+    <UnitTest name="_06_VerifyGETAPIRetrievesExistingUserSuccessfullyByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="fc5db330-b4a8-8577-de82-594062d6cfe6">
+      <Execution id="be9c59ce-2880-4c25-9b52-d0223dcff03b" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_06_VerifyGETAPIRetrievesExistingUserSuccessfullyByHospitalCredential" />
+    </UnitTest>
+    <UnitTest name="VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(&quot;Api&quot;,&quot;SuperAdmin&quot;,&quot;User API Testing&quot;,&quot;OK&quot;,&quot;200&quot;,&quot;16&quot;,null)" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="54d20ba9-cfe0-5d91-083e-834b32778c12">
+      <Execution id="5d9a4bce-a125-4264-9b91-39609421e4fe" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="VerifyGETAPIRetrievesExistingUserSuccessfullyByRole(&quot;Api&quot;,&quot;SuperAdmin&quot;,&quot;User API Testing&quot;,&quot;OK&quot;,&quot;200&quot;,&quot;16&quot;,null)" />
+    </UnitTest>
+    <UnitTest name="_01_VerifyPOSTUserAPIGeneratesTokenSuccessfullyForSuperAdminRoleThroughValidLogin" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="50abe67e-adce-44fd-59a7-870e0a7ba27c">
+      <Execution id="7a4008cd-44e2-481a-823a-b8716089407a" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_01_VerifyPOSTUserAPIGeneratesTokenSuccessfullyForSuperAdminRoleThroughValidLogin" />
+    </UnitTest>
+    <UnitTest name="_13_VerifyPOSTRequestForCheckingNewUserInTheSameOranizationByHospitalCredential" storage="c:\users\ibz\source\repos\restapi_automationframework\bin\debug\net8.0\enterpriseapiautomationframework.dll" id="c350a97c-a745-852f-ec51-0dbd43d775d8">
+      <Execution id="3b51f9bf-f946-4a53-8643-946241adea87" />
+      <TestMethod codeBase="C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll" adapterTypeName="executor://nunit3testexecutor/" className="EnterpriseApiAutomationFramework.Features.APITestingFeature" name="_13_VerifyPOSTRequestForCheckingNewUserInTheSameOranizationByHospitalCredential" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="fc5db330-b4a8-8577-de82-594062d6cfe6" executionId="be9c59ce-2880-4c25-9b52-d0223dcff03b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0decf63e-8f52-84d6-379b-5c5ddde3683b" executionId="778f480d-ae33-4437-8333-36efd112a62b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f53bcaa1-864a-6423-0199-435f2eb55e68" executionId="a4eb4568-f43c-4284-9475-eaa79b08ebc3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="567d839c-0ec4-8645-9780-36c0d7331af9" executionId="d3e461f6-3f30-4205-ab6a-3752a5247c32" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="03c82e56-7393-914c-9005-c2226df140ff" executionId="1de8fe8f-745e-4abb-bc59-6738b88c983a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="09a14533-4ea0-8b8d-a0c1-89ce4f3d2940" executionId="ed5a8686-1fe6-4003-9cc8-1d7d5325e5c3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c350a97c-a745-852f-ec51-0dbd43d775d8" executionId="3b51f9bf-f946-4a53-8643-946241adea87" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c5d8be1d-c072-a9b1-2f78-a36b5f30e838" executionId="45d06639-61d2-48d0-8ba6-b668a988352d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="df664544-4cd1-8ee0-09ac-010fef214b8c" executionId="e3ed72e8-45e8-4fde-96c5-2ad01884390c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8c18f31b-3c56-de95-47f8-cd1c135a5289" executionId="2279b3cc-74bf-4324-a391-70c32816fc49" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="50abe67e-adce-44fd-59a7-870e0a7ba27c" executionId="7a4008cd-44e2-481a-823a-b8716089407a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="453db77f-86ec-dc2f-9c31-6573a0d69bd4" executionId="f29cac27-d398-4629-a811-cd7633ca6114" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="54d20ba9-cfe0-5d91-083e-834b32778c12" executionId="5d9a4bce-a125-4264-9b91-39609421e4fe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8c7d6465-320a-22c5-22b7-cb7d21269e2d" executionId="b3818da9-ea11-40ea-a934-c1b6067add05" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dec51265-f825-6da8-5d00-669fd0505231" executionId="c52860c6-36d2-4e17-beb1-5fd0b321e930" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9bf24e8b-d2a7-f123-1dc4-0bf2bcb8a421" executionId="42b6c8d3-9a00-4969-9815-ac2a77bea1ca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="33522d9a-39b2-df89-60f4-87d65a06f245" executionId="509359b1-f434-4d56-aecc-b320f71e260b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="19fe57ed-f64c-75fa-851d-cb9bc1450df7" executionId="2ef1a773-8603-46fb-bdcc-31ef1f0e79ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7780849d-1cd6-408c-51fa-6603372e7d87" executionId="15e65459-dc5e-4126-9d4c-5326479b715e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cf59f219-5f52-eaa9-cbd5-b17aa85de66d" executionId="c1ee3729-f79f-4406-8764-d051ec4b39bc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="20" executed="19" passed="13" failed="6" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>NUnit Adapter 1.0.0.0: Test execution started&#xD;
+Running all tests in C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\EnterpriseApiAutomationFramework.dll&#xD;
+   NUnit3TestExecutor discovered 19 of 20 NUnit test cases using Current Discovery mode, Non-Explicit run&#xD;
+Given User has a valid access token on "Auth" base url&#xD;
+-&gt; done: TokenSteps.GivenUserHasAValidAccessTokenOnBaseUrl("Auth") (1.7s)&#xD;
+When User applies an expired access token&#xD;
+-&gt; done: TokenSteps.WhenUserAppliesAnExpiredAccessToken() (0.0s)&#xD;
+When User sends GET request on "Api" base url with current token only&#xD;
+-&gt; done: TokenSteps.WhenUserSendsGetRequestOnBaseUrlWithCurrentTokenOnly("Api") (0.9s)&#xD;
+Then the API status code should be 401&#xD;
+-&gt; error: Expected ((int)response.StatusCode) to be 401, but found 200 (difference of -201). (0.0s)&#xD;
+And Response should indicate token error "expired"&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User refreshes the access token on "Auth" base url&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User sends GET request for feature "Access Token Refresh"&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then the API status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.3s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url&#xD;
+-&gt; done: UserSteps.PostRequestOnBaseUrl("Auth") (1.3s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.9s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url&#xD;
+-&gt; done: UserSteps.PostRequestOnBaseUrl("Auth") (1.7s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.9s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.9s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.9s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the existing logged_in user is exist "Api"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheExistingLogged_InUserIsExist("Api") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.6s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the existing logged_in user is exist "Api"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheExistingLogged_InUserIsExist("Api") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.1s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the Email logged_in user is exist "Api"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheEmailLogged_InUserIsExist("Api") (0.3s)&#xD;
+And Status should be NoContent&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("NoContent") (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.4s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheUserExistInTheSameOrganization("ValidateCheckExis...") (0.3s)&#xD;
+And validate the response for the existing user in the same organization "ValidateCheckExistingEmail" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be exist and also in same Business Unit Id 'False'.&#xD;
+Already Email exist and in the same business unit id&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.0s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.1s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (1.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_OtherBusinessUnitId, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getCheckAvability", "ValidateCheckExis...", "ValidateCheckExis...", "CacheId", "-", "-") (0.3s)&#xD;
+Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_OtherBusinessUnitId" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be exist but not in same Business Unit Id 'True'.&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.7s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getCheckAvability", "ValidateCheckExis...", "ValidateCheckExis...", "CacheId", "-", "-") (0.3s)&#xD;
+Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be not exist, create a new organization&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.3s)&#xD;
+And Status should be NoContent&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("NoContent") (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.5s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+And Confirm the User exist in the Same Organization "ValidateCheckExistingEmail"&#xD;
+-&gt; done: UserSteps.ThenConfirmTheUserExistInTheSameOrganization("ValidateCheckExis...") (0.3s)&#xD;
+And existingUser info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenExistingUserInfoFromTheLastResponseIsStoredInAppsettings() (0.0s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.2s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (1.1s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible GET request on "Api" base url for endpoint "getExistingUser" with headers "CacheId"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithHeaders("Api", "getExistingUser", "CacheId") (0.3s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (1.1s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getCheckAvability" with url placeholders "ValidateCheckExistingEmail_Incorrect, BusinessUnitMemberId" target "ValidateCheckExistingEmail, ValidateBusinessUnitId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getCheckAvability", "ValidateCheckExis...", "ValidateCheckExis...", "CacheId", "-", "-") (0.3s)&#xD;
+Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"&#xD;
+Expected IsAvailableUserEmail to be not exist, create a new organization&#xD;
+-&gt; done: UserSteps.ThenValidateTheResponseForTheExistingUserInTheSameOrganizationAnd("ValidateCheckExis...", "ValidateCheckExis...") (0.3s)&#xD;
+And Status should be NoContent&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("NoContent") (0.0s)&#xD;
+When User sends flexible "Post" request on "Api" base url for endpoint "post_Register" with url placeholders "-" target "-" headers "CacheId" query params "-" body "register_Body"&#xD;
+-&gt; error: '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8. (0.0s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "HospitalRole"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "HospitalRole") (1.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Post, "Api", "addMultipleMember...", "-", "-", "CacheId", "-", "-") (0.7s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And Store the info for AddMultipleMemberByExcel&#xD;
+-&gt; done: LoginSteps.ThenStoreTheInfoForAddMultipleMemberByExcel() (0.1s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "-" target "-" headers "CacheId" query params "EmailId" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getExistingUser", "-", "-", "CacheId", "EmailId", "-") (0.2s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "getExistingUser" with url placeholders "ValidateCheckExistingEmail" target "EmailId" headers "CacheId" query params "-" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "getExistingUser", "ValidateCheckExis...", "EmailId", "CacheId", "-", "-") (0.3s)&#xD;
+Then Status should be NoContent&#xD;
+-&gt; error: Expected response.StatusCode.ToString() to be "NoContent" with a length of 9, but "OK" has a length of 2, differs near "OK" (index 0). (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Auth" base url with "SuperAdmin"&#xD;
+-&gt; done: UserSteps.WhenUserSendsPOSTRequestOnBaseUrlWith("Auth", "SuperAdmin") (1.6s)&#xD;
+Then Status should be OK&#xD;
+-&gt; done: UserSteps.ThenStatusShouldBe("OK") (0.0s)&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; done: LoginSteps.ThenAccessTokenIsStoredFromLastLoginResponse() (0.0s)&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; done: UserSteps.GetRequestForFeatureWithCachedId("User API Testing") (0.8s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; done: UserSteps.ValidateStatusCode(200) (0.0s)&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; done: LoginSteps.ThenSessionInfoFromLastResponseIsStoredInAppSettings() (0.0s)&#xD;
+When User sends flexible "Get" request on "Api" base url for endpoint "CheckExistingUserAvailabilityInfo" with url placeholders "-" target "-" headers "CacheId" query params "EmailId" body "-"&#xD;
+-&gt; done: UserSteps.FlexibleGetRequestWithAllParts(Get, "Api", "CheckExistingUser...", "-", "-", "CacheId", "EmailId", "-") (0.2s)&#xD;
+Then Status code should be 200&#xD;
+-&gt; error: Expected ((int)response.StatusCode) to be 200, but found 404 (difference of 204). (0.0s)&#xD;
+&#xD;
+When User sends POST request on "Api" base url with "SuperAdmin"&#xD;
+-&gt; error: '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8. (0.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; skipped because of previous errors&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; skipped because of previous errors&#xD;
+And Confirm the existing logged_in user is exist "User API Testing"&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+&#xD;
+When User sends POST request on "Api" base url with "HospitalRole"&#xD;
+-&gt; error: '{' is an invalid start of a property name. Expected a '"'. LineNumber: 15 | BytePositionInLine: 8. (0.0s)&#xD;
+Then Status should be OK&#xD;
+-&gt; skipped because of previous errors&#xD;
+And the access token is stored from the last login response&#xD;
+-&gt; skipped because of previous errors&#xD;
+When User sends GET request for feature "User API Testing" with cached id&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+And session info from the last response is stored in appsettings&#xD;
+-&gt; skipped because of previous errors&#xD;
+And Confirm the existing logged_in user is exist "User API Testing"&#xD;
+-&gt; skipped because of previous errors&#xD;
+Then Status code should be 200&#xD;
+-&gt; skipped because of previous errors&#xD;
+&#xD;
+RunAllModulesInParallel_WithConsolidatedReport: Runs parallel execution via out-of-process ParallelTestRunner host.&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

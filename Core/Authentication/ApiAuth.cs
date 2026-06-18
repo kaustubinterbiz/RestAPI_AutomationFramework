@@ -53,6 +53,11 @@ public static class ApiAuth
     // key: CacheId, BusinessUnitMemberId, CompanyBusinessUnitId, BusinessUnitId, EmailId, UserName, MemberId
     public static void SaveId_GetSessionInfo(ScenarioContext context, string? getSessionInfoBody, string? key)
     {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            throw new ArgumentException("Session info key is required.", nameof(key));
+        }
+
         var value = InfoResponseParse.TryGetSessionInfoValue(getSessionInfoBody, key);
         if (string.IsNullOrWhiteSpace(value))
         {

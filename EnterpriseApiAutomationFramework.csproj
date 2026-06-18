@@ -12,6 +12,8 @@
     <None Remove="ParallelTestRunner\**" />
     <Compile Remove="scripts\**" />
     <None Remove="scripts\**" />
+    <Compile Remove="tmp_ser.cs" />
+    <None Include="tmp_ser.cs" />
   </ItemGroup>
 
   <ItemGroup>
