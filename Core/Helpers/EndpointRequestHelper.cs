@@ -13,9 +13,7 @@ public static class EndpointRequestHelper
         string endpointJsonKey = "EndpointJson",
         string endpointKey = "get")
     {
-        ConfigReaderNew.LoadConfig(envFile);
-        ConfigReaderNew.LoadConfig(ConfigReaderNew.GetValue(endpointJsonKey));
-        var endpoint = ConfigReaderNew.GetValue(endpointKey);
+        var endpoint = ExcelConfigReader.GetEndpoint(endpointKey);
         return EndpointHelper.ResolveEndpoint(endpoint).Endpoint;
     }
 
@@ -32,6 +30,13 @@ public static class EndpointRequestHelper
             return fromAppSettings;
         }
 
+        var fromExcel = ExcelConfigReader.GetEndpointResponseValue(key);
+        if (!string.IsNullOrWhiteSpace(fromExcel))
+        {
+            return fromExcel;
+        }
+
+        ConfigReaderNew.LoadConfig("appsettings.json");
         return RequireValue(key, ConfigReaderNew.GetValue(key));
     }
 
@@ -40,7 +45,7 @@ public static class EndpointRequestHelper
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidOperationException(
-                $"Cached config value '{key}' is missing. Run GetSession step or check appsettings.json / RequestEndPoint.json.");
+                $"Cached config value '{key}' is missing. Run GetSession step or check appsettings.json / RequestEndPoint.xlsx.");
         }
 
         return value;

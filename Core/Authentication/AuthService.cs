@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
+using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Models.Request;
 using EnterpriseApiAutomationFramework.Models.Response;
 using RestSharp;
@@ -48,7 +49,7 @@ public static class AuthService
             ?? throw new JsonException($"Failed to deserialize login credentials for '{loginRoleKey}'.");
 
         ConfigReaderNew.LoadConfig(endpointJsonPath);
-        var loginEndpoint = ConfigReaderNew.GetValue("post");
+        var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
 
         return await apiClient.LoginPostAsync(loginEndpoint, credentials, bearerToken);
     }
@@ -57,8 +58,7 @@ public static class AuthService
     public static async Task<RestResponse> LoginWithBearerOnlyAsync(ApiClient apiClient, string bearerToken)
     {
         ConfigReaderNew.LoadConfig(AppSettingsFile);
-        ConfigReaderNew.LoadConfig(ConfigReaderNew.GetValue("EndpointJson"));
-        var loginEndpoint = ConfigReaderNew.GetValue("post");
+        var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
         return await apiClient.LoginPostBearerOnlyAsync(loginEndpoint, bearerToken);
     }
 
@@ -81,7 +81,7 @@ public static class AuthService
                 $"Failed to deserialize login credentials for key '{loginRoleKey}' in '{loginJsonPath}'.");
 
         ConfigReaderNew.LoadConfig(endpointJsonPath);
-        var loginEndpoint = ConfigReaderNew.GetValue("post");
+        var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
 
         var response = await apiClient.LoginPostAsync(loginEndpoint, credentials);
 
@@ -123,7 +123,7 @@ public static class AuthService
                 $"Failed to deserialize login credentials for key '{roleType}' in '{loginJsonPath}'.");
 
         ConfigReaderNew.LoadConfig(endpointJsonPath);
-        var loginEndpoint = ConfigReaderNew.GetValue("post");
+        var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
 
         var response = await apiClient.LoginPostAsync(loginEndpoint, credentials);
 

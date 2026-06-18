@@ -31,7 +31,7 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
 
             if (updateEndpointId && !string.IsNullOrWhiteSpace(sessionInfo.CacheId))
             {
-                UpdateResponseValuesInJsonFile(appSettingsFile, "EndpointJson", "CacheId", sessionInfo.CacheId);
+                UpdateEndpointStoredValue("CacheId", sessionInfo.CacheId);
             }
 
             return sessionInfo;
@@ -57,7 +57,7 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
 
             if (updateEndpointId && !string.IsNullOrWhiteSpace(existingUserInfo.MemberId))
             {
-                UpdateResponseValuesInJsonFile(appSettingsFile, "EndpointJson", "MemberId", existingUserInfo.MemberId);
+                UpdateEndpointStoredValue("MemberId", existingUserInfo.MemberId);
             }
 
             return existingUserInfo;
@@ -129,11 +129,14 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             if (updateEndpointId && members.Count > 0
                 && !string.IsNullOrWhiteSpace(members[0].MemberId))
             {
-                UpdateResponseValuesInJsonFile(appSettingsFile, "EndpointJson", "MemberId", members[0].MemberId);
+                UpdateEndpointStoredValue("MemberId", members[0].MemberId);
             }
 
             return members;
         }
+
+        private static void UpdateEndpointStoredValue(string updateOnKey, string storedValue) =>
+            ExcelConfigWriter.UpsertEndpointResponse(updateOnKey, storedValue);
 
         //Dynamic Response Handler
         private static void UpdateResponseValuesInJsonFile(string jsonFilePath, string Jsonkey, string updateOnKey, string storedValue)

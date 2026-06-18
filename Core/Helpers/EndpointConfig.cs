@@ -1,19 +1,10 @@
-using EnterpriseApiAutomationFramework.Core.Configurations;
-
 namespace EnterpriseApiAutomationFramework.Core.Helpers;
 
 /// <summary>
-/// Reads API paths from TestData/Request Endpoint/RequestEndPoint.json.
+/// Reads API paths from RequestEndPoint.xlsx (Endpoints sheet), with JSON fallback.
 /// </summary>
 public static class EndpointConfig
 {
-    private const string AppSettingsFile = "appsettings.json";
-    private const string EndpointJsonKey = "EndpointJson";
-
-    public static string GetEndpoint(string endpointKey)
-    {
-        ConfigReaderNew.LoadConfig(AppSettingsFile);
-        ConfigReaderNew.LoadConfig(ConfigReaderNew.GetValue(EndpointJsonKey));
-        return ConfigReaderNew.GetValue(endpointKey);
-    }
+    public static string GetEndpoint(string endpointKey) =>
+        ExcelConfigReader.GetEndpoint(endpointKey);
 }
