@@ -18,8 +18,6 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="TestData\Login\LoginRequest.json" />
-    <None Remove="TestData\Request Endpoint\RequestBody.json" />
   </ItemGroup>
 
   <!-- Keeps key folders visible in Solution Explorer / IDE -->
@@ -32,6 +30,7 @@
     <Folder Include="Reports\Parallel\Consolidated\" />
     <Folder Include="Reports\Parallel\Workers\" />
     <Folder Include="scripts\" />
+    <Folder Include="TestData\Request Endpoint\" />
     <None Include="Reports\Html\.gitkeep" />
     <None Include="Reports\Parallel\Consolidated\.gitkeep" />
     <None Include="Reports\Parallel\Workers\.gitkeep" />
@@ -50,17 +49,7 @@
     <Content Include="appsettings.Staging.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\Login\LoginRequest.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="TestData\Login\ExpiredAccessToken.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\Request Endpoint\RequestBody.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Generator></Generator>
-    </Content>
-    <Content Include="TestData\Request Endpoint\RequestEndPoint.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <!-- Any file dropped in TestData/UploadFiles/ is copied to output automatically -->
