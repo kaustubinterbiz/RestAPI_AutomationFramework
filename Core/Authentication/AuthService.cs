@@ -13,7 +13,6 @@ public static class AuthService
 {
     private const string AppSettingsFile = "appsettings.json";
 
-
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -27,7 +26,7 @@ public static class AuthService
 
     public static Task<RestResponse> LoginAndStoreTokenAsync(ApiClient apiClient, string roleType = "AdminRole", bool forceRefresh = true) =>
         SharedTokenProvider.LoginAndStoreTokenAsync(apiClient, client => FetchTokenFromCredentialRoleType_ApiAsync(client, roleType), forceRefresh);
-   
+
     public static Task EnsureAuthenticatedAsync(ApiClient apiClient) =>
         SharedTokenProvider.EnsureAuthenticatedAsync(apiClient, FetchTokenFromApiAsync);
 
@@ -36,22 +35,16 @@ public static class AuthService
     {
         ConfigReaderNew.LoadConfig(AppSettingsFile);
 
-        var loginJsonPath = ConfigReaderNew.GetValue("LoginJson");
-        var endpointJsonPath = ConfigReaderNew.GetValue("EndpointJson");
         var loginRoleKey = ConfigReaderNew.GetValue("LoginRoleKey");
         if (string.IsNullOrWhiteSpace(loginRoleKey))
-        {
             loginRoleKey = "OrganizationRole";
-        }
 
-        var credentialsJson = ConfigReaderNew.GetJsonBody(loginJsonPath, loginRoleKey);
-        var credentials = JsonSerializer.Deserialize<LoginRequest>(credentialsJson, JsonOptions)
-            ?? throw new JsonException($"Failed to deserialize login credentials for '{loginRoleKey}'.");
-
-        ConfigReaderNew.LoadConfig(endpointJsonPath);
+        var credentials = DeserializeLoginCredentials(loginRoleKey);
         var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
+        var response = await apiClient.LoginPostAsync(loginEndpoint, credentials, bearerToken);
+        SaveLoginResponse(loginRoleKey, response, null);
 
-        return await apiClient.LoginPostAsync(loginEndpoint, credentials, bearerToken);
+        return response;
     }
 
     /// <summary>POST token endpoint with bearer only (simulates reuse/expired token without new ROPC login).</summary>
@@ -64,29 +57,19 @@ public static class AuthService
 
     private static async Task<(string? Token, DateTimeOffset ExpiresAtUtc, RestResponse Response)> FetchTokenFromApiAsync(ApiClient apiClient)
     {
-          ConfigReaderNew.LoadConfig(AppSettingsFile);
-
-        var loginJsonPath = ConfigReaderNew.GetValue("LoginJson");
-        var endpointJsonPath = ConfigReaderNew.GetValue("EndpointJson");
+        ConfigReaderNew.LoadConfig(AppSettingsFile);
 
         var loginRoleKey = ConfigReaderNew.GetValue("LoginRoleKey");
         if (string.IsNullOrWhiteSpace(loginRoleKey))
-        {
             loginRoleKey = "OrganizationRole";
-        }
 
-        var credentialsJson = ConfigReaderNew.GetJsonBody(loginJsonPath, loginRoleKey);
-        var credentials = JsonSerializer.Deserialize<LoginRequest>(credentialsJson, JsonOptions)
-            ?? throw new JsonException(
-                $"Failed to deserialize login credentials for key '{loginRoleKey}' in '{loginJsonPath}'.");
-
-        ConfigReaderNew.LoadConfig(endpointJsonPath);
+        var credentials = DeserializeLoginCredentials(loginRoleKey);
         var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
-
         var response = await apiClient.LoginPostAsync(loginEndpoint, credentials);
 
         if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
         {
+            SaveLoginResponse(loginRoleKey, response, null);
             return (null, default, response);
         }
 
@@ -95,8 +78,11 @@ public static class AuthService
 
         if (string.IsNullOrWhiteSpace(token))
         {
+            SaveLoginResponse(loginRoleKey, response, null);
             return (null, default, response);
         }
+
+        SaveLoginResponse(loginRoleKey, response, token);
 
         int? expiresInSeconds = null;
         if (!string.IsNullOrWhiteSpace(loginResponse?.expires_in)
@@ -109,26 +95,18 @@ public static class AuthService
         return (token, expiresAtUtc, response);
     }
 
-    private static async Task<(string? Token, DateTimeOffset ExpiresAtUtc, RestResponse Response)> 
+    private static async Task<(string? Token, DateTimeOffset ExpiresAtUtc, RestResponse Response)>
         FetchTokenFromCredentialRoleType_ApiAsync(ApiClient apiClient, string roleType)
     {
         ConfigReaderNew.LoadConfig(AppSettingsFile);
 
-        var loginJsonPath = ConfigReaderNew.GetValue("LoginJson");
-        var endpointJsonPath = ConfigReaderNew.GetValue("EndpointJson");
-
-        var credentialsJson = ConfigReaderNew.GetJsonBody(loginJsonPath, roleType);
-        var credentials = JsonSerializer.Deserialize<LoginRequest>(credentialsJson, JsonOptions)
-            ?? throw new JsonException(
-                $"Failed to deserialize login credentials for key '{roleType}' in '{loginJsonPath}'.");
-
-        ConfigReaderNew.LoadConfig(endpointJsonPath);
+        var credentials = DeserializeLoginCredentials(roleType);
         var loginEndpoint = ExcelConfigReader.GetEndpoint("post");
-
         var response = await apiClient.LoginPostAsync(loginEndpoint, credentials);
 
         if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
         {
+            SaveLoginResponse(roleType, response, null);
             return (null, default, response);
         }
 
@@ -137,8 +115,11 @@ public static class AuthService
 
         if (string.IsNullOrWhiteSpace(token))
         {
+            SaveLoginResponse(roleType, response, null);
             return (null, default, response);
         }
+
+        SaveLoginResponse(roleType, response, token);
 
         int? expiresInSeconds = null;
         if (!string.IsNullOrWhiteSpace(loginResponse?.expires_in)
@@ -149,5 +130,30 @@ public static class AuthService
 
         var expiresAtUtc = JwtTokenHelper.ResolveExpiry(token, expiresInSeconds);
         return (token, expiresAtUtc, response);
+    }
+
+    private static LoginRequest DeserializeLoginCredentials(string role)
+    {
+        var credentialsJson = ExcelConfigReader.GetLoginCredentialsJson(role);
+        return JsonSerializer.Deserialize<LoginRequest>(credentialsJson, JsonOptions)
+            ?? throw new JsonException($"Failed to deserialize login credentials for '{role}'.");
+    }
+
+    private static void SaveLoginResponse(string role, RestResponse response, string? token)
+    {
+        var status = ((int)response.StatusCode).ToString();
+        var snippet = string.IsNullOrWhiteSpace(token)
+            ? Truncate(response.Content, 120)
+            : Truncate(token, 40);
+
+        ExcelConfigWriter.UpsertLoginResponse(role, status, snippet);
+    }
+
+    private static string? Truncate(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        return value.Length <= maxLength ? value : value[..maxLength] + "...";
     }
 }

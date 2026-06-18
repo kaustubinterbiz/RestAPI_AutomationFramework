@@ -1,15 +1,22 @@
+using System.Text.Json;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 
 namespace EnterpriseApiAutomationFramework.Core.Helpers;
 
 /// <summary>
-/// Reads test configuration from Excel workbooks (Phase 1: RequestEndPoint).
+/// Reads test configuration from Excel workbooks (Phase 1+: RequestEndPoint, LoginRequest).
 /// Falls back to JSON files referenced in appsettings when Excel is unavailable.
 /// </summary>
 public static class ExcelConfigReader
 {
     private const string AppSettingsFile = "appsettings.json";
     private const string EndpointJsonKey = "EndpointJson";
+    private const string LoginJsonKey = "LoginJson";
+
+    private static readonly JsonSerializerOptions JsonWriteOptions = new()
+    {
+        PropertyNamingPolicy = null
+    };
 
     public static string GetEndpoint(string endpointKey)
     {
@@ -27,6 +34,33 @@ public static class ExcelConfigReader
         }
 
         return GetEndpointFromJsonFallback(endpointKey);
+    }
+
+    public static string GetLoginCredentialsJson(string role)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(role);
+
+        ExcelConfigBootstrap.EnsureLoginRequestWorkbook();
+
+        if (TryGetLoginRoleRow(role, out var row))
+        {
+            var credentials = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var field in TestConfigDefaults.LoginCredentialColumns)
+            {
+                if (row.TryGetValue(field, out var value) && !string.IsNullOrWhiteSpace(value))
+                    credentials[field] = value;
+            }
+
+            if (credentials.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Role '{role}' was found in '{TestConfigDefaults.LoginExcelFile}' but has no credential fields.");
+            }
+
+            return JsonSerializer.Serialize(credentials, JsonWriteOptions);
+        }
+
+        return GetLoginCredentialsFromJsonFallback(role);
     }
 
     public static string? GetEndpointResponseValue(string key)
@@ -72,6 +106,28 @@ public static class ExcelConfigReader
         return true;
     }
 
+    public static bool TryGetLoginRoleRow(string role, out Dictionary<string, string> row)
+    {
+        row = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        if (!WorkbookExists(TestConfigDefaults.LoginExcelFile))
+            return false;
+
+        var rows = ExcelReader.ReadSheet(
+            TestConfigDefaults.LoginExcelFile,
+            TestConfigDefaults.LoginRolesSheet);
+
+        var match = rows.FirstOrDefault(r =>
+            r.TryGetValue(TestConfigDefaults.RoleColumn, out var roleName)
+            && string.Equals(roleName.Trim(), role, StringComparison.OrdinalIgnoreCase));
+
+        if (match == null)
+            return false;
+
+        row = match;
+        return true;
+    }
+
     private static bool WorkbookExists(string fileName)
     {
         try
@@ -104,5 +160,18 @@ public static class ExcelConfigReader
         }
 
         return value;
+    }
+
+    private static string GetLoginCredentialsFromJsonFallback(string role)
+    {
+        ConfigReaderNew.LoadConfig(AppSettingsFile);
+        var loginJsonPath = ConfigReaderNew.GetValue(LoginJsonKey);
+        if (string.IsNullOrWhiteSpace(loginJsonPath))
+        {
+            throw new InvalidOperationException(
+                $"Login role '{role}' was not found in Excel and '{LoginJsonKey}' is not configured.");
+        }
+
+        return ConfigReaderNew.GetJsonBody(loginJsonPath, role);
     }
 }

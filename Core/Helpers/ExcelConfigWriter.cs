@@ -1,7 +1,7 @@
 namespace EnterpriseApiAutomationFramework.Core.Helpers;
 
 /// <summary>
-/// Writes runtime config/response values back to Excel workbooks (Phase 1: RequestEndPoint).
+/// Writes runtime config/response values back to Excel workbooks.
 /// </summary>
 public static class ExcelConfigWriter
 {
@@ -28,22 +28,51 @@ public static class ExcelConfigWriter
         if (!string.IsNullOrWhiteSpace(responseSnippet))
             updates[TestConfigDefaults.ResponseSnippetColumn] = responseSnippet;
 
-        UpsertKeyValue(
+        UpsertBySearchColumn(
             TestConfigDefaults.EndpointExcelFile,
             TestConfigDefaults.EndpointResponseSheet,
+            TestConfigDefaults.KeyColumn,
             key,
             updates);
     }
 
-    public static void UpsertKeyValue(
+    public static void UpsertLoginResponse(
+        string role,
+        string httpStatus,
+        string? tokenSnippet = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(role);
+        ArgumentException.ThrowIfNullOrWhiteSpace(httpStatus);
+
+        ExcelConfigBootstrap.EnsureLoginRequestWorkbook();
+
+        var updates = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            [TestConfigDefaults.HttpStatusColumn] = httpStatus,
+            [TestConfigDefaults.UpdatedAtColumn] = DateTime.UtcNow.ToString("O")
+        };
+
+        if (!string.IsNullOrWhiteSpace(tokenSnippet))
+            updates[TestConfigDefaults.TokenSnippetColumn] = tokenSnippet;
+
+        UpsertBySearchColumn(
+            TestConfigDefaults.LoginExcelFile,
+            TestConfigDefaults.LoginResponseSheet,
+            TestConfigDefaults.RoleColumn,
+            role,
+            updates);
+    }
+
+    public static void UpsertBySearchColumn(
         string fileName,
         string sheetName,
-        string key,
+        string searchColumn,
+        string searchValue,
         IReadOnlyDictionary<string, string> columnUpdates)
     {
         var rowData = new Dictionary<string, string>(columnUpdates, StringComparer.OrdinalIgnoreCase)
         {
-            [TestConfigDefaults.KeyColumn] = key
+            [searchColumn] = searchValue
         };
 
         try
@@ -51,8 +80,8 @@ public static class ExcelConfigWriter
             ExcelReader.UpdateRowWhere(
                 fileName,
                 sheetName,
-                TestConfigDefaults.KeyColumn,
-                key,
+                searchColumn,
+                searchValue,
                 new Dictionary<string, string>(columnUpdates, StringComparer.OrdinalIgnoreCase));
         }
         catch (InvalidOperationException)

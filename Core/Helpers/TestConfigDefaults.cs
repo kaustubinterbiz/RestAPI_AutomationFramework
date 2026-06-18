@@ -10,9 +10,24 @@ public static class TestConfigDefaults
     public const string EndpointSheet = "Endpoints";
     public const string EndpointResponseSheet = "Endpoint_Response";
 
+    public const string LoginExcelFile = "LoginRequest.xlsx";
+    public const string LoginRolesSheet = "Roles";
+    public const string LoginResponseSheet = "Login_Response";
+
     public const string KeyColumn = "Key";
     public const string ValueColumn = "Value";
+    public const string RoleColumn = "Role";
+    public const string TokenSnippetColumn = "TokenSnippet";
     public const string HttpStatusColumn = "HttpStatus";
     public const string ResponseSnippetColumn = "ResponseSnippet";
     public const string UpdatedAtColumn = "UpdatedAt";
+
+    public static readonly IReadOnlyList<string> LoginCredentialColumns =
+    [
+        "grant_type",
+        "client_id",
+        "scope",
+        "username",
+        "password"
+    ];
 }
