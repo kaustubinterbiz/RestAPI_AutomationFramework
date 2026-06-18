@@ -66,23 +66,36 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
         public static IList<AddMultipleMemberByExcel_ResponseModel>? SaveAddMultiMemberByExcelResponseToExcel(
             string? responseContent,
             string excelFileName = AddMultipleMemberByExcelDefaults.FileName,
-            string responseSheetName = AddMultipleMemberByExcelDefaults.ResponseSheetName)
+            string responseSheetName = AddMultipleMemberByExcelDefaults.ResponseSheetName,
+            IReadOnlyList<string>? columnNames = null)
         {
             var members = InfoResponseParse.TryAddMultipleMemberByExcelList(responseContent)
                 ?? throw new InvalidOperationException(
                     "Could not parse AddMultipleMemberByExcel response. Expected a JSON array.");
 
+            var columnOrder = columnNames is { Count: > 0 }
+                ? columnNames
+                : InfoResponseParse.GetAddMultipleMemberByExcelPropertyNames();
+
             var rows = members
-                .Select(m => InfoResponseParse
-                    .ToAddMultiMemberByExcelPropertyDictionary(m, includeEmpty: true)
-                    .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase))
+                .Select(m =>
+                {
+                    var allProps = InfoResponseParse
+                        .ToAddMultiMemberByExcelPropertyDictionary(m, includeEmpty: true)
+                        .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+
+                    return columnOrder.ToDictionary(
+                        col => col,
+                        col => allProps.TryGetValue(col, out var v) ? v : string.Empty,
+                        StringComparer.OrdinalIgnoreCase);
+                })
                 .ToList();
 
             ExcelReader.ReplaceSheetData(
                 excelFileName,
                 responseSheetName,
                 rows,
-                InfoResponseParse.GetAddMultipleMemberByExcelPropertyNames());
+                columnOrder);
 
             return members;
         }
