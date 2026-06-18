@@ -1545,3 +1545,4 @@ C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\RBush.dll
 C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\SixLabors.Fonts.dll
 C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\System.IO.Packaging.dll
 C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\TestData\UploadFiles\Sample_File_Member.xlsx
+C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\TestData\UploadFiles\RequestEndPoint.xlsx
