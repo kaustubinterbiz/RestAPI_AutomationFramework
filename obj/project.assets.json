@@ -4441,7 +4441,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\33fd480c9661fbda006ee950630ec4ef\\nuget": {},
+    "C:\\Users\\ibz\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -4450,7 +4450,7 @@
       "projectUniqueName": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
       "projectName": "EnterpriseApiAutomationFramework",
       "projectPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
-      "packagesPath": "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\33fd480c9661fbda006ee950630ec4ef\\nuget",
+      "packagesPath": "C:\\Users\\ibz\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
