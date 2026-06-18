@@ -146,7 +146,7 @@
         When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"
         Then Status code should be 200
         #And Store the info for AddMultipleMemberByExcel
-	    And Store the AddMultipleMemberByExcel response in excel file "Sample_File_Member.xlsx" sheet "AddMultiMember_Response"
+	    And Store the AddMultipleMemberByExcel response in excel file "Sample_File_Member.xlsx" sheet "Sheet3"
         Then Validate the Status should be "User exists in same organization"
         #Then Status for AddMultipleMemberByExcel should be "User exists in same organization"
 

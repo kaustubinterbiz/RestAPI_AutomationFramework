@@ -831,7 +831,7 @@ namespace EnterpriseApiAutomationFramework.Features
 #line hidden
 #line 149
      await testRunner.AndAsync("Store the AddMultipleMemberByExcel response in excel file \"Sample_File_Member.xls" +
-                        "x\" sheet \"AddMultiMember_Response\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "x\" sheet \"Sheet3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 150
         await testRunner.ThenAsync("Validate the Status should be \"User exists in same organization\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
