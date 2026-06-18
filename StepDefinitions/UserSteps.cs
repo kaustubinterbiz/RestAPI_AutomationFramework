@@ -291,28 +291,22 @@ public class UserSteps
     public void ThenStatusShouldBe(string status) =>
         ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
 
+    [Then("Validate the Status should be {string}")]
+    public void ThenValidateTheStatusShouldBe(string expectedStatus) =>
+        AddMultipleMemberByExcelValidator.ValidateAllStatusesFromExcel(
+            AddMultipleMemberByExcelDefaults.FileName,
+            AddMultipleMemberByExcelDefaults.ResponseSheetName,
+            expectedStatus);
+
+    [Then(@"Validate all member statuses in excel file ""(.*)"" sheet ""(.*)"" should be ""(.*)""")]
+    public void ThenValidateAllMemberStatusesInExcel(string fileName, string sheetName, string expectedStatus) =>
+        AddMultipleMemberByExcelValidator.ValidateAllStatusesFromExcel(fileName, sheetName, expectedStatus);
+
     [Then("Status for AddMultipleMemberByExcel should be {string}")]
-    public void ThenStatusForAddMultipleMemberByExcelShouldBe(string status)
+    public void ThenStatusForAddMultipleMemberByExcelShouldBe(string expectedStatus)
     {
-        if(string.IsNullOrWhiteSpace(status).Equals("User exists in same organization"))
-        {
-            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
-            Console.WriteLine("Member already exist");
-        }
-        else if(string.IsNullOrWhiteSpace(status).Equals("User exists in different organization"))
-        {
-            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
-            Console.WriteLine("Member already exist in different organization");
-        }
-        
-        if (string.IsNullOrWhiteSpace(status).Equals("Success! Member information added."))
-        {
-            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
-        }
-        else
-        {
-            ResponseValidator.ValidateStatus(TokenContext.GetLastResponse(_context), status);
-        }
+        var response = TokenContext.GetLastResponse(_context);
+        AddMultipleMemberByExcelValidator.ValidateAllMemberStatusesFromResponse(response.Content, expectedStatus);
     }
 
 }
