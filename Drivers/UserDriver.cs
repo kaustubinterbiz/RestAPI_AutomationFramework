@@ -109,9 +109,7 @@ public class UserDriver
         await ApiAuth.EnsureReadyAsync(_apiClient);
 
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
-        ConfigReaderNew.LoadConfig(AppSettingsFile);
-        var bodyPath = ConfigReaderNew.GetValue(bodyFileKey);
-        var json = ConfigReaderNew.GetJsonBody(bodyPath, bodyKey);
+        var json = ExcelConfigReader.GetRequestBodyJson(bodyKey);
 
         return await _apiClient.PostAsync(endpoint, json, host: host ?? ApiHostContext.CurrentOrDefault);
     }

@@ -14,6 +14,11 @@ public static class TestConfigDefaults
     public const string LoginRolesSheet = "Roles";
     public const string LoginResponseSheet = "Login_Response";
 
+    public const string BodyExcelFile = "RequestBody.xlsx";
+    public const string BodyResponseSheet = "Body_Response";
+    public const string FieldColumn = "Field";
+    public const string BodyRawJsonMarker = "_body";
+
     public const string KeyColumn = "Key";
     public const string ValueColumn = "Value";
     public const string RoleColumn = "Role";

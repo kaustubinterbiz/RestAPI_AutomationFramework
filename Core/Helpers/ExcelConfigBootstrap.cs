@@ -13,6 +13,7 @@ public static class ExcelConfigBootstrap
     private const string AppSettingsFile = "appsettings.json";
     private const string EndpointJsonKey = "EndpointJson";
     private const string LoginJsonKey = "LoginJson";
+    private const string BodyJsonKey = "JsonBody";
 
     public static void EnsureRequestEndPointWorkbook()
     {
@@ -109,6 +110,78 @@ public static class ExcelConfigBootstrap
         responseSheet.Cell(1, 4).Value = TestConfigDefaults.UpdatedAtColumn;
 
         workbook.SaveAs(excelPath);
+    }
+
+    public static void EnsureRequestBodyWorkbook()
+    {
+        var excelPath = GetWorkbookWritePath(TestConfigDefaults.BodyExcelFile);
+        if (File.Exists(excelPath))
+            return;
+
+        ConfigReaderNew.LoadConfig(AppSettingsFile);
+        var jsonPath = ConfigReaderNew.GetValue(BodyJsonKey);
+        if (string.IsNullOrWhiteSpace(jsonPath))
+            throw new InvalidOperationException($"'{BodyJsonKey}' is not set in '{AppSettingsFile}'.");
+
+        var resolvedJsonPath = ConfigReaderNew.ResolvePathForRead(jsonPath);
+        var jsonText = File.ReadAllText(resolvedJsonPath);
+        var root = JsonNode.Parse(jsonText, documentOptions: new JsonDocumentOptions
+        {
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true
+        }) as JsonObject
+            ?? throw new InvalidOperationException($"Request body JSON root must be an object: '{resolvedJsonPath}'");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(excelPath)!);
+
+        using var workbook = new XLWorkbook();
+
+        foreach (var bodyEntry in root)
+        {
+            if (bodyEntry.Value is not JsonObject bodyObject)
+                continue;
+
+            var sheet = workbook.AddWorksheet(SanitizeSheetName(bodyEntry.Key));
+            sheet.Cell(1, 1).Value = TestConfigDefaults.FieldColumn;
+            sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+
+            if (IsFlatBodyObject(bodyObject))
+            {
+                var row = 2;
+                foreach (var field in bodyObject)
+                {
+                    sheet.Cell(row, 1).Value = field.Key;
+                    sheet.Cell(row, 2).Value = field.Value?.ToString() ?? string.Empty;
+                    row++;
+                }
+            }
+            else
+            {
+                sheet.Cell(2, 1).Value = TestConfigDefaults.BodyRawJsonMarker;
+                sheet.Cell(2, 2).Value = bodyObject.ToJsonString();
+            }
+        }
+
+        var responseSheet = workbook.AddWorksheet(TestConfigDefaults.BodyResponseSheet);
+        responseSheet.Cell(1, 1).Value = TestConfigDefaults.KeyColumn;
+        responseSheet.Cell(1, 2).Value = TestConfigDefaults.HttpStatusColumn;
+        responseSheet.Cell(1, 3).Value = TestConfigDefaults.ResponseSnippetColumn;
+        responseSheet.Cell(1, 4).Value = TestConfigDefaults.UpdatedAtColumn;
+
+        workbook.SaveAs(excelPath);
+    }
+
+    private static bool IsFlatBodyObject(JsonObject bodyObject) =>
+        bodyObject.All(property => property.Value is not (JsonObject or JsonArray));
+
+    private static string SanitizeSheetName(string sheetName)
+    {
+        var invalid = new[] { '\\', '/', '?', '*', '[', ']', ':' };
+        var sanitized = sheetName;
+        foreach (var ch in invalid)
+            sanitized = sanitized.Replace(ch, '_');
+
+        return sanitized.Length > 31 ? sanitized[..31] : sanitized;
     }
 
     private static string GetWorkbookWritePath(string fileName)

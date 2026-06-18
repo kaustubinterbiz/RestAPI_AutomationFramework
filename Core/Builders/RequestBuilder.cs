@@ -386,7 +386,7 @@ public class RequestBuilder
     /// Loads request body JSON from RequestBody.json (path from appsettings JsonBody).
     /// Formats:
     ///   null/empty/"-"              -> null (skip body)
-    ///   "register_Body"             -> appsettings JsonBody file + key
+    ///   "register_Body"             -> RequestBody.xlsx sheet (JSON fallback)
     ///   "TestData/.../RequestBody.json:register_Body" -> explicit file + key
     /// </summary>
     public static string? ResolveBodyFromConfig(
@@ -421,6 +421,10 @@ public class RequestBuilder
         }
 
         ArgumentException.ThrowIfNullOrWhiteSpace(jsonKey);
-        return ConfigReaderNew.GetJsonBody(bodyFilePath, jsonKey);
+
+        if (colonIndex > 0)
+            return ConfigReaderNew.GetJsonBody(bodyFilePath, jsonKey);
+
+        return ExcelConfigReader.GetRequestBodyJson(jsonKey);
     }
 }

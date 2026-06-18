@@ -63,6 +63,33 @@ public static class ExcelConfigWriter
             updates);
     }
 
+    public static void UpsertBodyResponse(
+        string bodyKey,
+        string httpStatus,
+        string? responseSnippet = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(bodyKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(httpStatus);
+
+        ExcelConfigBootstrap.EnsureRequestBodyWorkbook();
+
+        var updates = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            [TestConfigDefaults.HttpStatusColumn] = httpStatus,
+            [TestConfigDefaults.UpdatedAtColumn] = DateTime.UtcNow.ToString("O")
+        };
+
+        if (!string.IsNullOrWhiteSpace(responseSnippet))
+            updates[TestConfigDefaults.ResponseSnippetColumn] = responseSnippet;
+
+        UpsertBySearchColumn(
+            TestConfigDefaults.BodyExcelFile,
+            TestConfigDefaults.BodyResponseSheet,
+            TestConfigDefaults.KeyColumn,
+            bodyKey,
+            updates);
+    }
+
     public static void UpsertBySearchColumn(
         string fileName,
         string sheetName,
