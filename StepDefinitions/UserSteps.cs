@@ -295,7 +295,7 @@ public class UserSteps
     public void ThenValidateTheStatusShouldBe(string expectedStatus) =>
         AddMultipleMemberByExcelValidator.ValidateAllStatusesFromExcel(
             AddMultipleMemberByExcelDefaults.FileName,
-            AddMultipleMemberByExcelDefaults.SheetName,
+            AddMultipleMemberByExcelDefaults.ResponseSheetName,
             expectedStatus);
 
     [Then(@"Validate all member statuses in excel file ""(.*)"" sheet ""(.*)"" should be ""(.*)""")]

@@ -87,6 +87,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties testdata_4login_4loginrequest_1json__JsonSchema="https://acp-protocol.dev/schemas/v1/vars.schema.json" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -11,8 +11,8 @@
         When User sends POST request on "Auth" base url
         Then Status should be OK
 
-    @Api @SuperAdmin @LoginByAdmin
-    Scenario:03.Verify GET API retrieves Cached_ID successfully using SuperAdmin role
+    @Api @SuperAdmin @LoginByAdmin @[api/v2/Session/GetSessionInfo/]
+    Scenario:03.Verify GET API retrieves Cached_ID successfully using SuperAdmin role 
         When User sends POST request on "Auth" base url with "SuperAdmin"
         Then Status should be OK
         And the access token is stored from the last login response
@@ -20,8 +20,8 @@
         Then Status code should be 200
         And session info from the last response is stored in appsettings
 
-    @Api @Env @LoginByEnv
-    Scenario:04.Verify GET API retrieves Cached_ID successfully using role
+    @Api @Env @LoginByEnv @[api/v2/Session/GetSessionInfo/]
+    Scenario:04.Verify GET API retrieves Cached_ID successfully using role 
         When User sends POST request on "Auth" base url
         Then Status should be OK
         And the access token is stored from the last login response
@@ -29,7 +29,7 @@
         Then Status code should be 200
         And session info from the last response is stored in appsettings
 
-    @Api @SuperAdmin @LoginByAdmin
+    @Api @SuperAdmin @LoginByAdmin @[api/Account/ExistingUser?emailId={EmailId}]
     Scenario:05.Verify GET API retrieves existing user successfully by Admin role
         When User sends POST request on "Auth" base url with "SuperAdmin"
         Then Status should be OK
@@ -40,7 +40,7 @@
         And Confirm the existing logged_in user is exist "Api"
         Then Status code should be 200
 
-    @Api @HospitalRole 
+    @Api @HospitalRole @[api/Account/ExistingUser?emailId={EmailId}]
     Scenario:06.Verify GET API retrieves existing user successfully by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -51,7 +51,7 @@
         And Confirm the existing logged_in user is exist "Api"
         Then Status code should be 200
 
-    @Api @HospitalRole
+    @Api @HospitalRole @[api/Account/ExistingUser?emailId={EmailId}]
     Scenario:07.Verify GET API retrieves user not exist by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -62,7 +62,7 @@
         And Confirm the Email logged_in user is exist "Api" 
 	    And Status should be NoContent
 
-    @Api
+    @Api @[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]
     Scenario:08.Verify GET Request for checking existing user in the same Oranization by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -74,7 +74,7 @@
 	    And validate the response for the existing user in the same organization "ValidateCheckExistingEmail" and "ValidateCheckExistingEmail"
         Then Status code should be 200
 
-    @Api
+    @Api @[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]
     Scenario:09.Verify GET Request for checking existing user not in the same Oranization by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -86,7 +86,7 @@
 	    Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_OtherBusinessUnitId" and "ValidateCheckExistingEmail"
         Then Status code should be 200
 
-    @Api
+    @Api @[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]
     Scenario:10.Verify GET Request for checking new user in the same Oranization by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -98,7 +98,7 @@
 	    Then validate the response for the existing user in the same organization "ValidateCheckExistingEmail_Incorrect" and "ValidateCheckExistingEmail"
         And Status should be NoContent
 
-    @Api
+    @Api @[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]
     Scenario:11.Verify existing user in the same Organization by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -110,7 +110,7 @@
         And existingUser info from the last response is stored in appsettings
         Then Status code should be 200
 
-    @Api @SuperAdmin @FlexibleRequest
+    @Api @SuperAdmin @FlexibleRequest @[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]
     Scenario:12.Verify flexible GET request retrieves existing user with dynamic headers
         When User sends POST request on "Auth" base url with "SuperAdmin"
         Then Status should be OK
@@ -121,7 +121,7 @@
         When User sends flexible GET request on "Api" base url for endpoint "getExistingUser" with headers "CacheId"
         Then Status code should be 200
 
-    @Api
+    @Api @[api/Account/Register]
     Scenario:13.Verify POST Request for checking new user in the same Oranization by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -135,7 +135,7 @@
         When User sends flexible "Post" request on "Api" base url for endpoint "post_Register" with url placeholders "-" target "-" headers "CacheId" query params "-" body "register_Body"
         Then Status code should be 200
 
-    @Api
+    @Api @[api/Account/AddMultipleMemberByExce]  
     Scenario:14.Verify POST Request for uploading multiple user by excel file in the same Oranization by HospitalCredential
         When User sends POST request on "Auth" base url with "HospitalRole"
         Then Status should be OK
@@ -146,7 +146,7 @@
         When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"
         Then Status code should be 200
         #And Store the info for AddMultipleMemberByExcel
-	    And Store the AddMultipleMemberByExcel response in excel file "Sample_File_Member.xlsx" sheet "Sheet3"
+	    And Store the AddMultipleMemberByExcel response in excel file "Sample_File_Member.xlsx" sheet "Member_Respons_UserAlreadyExist"
         Then Validate the Status should be "User exists in same organization"
         #Then Status for AddMultipleMemberByExcel should be "User exists in same organization"
 

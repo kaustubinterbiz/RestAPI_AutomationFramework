@@ -190,12 +190,14 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("SuperAdmin")]
         [global::NUnit.Framework.CategoryAttribute("LoginByAdmin")]
+        [global::NUnit.Framework.CategoryAttribute("[api/v2/Session/GetSessionInfo/]")]
         public async global::System.Threading.Tasks.Task _03_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingSuperAdminRole()
         {
             string[] tagsOfScenario = new string[] {
                     "Api",
                     "SuperAdmin",
-                    "LoginByAdmin"};
+                    "LoginByAdmin",
+                    "[api/v2/Session/GetSessionInfo/]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "2";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("03.Verify GET API retrieves Cached_ID successfully using SuperAdmin role", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -238,12 +240,14 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("Env")]
         [global::NUnit.Framework.CategoryAttribute("LoginByEnv")]
+        [global::NUnit.Framework.CategoryAttribute("[api/v2/Session/GetSessionInfo/]")]
         public async global::System.Threading.Tasks.Task _04_VerifyGETAPIRetrievesCached_IDSuccessfullyUsingRole()
         {
             string[] tagsOfScenario = new string[] {
                     "Api",
                     "Env",
-                    "LoginByEnv"};
+                    "LoginByEnv",
+                    "[api/v2/Session/GetSessionInfo/]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "3";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("04.Verify GET API retrieves Cached_ID successfully using role", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -286,12 +290,14 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("SuperAdmin")]
         [global::NUnit.Framework.CategoryAttribute("LoginByAdmin")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Account/ExistingUser?emailId={EmailId}]")]
         public async global::System.Threading.Tasks.Task _05_VerifyGETAPIRetrievesExistingUserSuccessfullyByAdminRole()
         {
             string[] tagsOfScenario = new string[] {
                     "Api",
                     "SuperAdmin",
-                    "LoginByAdmin"};
+                    "LoginByAdmin",
+                    "[api/Account/ExistingUser?emailId={EmailId}]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "4";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("05.Verify GET API retrieves existing user successfully by Admin role", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -339,11 +345,13 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("06.Verify GET API retrieves existing user successfully by HospitalCredential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("HospitalRole")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Account/ExistingUser?emailId={EmailId}]")]
         public async global::System.Threading.Tasks.Task _06_VerifyGETAPIRetrievesExistingUserSuccessfullyByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
                     "Api",
-                    "HospitalRole"};
+                    "HospitalRole",
+                    "[api/Account/ExistingUser?emailId={EmailId}]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "5";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("06.Verify GET API retrieves existing user successfully by HospitalCredential", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -391,11 +399,13 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("07.Verify GET API retrieves user not exist by HospitalCredential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("HospitalRole")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Account/ExistingUser?emailId={EmailId}]")]
         public async global::System.Threading.Tasks.Task _07_VerifyGETAPIRetrievesUserNotExistByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
                     "Api",
-                    "HospitalRole"};
+                    "HospitalRole",
+                    "[api/Account/ExistingUser?emailId={EmailId}]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "6";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("07.Verify GET API retrieves user not exist by HospitalCredential", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -443,10 +453,12 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("08.Verify GET Request for checking existing user in the same Oranization by Hospi" +
             "talCredential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]")]
         public async global::System.Threading.Tasks.Task _08_VerifyGETRequestForCheckingExistingUserInTheSameOranizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api"};
+                    "Api",
+                    "[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "7";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("08.Verify GET Request for checking existing user in the same Oranization by Hospi" +
@@ -499,10 +511,12 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("09.Verify GET Request for checking existing user not in the same Oranization by H" +
             "ospitalCredential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]")]
         public async global::System.Threading.Tasks.Task _09_VerifyGETRequestForCheckingExistingUserNotInTheSameOranizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api"};
+                    "Api",
+                    "[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "8";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("09.Verify GET Request for checking existing user not in the same Oranization by H" +
@@ -555,10 +569,12 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("10.Verify GET Request for checking new user in the same Oranization by HospitalCr" +
             "edential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]")]
         public async global::System.Threading.Tasks.Task _10_VerifyGETRequestForCheckingNewUserInTheSameOranizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api"};
+                    "Api",
+                    "[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "9";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("10.Verify GET Request for checking new user in the same Oranization by HospitalCr" +
@@ -610,10 +626,12 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("11.Verify existing user in the same Organization by HospitalCredential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]")]
         public async global::System.Threading.Tasks.Task _11_VerifyExistingUserInTheSameOrganizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api"};
+                    "Api",
+                    "[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "10";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("11.Verify existing user in the same Organization by HospitalCredential", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -665,12 +683,14 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.CategoryAttribute("Api")]
         [global::NUnit.Framework.CategoryAttribute("SuperAdmin")]
         [global::NUnit.Framework.CategoryAttribute("FlexibleRequest")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]")]
         public async global::System.Threading.Tasks.Task _12_VerifyFlexibleGETRequestRetrievesExistingUserWithDynamicHeaders()
         {
             string[] tagsOfScenario = new string[] {
                     "Api",
                     "SuperAdmin",
-                    "FlexibleRequest"};
+                    "FlexibleRequest",
+                    "[api/Member/CheckEmailAvailibility?EmailID=&BusinessUnitID=]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "11";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("12.Verify flexible GET request retrieves existing user with dynamic headers", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -719,10 +739,12 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("13.Verify POST Request for checking new user in the same Oranization by HospitalC" +
             "redential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Account/Register]")]
         public async global::System.Threading.Tasks.Task _13_VerifyPOSTRequestForCheckingNewUserInTheSameOranizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api"};
+                    "Api",
+                    "[api/Account/Register]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "12";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("13.Verify POST Request for checking new user in the same Oranization by HospitalC" +
@@ -783,10 +805,12 @@ namespace EnterpriseApiAutomationFramework.Features
         [global::NUnit.Framework.DescriptionAttribute("14.Verify POST Request for uploading multiple user by excel file in the same Oran" +
             "ization by HospitalCredential")]
         [global::NUnit.Framework.CategoryAttribute("Api")]
+        [global::NUnit.Framework.CategoryAttribute("[api/Account/AddMultipleMemberByExce]")]
         public async global::System.Threading.Tasks.Task _14_VerifyPOSTRequestForUploadingMultipleUserByExcelFileInTheSameOranizationByHospitalCredential()
         {
             string[] tagsOfScenario = new string[] {
-                    "Api"};
+                    "Api",
+                    "[api/Account/AddMultipleMemberByExce]"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "13";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("14.Verify POST Request for uploading multiple user by excel file in the same Oran" +
@@ -831,7 +855,7 @@ namespace EnterpriseApiAutomationFramework.Features
 #line hidden
 #line 149
      await testRunner.AndAsync("Store the AddMultipleMemberByExcel response in excel file \"Sample_File_Member.xls" +
-                        "x\" sheet \"Sheet3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "x\" sheet \"Member_Respons_UserAlreadyExist\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 150
         await testRunner.ThenAsync("Validate the Status should be \"User exists in same organization\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
