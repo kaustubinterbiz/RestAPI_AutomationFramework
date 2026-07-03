@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsTestProject>false</IsTestProject>
+    <EnableNUnitRunner>false</EnableNUnitRunner>
     <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
     <StartupObject>EnterpriseApiAutomationFramework.ParallelTestRunner.Program</StartupObject>
     <RootNamespace>EnterpriseApiAutomationFramework.ParallelTestRunner</RootNamespace>

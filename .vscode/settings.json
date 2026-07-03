@@ -17,6 +17,11 @@
   "[reqnroll-feature]": {
     "editor.formatOnSave": false
   },
+  "reqnroll.projectFile": "EnterpriseApiAutomationFramework.csproj",
+  "reqnroll.bindingPaths": [
+    "StepDefinitions",
+    "Hooks"
+  ],
   "cucumber.features": [
     "Features/**/*.feature"
   ],

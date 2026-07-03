@@ -13,6 +13,22 @@ public static class TestConfigDefaults
     public const string LoginExcelFile = "LoginRequest.xlsx";
     public const string LoginRolesSheet = "Roles";
     public const string LoginResponseSheet = "Login_Response";
+    public const string RoleGroupsSheet = "RoleGroups";
+
+    public const string ParentRoleColumn = "ParentRole";
+    public const string ChildRoleColumn = "ChildRole";
+    public const string ExecutionOrderColumn = "ExecutionOrder";
+    public const string EnabledColumn = "Enabled";
+
+    public const string DefaultAddMemberRoleGroup = "AddMemberRole";
+
+    /// <summary>Default child roles for AddMemberRole (Excel RoleGroups sheet source of truth).</summary>
+    public static readonly IReadOnlyList<(string Role, int Order)> DefaultAddMemberChildRoles =
+    [
+        ("SuperAdmin", 1),
+        ("HospitalRole", 2),
+        ("OrganizationRole", 3)
+    ];
 
     public const string BodyExcelFile = "RequestBody.xlsx";
     public const string BodyResponseSheet = "Body_Response";

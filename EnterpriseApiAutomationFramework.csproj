@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsTestProject>true</IsTestProject>
+    <ReqnrollUseIntermediateOutputPathForCodeBehind>true</ReqnrollUseIntermediateOutputPathForCodeBehind>
+    <ReqnrollDeleteObsoleteCodeBehindFilesOnClean>true</ReqnrollDeleteObsoleteCodeBehindFilesOnClean>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +24,7 @@
 
   <!-- Keeps key folders visible in Solution Explorer / IDE -->
   <ItemGroup>
+    <Folder Include="Features\" />
     <Folder Include="Core\ParallelExecution\" />
     <Folder Include="Core\Reporting\Templates\" />
     <Folder Include="Hooks\" />
@@ -38,8 +41,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Features\**\*.feature" />
-    <None Include="reqnroll.json" />
+    <Compile Remove="Features\**\*.feature.cs" />
+    <None Remove="Features\**\*.feature.cs" />
+    <None Update="reqnroll.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -121,6 +121,82 @@ public static class ExcelConfigReader
         return true;
     }
 
+    /// <summary>
+    /// Returns enabled child roles for a parent role group, ordered by ExecutionOrder then ChildRole.
+    /// </summary>
+    public static IReadOnlyList<string> GetChildRoles(string parentRole)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(parentRole);
+
+        ExcelConfigBootstrap.EnsureRoleGroupsSheet();
+
+        var rows = GetRoleGroupRows(parentRole, enabledOnly: true);
+        if (rows.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"No enabled child roles found for parent role group '{parentRole}' in " +
+                $"'{TestConfigDefaults.LoginExcelFile}' sheet '{TestConfigDefaults.RoleGroupsSheet}'.");
+        }
+
+        foreach (var childRole in rows.Select(r => r.ChildRole))
+        {
+            if (!TryGetLoginRoleRow(childRole, out _))
+            {
+                throw new InvalidOperationException(
+                    $"Child role '{childRole}' under '{parentRole}' was not found in " +
+                    $"'{TestConfigDefaults.LoginExcelFile}' sheet '{TestConfigDefaults.LoginRolesSheet}'. " +
+                    $"Add credentials for '{childRole}' in the Roles sheet.");
+            }
+        }
+
+        return rows.Select(r => r.ChildRole).ToList();
+    }
+
+    /// <summary>Child roles for AddMemberRole group (SuperAdmin, HospitalRole, OrganizationRole).</summary>
+    public static IReadOnlyList<string> GetAddMemberChildRoles() =>
+        GetChildRoles(TestConfigDefaults.DefaultAddMemberRoleGroup);
+
+    public static IReadOnlyList<RoleGroupEntry> GetRoleGroupRows(string parentRole, bool enabledOnly = false)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(parentRole);
+
+        ExcelConfigBootstrap.EnsureRoleGroupsSheet();
+
+        if (!WorkbookExists(TestConfigDefaults.LoginExcelFile))
+            return Array.Empty<RoleGroupEntry>();
+
+        var rows = ExcelReader.ReadSheet(
+            TestConfigDefaults.LoginExcelFile,
+            TestConfigDefaults.RoleGroupsSheet);
+
+        var matches = rows
+            .Where(r =>
+                r.TryGetValue(TestConfigDefaults.ParentRoleColumn, out var parent)
+                && string.Equals(parent.Trim(), parentRole, StringComparison.OrdinalIgnoreCase))
+            .Select(RoleGroupEntry.FromRow)
+            .Where(entry => entry != null)
+            .Cast<RoleGroupEntry>()
+            .Where(entry => !enabledOnly || entry.IsEnabled)
+            .OrderBy(entry => entry.ExecutionOrder)
+            .ThenBy(entry => entry.ChildRole, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return matches;
+    }
+
+    public static void ValidateChildRolesExistInRolesSheet(IEnumerable<string> childRoles)
+    {
+        foreach (var role in childRoles)
+        {
+            if (!TryGetLoginRoleRow(role, out _))
+            {
+                throw new InvalidOperationException(
+                    $"Role '{role}' was not found in '{TestConfigDefaults.LoginExcelFile}' " +
+                    $"sheet '{TestConfigDefaults.LoginRolesSheet}'.");
+            }
+        }
+    }
+
     public static bool TryGetLoginRoleRow(string role, out Dictionary<string, string> row)
     {
         row = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

@@ -1,0 +1,11 @@
+<Project>
+  <!-- Classic NUnit/VSTest for IDE Test Explorer + dotnet test compatibility -->
+  <PropertyGroup>
+    <EnableNUnitRunner>false</EnableNUnitRunner>
+  </PropertyGroup>
+
+  <!-- Override vulnerable transitive System.Drawing.Common 5.0.0 from ExtentReports -->
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="8.0.24" />
+  </ItemGroup>
+</Project>
