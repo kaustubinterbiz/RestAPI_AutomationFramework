@@ -4,27 +4,27 @@
     <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
     <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
-    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\AppData\Local\Temp\cursor-sandbox-cache\2ab2771ce78f9d23cce4fb111fa60694\nuget</NuGetPackageRoot>
-    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\ibz\AppData\Local\Temp\cursor-sandbox-cache\2ab2771ce78f9d23cce4fb111fa60694\nuget</NuGetPackageFolders>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\ibz\.nuget\packages\</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
     <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">7.0.0</NuGetToolVersion>
   </PropertyGroup>
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <SourceRoot Include="C:\Users\ibz\AppData\Local\Temp\cursor-sandbox-cache\2ab2771ce78f9d23cce4fb111fa60694\nuget\" />
+    <SourceRoot Include="C:\Users\ibz\.nuget\packages\" />
   </ItemGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)\reqnroll.tools.msbuild.generation\3.3.4\build\Reqnroll.Tools.MsBuild.Generation.props" Condition="Exists('$(NuGetPackageRoot)\reqnroll.tools.msbuild.generation\3.3.4\build\Reqnroll.Tools.MsBuild.Generation.props')" />
-    <Import Project="$(NuGetPackageRoot)\nunit\3.14.0\build\NUnit.props" Condition="Exists('$(NuGetPackageRoot)\nunit\3.14.0\build\NUnit.props')" />
-    <Import Project="$(NuGetPackageRoot)\reqnroll.nunit\3.3.4\build\Reqnroll.NUnit.props" Condition="Exists('$(NuGetPackageRoot)\reqnroll.nunit\3.3.4\build\Reqnroll.NUnit.props')" />
-    <Import Project="$(NuGetPackageRoot)\microsoft.testing.platform\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Platform.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.testing.platform\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Platform.props')" />
-    <Import Project="$(NuGetPackageRoot)\microsoft.testing.platform.msbuild\2.1.0\buildTransitive\Microsoft.Testing.Platform.MSBuild.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.testing.platform.msbuild\2.1.0\buildTransitive\Microsoft.Testing.Platform.MSBuild.props')" />
-    <Import Project="$(NuGetPackageRoot)\microsoft.testing.extensions.telemetry\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Extensions.Telemetry.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.testing.extensions.telemetry\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Extensions.Telemetry.props')" />
-    <Import Project="$(NuGetPackageRoot)\nunit3testadapter\6.2.0\build\net8.0\NUnit3TestAdapter.props" Condition="Exists('$(NuGetPackageRoot)\nunit3testadapter\6.2.0\build\net8.0\NUnit3TestAdapter.props')" />
-    <Import Project="$(NuGetPackageRoot)\microsoft.testplatform.testhost\18.5.1\build\net8.0\Microsoft.TestPlatform.TestHost.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.testplatform.testhost\18.5.1\build\net8.0\Microsoft.TestPlatform.TestHost.props')" />
-    <Import Project="$(NuGetPackageRoot)\microsoft.codecoverage\18.5.1\build\netstandard2.0\Microsoft.CodeCoverage.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.codecoverage\18.5.1\build\netstandard2.0\Microsoft.CodeCoverage.props')" />
-    <Import Project="$(NuGetPackageRoot)\microsoft.net.test.sdk\18.5.1\build\net8.0\Microsoft.NET.Test.Sdk.props" Condition="Exists('$(NuGetPackageRoot)\microsoft.net.test.sdk\18.5.1\build\net8.0\Microsoft.NET.Test.Sdk.props')" />
+    <Import Project="$(NuGetPackageRoot)reqnroll.tools.msbuild.generation\3.3.4\build\Reqnroll.Tools.MsBuild.Generation.props" Condition="Exists('$(NuGetPackageRoot)reqnroll.tools.msbuild.generation\3.3.4\build\Reqnroll.Tools.MsBuild.Generation.props')" />
+    <Import Project="$(NuGetPackageRoot)nunit\3.14.0\build\NUnit.props" Condition="Exists('$(NuGetPackageRoot)nunit\3.14.0\build\NUnit.props')" />
+    <Import Project="$(NuGetPackageRoot)reqnroll.nunit\3.3.4\build\Reqnroll.NUnit.props" Condition="Exists('$(NuGetPackageRoot)reqnroll.nunit\3.3.4\build\Reqnroll.NUnit.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.testing.platform\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Platform.props" Condition="Exists('$(NuGetPackageRoot)microsoft.testing.platform\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Platform.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.testing.platform.msbuild\2.1.0\buildTransitive\Microsoft.Testing.Platform.MSBuild.props" Condition="Exists('$(NuGetPackageRoot)microsoft.testing.platform.msbuild\2.1.0\buildTransitive\Microsoft.Testing.Platform.MSBuild.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.testing.extensions.telemetry\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Extensions.Telemetry.props" Condition="Exists('$(NuGetPackageRoot)microsoft.testing.extensions.telemetry\2.1.0\buildTransitive\net8.0\Microsoft.Testing.Extensions.Telemetry.props')" />
+    <Import Project="$(NuGetPackageRoot)nunit3testadapter\6.2.0\build\net8.0\NUnit3TestAdapter.props" Condition="Exists('$(NuGetPackageRoot)nunit3testadapter\6.2.0\build\net8.0\NUnit3TestAdapter.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.testplatform.testhost\18.5.1\build\net8.0\Microsoft.TestPlatform.TestHost.props" Condition="Exists('$(NuGetPackageRoot)microsoft.testplatform.testhost\18.5.1\build\net8.0\Microsoft.TestPlatform.TestHost.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.codecoverage\18.5.1\build\netstandard2.0\Microsoft.CodeCoverage.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codecoverage\18.5.1\build\netstandard2.0\Microsoft.CodeCoverage.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.net.test.sdk\18.5.1\build\net8.0\Microsoft.NET.Test.Sdk.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.test.sdk\18.5.1\build\net8.0\Microsoft.NET.Test.Sdk.props')" />
   </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">C:\Users\ibz\AppData\Local\Temp\cursor-sandbox-cache\2ab2771ce78f9d23cce4fb111fa60694\nuget\microsoft.codeanalysis.analyzers\3.0.0</PkgMicrosoft_CodeAnalysis_Analyzers>
+    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">C:\Users\ibz\.nuget\packages\microsoft.codeanalysis.analyzers\3.0.0</PkgMicrosoft_CodeAnalysis_Analyzers>
   </PropertyGroup>
 </Project>

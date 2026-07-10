@@ -1792,3 +1792,4 @@ D:\API Automation Framework\RestAPI_AutomationFramework\obj\Debug\net8.0\Enterpr
 D:\API Automation Framework\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.genruntimeconfig.cache
 D:\API Automation Framework\RestAPI_AutomationFramework\obj\Debug\net8.0\ref\EnterpriseApiAutomationFramework.dll
 D:\API Automation Framework\RestAPI_AutomationFramework\bin\Debug\net8.0\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll
+D:\API Automation Framework\RestAPI_AutomationFramework\bin\Debug\net8.0\TestData\UploadFiles\AuthorizationMatrix.xlsx

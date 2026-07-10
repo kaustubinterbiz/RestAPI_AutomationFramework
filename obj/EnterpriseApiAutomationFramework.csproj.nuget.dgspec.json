@@ -10,7 +10,7 @@
         "projectUniqueName": "D:\\API Automation Framework\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
         "projectName": "EnterpriseApiAutomationFramework",
         "projectPath": "D:\\API Automation Framework\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
-        "packagesPath": "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\2ab2771ce78f9d23cce4fb111fa60694\\nuget",
+        "packagesPath": "C:\\Users\\ibz\\.nuget\\packages\\",
         "outputPath": "D:\\API Automation Framework\\RestAPI_AutomationFramework\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -26,6 +26,7 @@
         },
         "frameworks": {
           "net8.0": {
+            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -44,6 +45,7 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "ClosedXML": {
