@@ -32,7 +32,7 @@ Feature: Add Member API - Role Group (Scenario Outline)
     And session info from the last response is stored in appsettings
     When User sends flexible "Post" request on "Api" base url for endpoint "addMultipleMemberByExcel" with url placeholders "-" target "-" headers "CacheId" query params "-" body "-"
     Then Status code should be <StatusCode>
-    And Store the AddMultipleMemberByExcel response in excel file "Sample_File_Member.xlsx" sheet "Member_Respons_UserAlreadyExist"
+    And Store the AddMultipleMemberByExcel response in excel file "Sample_File_Member.xlsx" sheet "Member_ResponseSheet"
     Then Validate the Status should be "<ExpectedMessage>"
 
     Examples: AddMemberRole
