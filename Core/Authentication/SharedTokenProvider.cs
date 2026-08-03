@@ -140,7 +140,9 @@ public static class SharedTokenProvider
         InvalidateAllCaches();
         _processToken = expiredToken;
         _processExpiresAtUtc = DateTimeOffset.UtcNow.AddHours(-1);
-        TokenManager.SetAccessToken(expiredToken, persistToConfig: false);
+        // Persist so the applied expired token survives to the next Reqnroll step
+        // (PerScenario mode carries the token across steps via appsettings.json).
+        TokenManager.SetAccessToken(expiredToken, persistToConfig: true);
     }
 
     private static bool TryLoadCachedToken(

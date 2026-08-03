@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using ClosedXML.Excel;
 
 namespace EnterpriseApiAutomationFramework.Core.Helpers;
@@ -9,6 +11,251 @@ namespace EnterpriseApiAutomationFramework.Core.Helpers;
 /// </summary>
 public static class ExcelReader
 {
+    // ---------------------------------------------------------------------
+    //  Concurrency-safe workbook access
+    // ---------------------------------------------------------------------
+    // Two independent test scenarios (even in *separate* test-host processes
+    // under parallel execution) used to collide on the same .xlsx file — one
+    // reading while another saved — producing
+    // "The process cannot access the file ... because it is being used by
+    // another process".
+    //
+    // The fix has three layers so the file is never held open longer than a
+    // few milliseconds and access is fully serialized machine-wide:
+    //   1. A *named* Mutex keyed on the file path serializes every open/save
+    //      across ALL threads AND processes (an in-process lock alone cannot
+    //      coordinate separate test-host processes).
+    //   2. The file is slurped into memory (FileStream with
+    //      FileShare.ReadWrite) and the handle is closed immediately, so a
+    //      read never fails just because someone else has the file open
+    //      (e.g. viewing it in Excel).
+    //   3. Writes are atomic: the workbook is rebuilt in memory and swapped
+    //      in via a temp file + File.Move, so the real file is never left
+    //      half-written or locked. A short retry rides out transient
+    //      OS/antivirus locks.
+
+    private const int MaxAttempts = 20;
+    private static readonly TimeSpan MutexTimeout = TimeSpan.FromSeconds(90);
+
+    /// <summary>Opens the workbook at <paramref name="filePath"/>, runs <paramref name="body"/>,
+    /// and optionally persists the changes — serialized cross-process with retry.</summary>
+    internal static T WithWorkbook<T>(string filePath, Func<XLWorkbook, T> body, bool save)
+    {
+        var fullPath = Path.GetFullPath(filePath);
+        return WithFileMutex(fullPath, () => RunWithRetry(() => save
+            ? MutateInMemory(fullPath, body)
+            : ReadInMemory(fullPath, body)));
+    }
+
+    internal static void WithWorkbook(string filePath, Action<XLWorkbook> body, bool save) =>
+        WithWorkbook(filePath, wb => { body(wb); return true; }, save);
+
+    private static T ReadInMemory<T>(string fullPath, Func<XLWorkbook, T> body)
+    {
+        using var input = new MemoryStream(ReadAllBytesShared(fullPath), writable: false);
+        using var workbook = new XLWorkbook(input);
+        return body(workbook);
+    }
+
+    private static T MutateInMemory<T>(string fullPath, Func<XLWorkbook, T> body)
+    {
+        T result;
+        byte[] outBytes;
+        using (var input = new MemoryStream(ReadAllBytesShared(fullPath), writable: false))
+        using (var workbook = new XLWorkbook(input))
+        {
+            result = body(workbook);
+            using var output = new MemoryStream();
+            workbook.SaveAs(output);
+            outBytes = output.ToArray();
+        }
+
+        WriteAllBytesAtomic(fullPath, outBytes);
+        return result;
+    }
+
+    /// <summary>Reads the whole file into memory, tolerating other open handles, then closes it.</summary>
+    private static byte[] ReadAllBytesShared(string fullPath)
+    {
+        using var fs = new FileStream(
+            fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var ms = new MemoryStream();
+        fs.CopyTo(ms);
+        return ms.ToArray();
+    }
+
+    /// <summary>
+    /// Writes bytes to <paramref name="fullPath"/> without holding the handle open.
+    /// Order: in-place overwrite → File.WriteAllBytes → temp+Copy → temp+replace via rename.
+    /// Avoids relying on File.Move(overwrite) first — that often throws
+    /// UnauthorizedAccessException under VS debug when the destination is briefly locked.
+    /// </summary>
+    private static void WriteAllBytesAtomic(string fullPath, byte[] data)
+    {
+        ClearReadOnlyAttribute(fullPath);
+
+        if (TryWriteInPlace(fullPath, data))
+            return;
+
+        try
+        {
+            File.WriteAllBytes(fullPath, data);
+            return;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // fall through
+        }
+
+        var tempPath = fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        var backupPath = fullPath + "." + Guid.NewGuid().ToString("N") + ".bak";
+        try
+        {
+            File.WriteAllBytes(tempPath, data);
+
+            try
+            {
+                File.Copy(tempPath, fullPath, overwrite: true);
+                return;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // Replace by renaming the destination aside, then moving temp into place.
+                ClearReadOnlyAttribute(fullPath);
+                File.Move(fullPath, backupPath);
+                try
+                {
+                    File.Move(tempPath, fullPath);
+                    tempPath = null;
+                }
+                catch
+                {
+                    // Roll back backup if we failed to place the new file.
+                    try { if (!File.Exists(fullPath) && File.Exists(backupPath)) File.Move(backupPath, fullPath); }
+                    catch { /* best effort */ }
+                    throw;
+                }
+            }
+        }
+        finally
+        {
+            if (tempPath != null)
+                TryDelete(tempPath);
+            TryDelete(backupPath);
+        }
+    }
+
+    private static bool TryWriteInPlace(string fullPath, byte[] data)
+    {
+        try
+        {
+            using var fs = new FileStream(
+                fullPath,
+                FileMode.OpenOrCreate,
+                FileAccess.Write,
+                FileShare.ReadWrite);
+            fs.SetLength(0);
+            fs.Write(data, 0, data.Length);
+            fs.Flush(true);
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    private static void ClearReadOnlyAttribute(string path)
+    {
+        try
+        {
+            if (!File.Exists(path))
+                return;
+
+            var attrs = File.GetAttributes(path);
+            if ((attrs & FileAttributes.ReadOnly) != 0)
+                File.SetAttributes(path, attrs & ~FileAttributes.ReadOnly);
+        }
+        catch
+        {
+            // best effort — retry loop will surface a real failure
+        }
+    }
+
+    private static void TryDelete(string path)
+    {
+        try { if (File.Exists(path)) File.Delete(path); }
+        catch { /* best effort — a leftover temp file must never fail a test */ }
+    }
+
+    /// <summary>Serializes access to a single file across all threads and processes on the machine.</summary>
+    private static T WithFileMutex<T>(string fullPath, Func<T> action)
+    {
+        using var mutex = new Mutex(initiallyOwned: false, MutexNameFor(fullPath));
+        var owned = false;
+        try
+        {
+            try
+            {
+                owned = mutex.WaitOne(MutexTimeout);
+            }
+            catch (AbandonedMutexException)
+            {
+                owned = true; // prior owner crashed; we now own it
+            }
+
+            if (!owned)
+            {
+                throw new TimeoutException(
+                    $"Timed out after {MutexTimeout.TotalSeconds:0}s waiting for exclusive access to '{fullPath}'.");
+            }
+
+            return action();
+        }
+        finally
+        {
+            if (owned)
+            {
+                try { mutex.ReleaseMutex(); }
+                catch (ApplicationException) { /* not owned on this thread */ }
+            }
+        }
+    }
+
+    private static string MutexNameFor(string fullPath)
+    {
+        var hash = Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(fullPath.ToLowerInvariant())));
+        // No namespace prefix => "Local\" (session-wide), shared by every test-host process.
+        return "ExcelReader_" + hash;
+    }
+
+    private static T RunWithRetry<T>(Func<T> action)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return action();
+            }
+            catch (Exception ex)
+                when (attempt < MaxAttempts && IsTransientFileAccessError(ex))
+            {
+                Thread.Sleep(Math.Min(100 * attempt, 800));
+            }
+        }
+    }
+
+    /// <summary>
+    /// True for sharing/access denials that clear after a short wait
+    /// (VS debug testhost, antivirus, indexer). Not for missing paths.
+    /// </summary>
+    private static bool IsTransientFileAccessError(Exception ex) =>
+        ex is UnauthorizedAccessException
+        || (ex is IOException
+            && ex is not FileNotFoundException
+            && ex is not DirectoryNotFoundException);
+
     // =========================================================================
     //  READ
     // =========================================================================
@@ -20,28 +267,30 @@ public static class ExcelReader
     public static List<Dictionary<string, string>> ReadSheet(string fileName, string sheetName)
     {
         var filePath = FileUploadHelper.GetFilePath(fileName);
-        using var workbook = new XLWorkbook(filePath);
-        var sheet = GetSheet(workbook, fileName, sheetName);
-
-        var rows  = new List<Dictionary<string, string>>();
-        var range = sheet.RangeUsed();
-        if (range == null) return rows;
-
-        var headers = ReadHeaders(range);
-
-        for (int r = 2; r <= range.RowCount(); r++)
+        return WithWorkbook(filePath, workbook =>
         {
-            var dataRow = range.Row(r);
-            if (dataRow.Cells().All(c => c.IsEmpty())) continue;
+            var sheet = GetSheet(workbook, fileName, sheetName);
 
-            var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            for (int c = 0; c < headers.Count; c++)
-                dict[headers[c]] = GetCellValue(dataRow.Cell(c + 1));
+            var rows  = new List<Dictionary<string, string>>();
+            var range = sheet.RangeUsed();
+            if (range == null) return rows;
 
-            rows.Add(dict);
-        }
+            var headers = ReadHeaders(range);
 
-        return rows;
+            for (int r = 2; r <= range.RowCount(); r++)
+            {
+                var dataRow = range.Row(r);
+                if (dataRow.Cells().All(c => c.IsEmpty())) continue;
+
+                var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                for (int c = 0; c < headers.Count; c++)
+                    dict[headers[c]] = GetCellValue(dataRow.Cell(c + 1));
+
+                rows.Add(dict);
+            }
+
+            return rows;
+        }, save: false);
     }
 
     /// <summary>
@@ -82,8 +331,9 @@ public static class ExcelReader
     public static List<string> GetSheetNames(string fileName)
     {
         var filePath = FileUploadHelper.GetFilePath(fileName);
-        using var workbook = new XLWorkbook(filePath);
-        return workbook.Worksheets.Select(ws => ws.Name).ToList();
+        return WithWorkbook(filePath,
+            workbook => workbook.Worksheets.Select(ws => ws.Name).ToList(),
+            save: false);
     }
 
     // =========================================================================
@@ -103,31 +353,31 @@ public static class ExcelReader
         Dictionary<string, string> columnUpdates)
     {
         var filePath = FileUploadHelper.GetFilePath(fileName);
-        using var workbook = new XLWorkbook(filePath);
-        var sheet = GetSheet(workbook, fileName, sheetName);
-        var range = sheet.RangeUsed()
-            ?? throw new InvalidOperationException($"Sheet '{sheetName}' is empty.");
-
-        var headers    = ReadHeaders(range);
-        var sheetRow   = rowIndex + 1;  // +1 because row 1 = header in the sheet
-
-        if (rowIndex < 1 || rowIndex > range.RowCount() - 1)
-            throw new ArgumentOutOfRangeException(nameof(rowIndex),
-                $"Row {rowIndex} does not exist in sheet '{sheetName}'.");
-
-        foreach (var (column, value) in columnUpdates)
+        WithWorkbook(filePath, workbook =>
         {
-            var colIndex = headers.FindIndex(h =>
-                string.Equals(h, column, StringComparison.OrdinalIgnoreCase));
+            var sheet = GetSheet(workbook, fileName, sheetName);
+            var range = sheet.RangeUsed()
+                ?? throw new InvalidOperationException($"Sheet '{sheetName}' is empty.");
 
-            if (colIndex == -1)
-                throw new KeyNotFoundException(
-                    $"Column '{column}' not found. Available: {string.Join(", ", headers)}");
+            var headers    = ReadHeaders(range);
+            var sheetRow   = rowIndex + 1;  // +1 because row 1 = header in the sheet
 
-            sheet.Cell(sheetRow, colIndex + 1).Value = value;
-        }
+            if (rowIndex < 1 || rowIndex > range.RowCount() - 1)
+                throw new ArgumentOutOfRangeException(nameof(rowIndex),
+                    $"Row {rowIndex} does not exist in sheet '{sheetName}'.");
 
-        workbook.Save();
+            foreach (var (column, value) in columnUpdates)
+            {
+                var colIndex = headers.FindIndex(h =>
+                    string.Equals(h, column, StringComparison.OrdinalIgnoreCase));
+
+                if (colIndex == -1)
+                    throw new KeyNotFoundException(
+                        $"Column '{column}' not found. Available: {string.Join(", ", headers)}");
+
+                sheet.Cell(sheetRow, colIndex + 1).Value = value;
+            }
+        }, save: true);
     }
 
     /// <summary>
@@ -143,47 +393,47 @@ public static class ExcelReader
         Dictionary<string, string> columnUpdates)
     {
         var filePath = FileUploadHelper.GetFilePath(fileName);
-        using var workbook = new XLWorkbook(filePath);
-        var sheet = GetSheet(workbook, fileName, sheetName);
-        var range = sheet.RangeUsed()
-            ?? throw new InvalidOperationException($"Sheet '{sheetName}' is empty.");
-
-        var headers    = ReadHeaders(range);
-        var searchCol  = headers.FindIndex(h =>
-            string.Equals(h, searchColumn, StringComparison.OrdinalIgnoreCase));
-
-        if (searchCol == -1)
-            throw new KeyNotFoundException(
-                $"Search column '{searchColumn}' not found. Available: {string.Join(", ", headers)}");
-
-        int? matchedRow = null;
-        for (int r = 2; r <= range.RowCount(); r++)
+        WithWorkbook(filePath, workbook =>
         {
-            var cellValue = range.Row(r).Cell(searchCol + 1).GetString().Trim();
-            if (string.Equals(cellValue, searchValue, StringComparison.OrdinalIgnoreCase))
-            {
-                matchedRow = r;
-                break;
-            }
-        }
+            var sheet = GetSheet(workbook, fileName, sheetName);
+            var range = sheet.RangeUsed()
+                ?? throw new InvalidOperationException($"Sheet '{sheetName}' is empty.");
 
-        if (matchedRow == null)
-            throw new InvalidOperationException(
-                $"No row found where '{searchColumn}' = '{searchValue}' in sheet '{sheetName}'.");
+            var headers    = ReadHeaders(range);
+            var searchCol  = headers.FindIndex(h =>
+                string.Equals(h, searchColumn, StringComparison.OrdinalIgnoreCase));
 
-        foreach (var (column, value) in columnUpdates)
-        {
-            var colIndex = headers.FindIndex(h =>
-                string.Equals(h, column, StringComparison.OrdinalIgnoreCase));
-
-            if (colIndex == -1)
+            if (searchCol == -1)
                 throw new KeyNotFoundException(
-                    $"Column '{column}' not found. Available: {string.Join(", ", headers)}");
+                    $"Search column '{searchColumn}' not found. Available: {string.Join(", ", headers)}");
 
-            sheet.Cell(matchedRow.Value, colIndex + 1).Value = value;
-        }
+            int? matchedRow = null;
+            for (int r = 2; r <= range.RowCount(); r++)
+            {
+                var cellValue = range.Row(r).Cell(searchCol + 1).GetString().Trim();
+                if (string.Equals(cellValue, searchValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    matchedRow = r;
+                    break;
+                }
+            }
 
-        workbook.Save();
+            if (matchedRow == null)
+                throw new InvalidOperationException(
+                    $"No row found where '{searchColumn}' = '{searchValue}' in sheet '{sheetName}'.");
+
+            foreach (var (column, value) in columnUpdates)
+            {
+                var colIndex = headers.FindIndex(h =>
+                    string.Equals(h, column, StringComparison.OrdinalIgnoreCase));
+
+                if (colIndex == -1)
+                    throw new KeyNotFoundException(
+                        $"Column '{column}' not found. Available: {string.Join(", ", headers)}");
+
+                sheet.Cell(matchedRow.Value, colIndex + 1).Value = value;
+            }
+        }, save: true);
     }
 
     /// <summary>
@@ -198,44 +448,43 @@ public static class ExcelReader
         IReadOnlyList<string>? columnOrder = null)
     {
         var filePath = FileUploadHelper.GetFilePath(fileName);
-        using var workbook = new XLWorkbook(filePath);
-
-        if (!workbook.TryGetWorksheet(sheetName, out var sheet))
-            sheet = workbook.AddWorksheet(sheetName);
-
-        var range = sheet.RangeUsed();
-        List<string> headers;
-
-        if (range == null || IsHeaderRowEmpty(sheet))
+        WithWorkbook(filePath, workbook =>
         {
-            headers = columnOrder?.ToList()
-                ?? (rowsData.Count > 0
-                    ? rowsData[0].Keys.ToList()
-                    : throw new InvalidOperationException(
-                        $"Sheet '{sheetName}' has no headers and no row data was provided."));
+            if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+                sheet = workbook.AddWorksheet(sheetName);
 
-            for (int c = 0; c < headers.Count; c++)
-                sheet.Cell(1, c + 1).Value = headers[c];
-        }
-        else
-        {
-            headers = ReadHeaders(range);
-            EnsureHeaders(sheet, headers, columnOrder ?? headers);
-            EnsureHeaders(sheet, headers, rowsData.SelectMany(r => r.Keys));
-        }
+            var range = sheet.RangeUsed();
+            List<string> headers;
 
-        ClearDataRows(sheet, headers.Count);
-
-        for (int r = 0; r < rowsData.Count; r++)
-        {
-            for (int c = 0; c < headers.Count; c++)
+            if (range == null || IsHeaderRowEmpty(sheet))
             {
-                var value = rowsData[r].TryGetValue(headers[c], out var v) ? v : string.Empty;
-                sheet.Cell(r + 2, c + 1).Value = value;
-            }
-        }
+                headers = columnOrder?.ToList()
+                    ?? (rowsData.Count > 0
+                        ? rowsData[0].Keys.ToList()
+                        : throw new InvalidOperationException(
+                            $"Sheet '{sheetName}' has no headers and no row data was provided."));
 
-        workbook.Save();
+                for (int c = 0; c < headers.Count; c++)
+                    sheet.Cell(1, c + 1).Value = headers[c];
+            }
+            else
+            {
+                headers = ReadHeaders(range);
+                EnsureHeaders(sheet, headers, columnOrder ?? headers);
+                EnsureHeaders(sheet, headers, rowsData.SelectMany(r => r.Keys));
+            }
+
+            ClearDataRows(sheet, headers.Count);
+
+            for (int r = 0; r < rowsData.Count; r++)
+            {
+                for (int c = 0; c < headers.Count; c++)
+                {
+                    var value = rowsData[r].TryGetValue(headers[c], out var v) ? v : string.Empty;
+                    sheet.Cell(r + 2, c + 1).Value = value;
+                }
+            }
+        }, save: true);
     }
 
     private static bool IsHeaderRowEmpty(IXLWorksheet sheet)
@@ -288,39 +537,39 @@ public static class ExcelReader
         string sheetName,
         List<Dictionary<string, string>> rows)
     {
-        var filePath = FileUploadHelper.  GetFilePath(fileName);
-        using var workbook = new XLWorkbook(filePath);
-        var sheet = GetSheet(workbook, fileName, sheetName);
-        var range = sheet.RangeUsed();
-
-        List<string> headers;
-        int nextRow;
-
-        if (range == null)
+        var filePath = FileUploadHelper.GetFilePath(fileName);
+        WithWorkbook(filePath, workbook =>
         {
-            // Empty sheet — build headers from first row's keys
-            headers = rows[0].Keys.ToList();
-            for (int c = 0; c < headers.Count; c++)
-                sheet.Cell(1, c + 1).Value = headers[c];
-            nextRow = 2;
-        }
-        else
-        {
-            headers = ReadHeaders(range);
-            nextRow = range.RangeAddress.LastAddress.RowNumber + 1;
-        }
+            var sheet = GetSheet(workbook, fileName, sheetName);
+            var range = sheet.RangeUsed();
 
-        foreach (var rowData in rows)
-        {
-            for (int c = 0; c < headers.Count; c++)
+            List<string> headers;
+            int nextRow;
+
+            if (range == null)
             {
-                var value = rowData.TryGetValue(headers[c], out var v) ? v : string.Empty;
-                sheet.Cell(nextRow, c + 1).Value = value;
+                // Empty sheet — build headers from first row's keys
+                headers = rows[0].Keys.ToList();
+                for (int c = 0; c < headers.Count; c++)
+                    sheet.Cell(1, c + 1).Value = headers[c];
+                nextRow = 2;
             }
-            nextRow++;
-        }
+            else
+            {
+                headers = ReadHeaders(range);
+                nextRow = range.RangeAddress.LastAddress.RowNumber + 1;
+            }
 
-        workbook.Save();
+            foreach (var rowData in rows)
+            {
+                for (int c = 0; c < headers.Count; c++)
+                {
+                    var value = rowData.TryGetValue(headers[c], out var v) ? v : string.Empty;
+                    sheet.Cell(nextRow, c + 1).Value = value;
+                }
+                nextRow++;
+            }
+        }, save: true);
     }
 
     // =========================================================================

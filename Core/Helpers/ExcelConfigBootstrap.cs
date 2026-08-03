@@ -19,7 +19,10 @@ public static class ExcelConfigBootstrap
     {
         var excelPath = GetWorkbookWritePath(TestConfigDefaults.EndpointExcelFile);
         if (File.Exists(excelPath))
+        {
+            EnsureEndpointResponseSheet(excelPath);
             return;
+        }
 
         ConfigReaderNew.LoadConfig(AppSettingsFile);
         var jsonPath = ConfigReaderNew.GetValue(EndpointJsonKey);
@@ -48,13 +51,64 @@ public static class ExcelConfigBootstrap
         }
 
         var responseSheet = workbook.AddWorksheet(TestConfigDefaults.EndpointResponseSheet);
-        responseSheet.Cell(1, 1).Value = TestConfigDefaults.KeyColumn;
-        responseSheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
-        responseSheet.Cell(1, 3).Value = TestConfigDefaults.HttpStatusColumn;
-        responseSheet.Cell(1, 4).Value = TestConfigDefaults.ResponseSnippetColumn;
-        responseSheet.Cell(1, 5).Value = TestConfigDefaults.UpdatedAtColumn;
+        WriteEndpointResponseHeader(responseSheet);
 
         workbook.SaveAs(excelPath);
+    }
+
+    private static int _endpointResponseSheetReady;
+
+    /// <summary>
+    /// Ensures Endpoint_Response sheet + standard columns exist on an existing RequestEndPoint.xlsx.
+    /// Runs at most once per process after the workbook is present.
+    /// </summary>
+    public static void EnsureEndpointResponseSheet(string? excelPath = null)
+    {
+        if (Interlocked.CompareExchange(ref _endpointResponseSheetReady, 1, 0) != 0)
+            return;
+
+        excelPath ??= GetWorkbookWritePath(TestConfigDefaults.EndpointExcelFile);
+        if (!File.Exists(excelPath))
+        {
+            Interlocked.Exchange(ref _endpointResponseSheetReady, 0);
+            EnsureRequestEndPointWorkbook();
+            return;
+        }
+
+        // Read-only first: avoid rewriting when the sheet already exists (WPS/Excel often locks the file).
+        var sheetReady = false;
+        ExcelReader.WithWorkbook(excelPath, workbook =>
+        {
+            if (workbook.TryGetWorksheet(TestConfigDefaults.EndpointResponseSheet, out var existing)
+                && !string.IsNullOrWhiteSpace(existing.Cell(1, 1).GetString()))
+            {
+                sheetReady = true;
+            }
+        }, save: false);
+
+        if (sheetReady)
+            return;
+
+        ExcelReader.WithWorkbook(excelPath, workbook =>
+        {
+            if (workbook.TryGetWorksheet(TestConfigDefaults.EndpointResponseSheet, out var existing))
+            {
+                if (string.IsNullOrWhiteSpace(existing.Cell(1, 1).GetString()))
+                    WriteEndpointResponseHeader(existing);
+                return;
+            }
+
+            WriteEndpointResponseHeader(workbook.AddWorksheet(TestConfigDefaults.EndpointResponseSheet));
+        }, save: true);
+    }
+
+    private static void WriteEndpointResponseHeader(IXLWorksheet sheet)
+    {
+        sheet.Cell(1, 1).Value = TestConfigDefaults.KeyColumn;
+        sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+        sheet.Cell(1, 3).Value = TestConfigDefaults.HttpStatusColumn;
+        sheet.Cell(1, 4).Value = TestConfigDefaults.ResponseSnippetColumn;
+        sheet.Cell(1, 5).Value = TestConfigDefaults.UpdatedAtColumn;
     }
 
     public static void EnsureLoginRequestWorkbook()
@@ -120,28 +174,27 @@ public static class ExcelConfigBootstrap
         EnsureLoginRequestWorkbook();
 
         var excelPath = GetWorkbookWritePath(TestConfigDefaults.LoginExcelFile);
-        using var workbook = new XLWorkbook(excelPath);
-
-        EnsureRoleAliases(workbook);
-
-        var sheet = workbook.TryGetWorksheet(TestConfigDefaults.RoleGroupsSheet, out var roleGroupsSheet)
-            ? roleGroupsSheet
-            : workbook.AddWorksheet(TestConfigDefaults.RoleGroupsSheet);
-
-        EnsureRoleGroupsHeader(sheet);
-
-        var existingAddMemberRows = ReadParentGroupRows(sheet, TestConfigDefaults.DefaultAddMemberRoleGroup);
-        if (existingAddMemberRows.Count == 0)
+        ExcelReader.WithWorkbook(excelPath, workbook =>
         {
-            AppendParentRoleGroupRows(sheet, TestConfigDefaults.DefaultAddMemberRoleGroup, TestConfigDefaults.DefaultAddMemberChildRoles);
-        }
-        else if (existingAddMemberRows.Any(r =>
-                     string.Equals(r.ChildRole, "AdminRole", StringComparison.OrdinalIgnoreCase)))
-        {
-            SyncParentRoleGroup(sheet, TestConfigDefaults.DefaultAddMemberRoleGroup, TestConfigDefaults.DefaultAddMemberChildRoles);
-        }
+            EnsureRoleAliases(workbook);
 
-        workbook.Save();
+            var sheet = workbook.TryGetWorksheet(TestConfigDefaults.RoleGroupsSheet, out var roleGroupsSheet)
+                ? roleGroupsSheet
+                : workbook.AddWorksheet(TestConfigDefaults.RoleGroupsSheet);
+
+            EnsureRoleGroupsHeader(sheet);
+
+            var existingAddMemberRows = ReadParentGroupRows(sheet, TestConfigDefaults.DefaultAddMemberRoleGroup);
+            if (existingAddMemberRows.Count == 0)
+            {
+                AppendParentRoleGroupRows(sheet, TestConfigDefaults.DefaultAddMemberRoleGroup, TestConfigDefaults.DefaultAddMemberChildRoles);
+            }
+            else if (existingAddMemberRows.Any(r =>
+                         string.Equals(r.ChildRole, "AdminRole", StringComparison.OrdinalIgnoreCase)))
+            {
+                SyncParentRoleGroup(sheet, TestConfigDefaults.DefaultAddMemberRoleGroup, TestConfigDefaults.DefaultAddMemberChildRoles);
+            }
+        }, save: true);
     }
 
     private static List<RoleGroupEntry> ReadParentGroupRows(IXLWorksheet sheet, string parentRole)

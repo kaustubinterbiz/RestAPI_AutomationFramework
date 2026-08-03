@@ -16,8 +16,8 @@ Feature: Authorization API Testing
     Examples: ExistingUserAccess
       | EndpointKey     | HttpMethod | Role             | ExpectedStatus |
       | getExistingUser | GET        | SuperAdmin       | 200            |
-      | getExistingUser | GET        | HospitalRole     | 200            |
-      | getExistingUser | GET        | OrganizationRole | 200            |
+      | getExistingUser | GET        | HospitalRole     | 401            |
+      | getExistingUser | GET        | OrganizationRole | 401            |
 
     Examples: GuestAccess
       | EndpointKey     | HttpMethod | Role  | ExpectedStatus |

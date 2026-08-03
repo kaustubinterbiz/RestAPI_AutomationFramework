@@ -1,6 +1,7 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
 using EnterpriseApiAutomationFramework.Core.Helpers;
 using FluentAssertions;
+using NUnit.Framework;
 
 namespace EnterpriseApiAutomationFramework.Core.Validators;
 

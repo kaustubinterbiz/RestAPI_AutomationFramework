@@ -147,6 +147,20 @@ public static class AuthService
             : Truncate(token, 40);
 
         ExcelConfigWriter.UpsertLoginResponse(role, status, snippet);
+
+        try
+        {
+            ExcelConfigWriter.UpsertApiResponse(
+                TestConfigDefaults.LoginApiKey,
+                response.Content ?? string.Empty,
+                httpStatus: status,
+                primaryValue: role);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or TimeoutException)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Excel login API response upsert skipped: {ex.Message}");
+        }
     }
 
     private static string? Truncate(string? value, int maxLength)

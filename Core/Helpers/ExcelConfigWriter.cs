@@ -18,7 +18,7 @@ public static class ExcelConfigWriter
 
         var updates = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            [TestConfigDefaults.ValueColumn] = value,
+            [TestConfigDefaults.ValueColumn] = TruncateForExcel(value),
             [TestConfigDefaults.UpdatedAtColumn] = DateTime.UtcNow.ToString("O")
         };
 
@@ -26,7 +26,7 @@ public static class ExcelConfigWriter
             updates[TestConfigDefaults.HttpStatusColumn] = httpStatus;
 
         if (!string.IsNullOrWhiteSpace(responseSnippet))
-            updates[TestConfigDefaults.ResponseSnippetColumn] = responseSnippet;
+            updates[TestConfigDefaults.ResponseSnippetColumn] = TruncateForExcel(responseSnippet);
 
         UpsertBySearchColumn(
             TestConfigDefaults.EndpointExcelFile,
@@ -34,6 +34,38 @@ public static class ExcelConfigWriter
             TestConfigDefaults.KeyColumn,
             key,
             updates);
+    }
+
+    /// <summary>
+    /// Stores an API response under its endpoint key in Endpoint_Response
+    /// (Key = api key, Value = primary value or body, ResponseSnippet = full body).
+    /// </summary>
+    public static void UpsertApiResponse(
+        string apiKey,
+        string responseBody,
+        string? httpStatus = null,
+        string? primaryValue = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+
+        var body = responseBody ?? string.Empty;
+        var value = !string.IsNullOrWhiteSpace(primaryValue) ? primaryValue : body;
+        if (string.IsNullOrWhiteSpace(value))
+            value = "(empty)";
+
+        UpsertEndpointResponse(
+            key: apiKey,
+            value: value,
+            httpStatus: httpStatus,
+            responseSnippet: body);
+    }
+
+    private static string TruncateForExcel(string text)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= TestConfigDefaults.ExcelMaxCellChars)
+            return text;
+
+        return text[..TestConfigDefaults.ExcelMaxCellChars];
     }
 
     public static void UpsertLoginResponse(

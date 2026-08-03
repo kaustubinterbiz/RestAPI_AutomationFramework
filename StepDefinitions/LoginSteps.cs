@@ -80,6 +80,13 @@ public class LoginSteps
         StoreInfo.SaveExistingUserFromResponse(response.Content);
     }
 
+    [Then(@"business unit info from the last response is stored in appsettings")]
+    public void ThenBusinessUnitInfoFromTheLastResponseIsStoredInAppsettings()
+    {
+        var response = TokenContext.GetLastResponse(_context);
+        StoreInfo.SavePACFBusinessUnitFromResponse(response.Content);
+    }
+
 
     [When(@"User sends POST request on ""(.*)"" base url using stored access token")]
     public async Task WhenUserSendsPostOnAuthUsingStoredAccessToken(string baseUrlType)

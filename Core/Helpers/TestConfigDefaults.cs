@@ -43,6 +43,16 @@ public static class TestConfigDefaults
     public const string ResponseSnippetColumn = "ResponseSnippet";
     public const string UpdatedAtColumn = "UpdatedAt";
 
+    /// <summary>Excel cell text limit — ResponseSnippet / Value are truncated to this.</summary>
+    public const int ExcelMaxCellChars = 32000;
+
+    // Canonical API keys used when persisting full responses to Endpoint_Response.
+    public const string SessionInfoApiKey = "get";
+    public const string ExistingUserApiKey = "getExistingUser";
+    public const string PacfByBusinessUnitApiKey = "getPACFByBusinessUnitID";
+    public const string AddMultipleMemberByExcelApiKey = "addMultipleMemberByExcel";
+    public const string LoginApiKey = "login";
+
     public static readonly IReadOnlyList<string> LoginCredentialColumns =
     [
         "grant_type",

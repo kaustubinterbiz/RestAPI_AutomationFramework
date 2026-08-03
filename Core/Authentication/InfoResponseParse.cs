@@ -186,5 +186,55 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Select(p => p.Name)
                 .ToList();
+
+        public static GetPACFByBusinessUnitId_ResponseModel? TryGetPACFBusinessUnitInfo(string? responseContent)
+        {
+            if (string.IsNullOrWhiteSpace(responseContent))
+                return null;
+
+            try
+            {
+                return JsonSerializer.Deserialize<GetPACFByBusinessUnitId_ResponseModel>(
+                    responseContent, JsonOptions);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Flattens PACF business-unit fields for appsettings section storage.
+        /// Lists are serialized as JSON so nested data is preserved without colliding
+        /// with SessionInfo flat keys (EmailId, BusinessUnitId, etc.).
+        /// </summary>
+        public static IReadOnlyDictionary<string, string> ToPACFBusinessUnitPropertyDictionary(
+            GetPACFByBusinessUnitId_ResponseModel businessUnit)
+        {
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var property in typeof(GetPACFByBusinessUnitId_ResponseModel)
+                         .GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var raw = property.GetValue(businessUnit);
+                if (raw is null)
+                    continue;
+
+                string value;
+                if (raw is System.Collections.IEnumerable enumerable and not string)
+                {
+                    value = JsonSerializer.Serialize(raw, JsonOptions);
+                }
+                else
+                {
+                    value = raw.ToString() ?? string.Empty;
+                }
+
+                if (!string.IsNullOrWhiteSpace(value))
+                    result[property.Name] = value;
+            }
+
+            return result;
+        }
     }
 }

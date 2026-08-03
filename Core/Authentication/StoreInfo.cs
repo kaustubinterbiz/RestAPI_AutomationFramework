@@ -10,60 +10,55 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
         public const string SessionInfoSection = "SessionInfo";
         public const string CheckExistingUserInfoSection = "CheckExistingUserAvailabilityInfo";
         public const string AddMultipleMemberByExcelInfoSection = "AddMultipleMemberByExcelInfo";
+        public const string BusinessUnitInfoSection = "BusinessUnitInfo";
 
-        //Session Info 
+        //Session Info — full body + extracted keys go to RequestEndPoint.xlsx Endpoint_Response
         public static GetSessionInfo SaveSessionInfoFromResponse(
-        string? responseContent,
-        string appSettingsFile = AppSettingsFile,
-        bool updateEndpointId = true)
+            string? responseContent,
+            string appSettingsFile = AppSettingsFile,
+            bool updateEndpointId = true)
         {
             var sessionInfo = InfoResponseParse.TryGetSessionInfo(responseContent)
                 ?? throw new InvalidOperationException(
                     "Could not parse GetSessionInfo from the last API response.");
 
             var properties = InfoResponseParse.ToGetSessionPropertyDictionary(sessionInfo);
-            ConfigReaderNew.UpdateJsonSection(appSettingsFile, SessionInfoSection, properties);
 
-            foreach (var (key, value) in properties)
-            {
-                ConfigReaderNew.UpdateJsonValue(appSettingsFile, key, value);
-            }
+            SaveApiResponse(
+                TestConfigDefaults.SessionInfoApiKey,
+                responseContent,
+                primaryValue: sessionInfo.CacheId);
 
-            if (updateEndpointId && !string.IsNullOrWhiteSpace(sessionInfo.CacheId))
-            {
-                UpdateEndpointStoredValue("CacheId", sessionInfo.CacheId);
-            }
+            if (updateEndpointId)
+                UpsertExtractedKeys(properties);
 
             return sessionInfo;
         }
 
         //Existing User
         public static CheckExistingUser_ResponseModel SaveExistingUserFromResponse(
-        string? responseContent,
-        string appSettingsFile = AppSettingsFile,
-        bool updateEndpointId = true)
+            string? responseContent,
+            string appSettingsFile = AppSettingsFile,
+            bool updateEndpointId = true)
         {
             var existingUserInfo = InfoResponseParse.TryCheckExistingUserInfo(responseContent)
                 ?? throw new InvalidOperationException(
                     "Could not parse CheckExistingUserInfo from the last API response.");
 
             var properties = InfoResponseParse.ToCheckExistingUserPropertyDictionary(existingUserInfo);
-            ConfigReaderNew.UpdateJsonSection(appSettingsFile, CheckExistingUserInfoSection, properties);
 
-            foreach (var (key, value) in properties)
-            {
-                ConfigReaderNew.UpdateJsonValue(appSettingsFile, key, value);
-            }
+            SaveApiResponse(
+                TestConfigDefaults.ExistingUserApiKey,
+                responseContent,
+                primaryValue: existingUserInfo.MemberId);
 
-            if (updateEndpointId && !string.IsNullOrWhiteSpace(existingUserInfo.MemberId))
-            {
-                UpdateEndpointStoredValue("MemberId", existingUserInfo.MemberId);
-            }
+            if (updateEndpointId)
+                UpsertExtractedKeys(properties);
 
             return existingUserInfo;
         }
 
-        public static IList<AddMultipleMemberByExcel_ResponseModel>?   SaveAddMultiMemberByExcelResponseToExcel(
+        public static IList<AddMultipleMemberByExcel_ResponseModel>? SaveAddMultiMemberByExcelResponseToExcel(
             string? responseContent,
             string excelFileName = AddMultipleMemberByExcelDefaults.FileName,
             string responseSheetName = AddMultipleMemberByExcelDefaults.ResponseSheetName,
@@ -109,56 +104,103 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
                 ?? throw new InvalidOperationException(
                     "Could not parse AddMultipleMemberByExcel response. Expected a JSON array.");
 
-            var sectionValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["MemberCount"] = members.Count.ToString()
-            };
+            var primaryMemberId = members.Count > 0 ? members[0].MemberId : null;
+
+            SaveApiResponse(
+                TestConfigDefaults.AddMultipleMemberByExcelApiKey,
+                responseContent,
+                primaryValue: primaryMemberId);
+
+            if (updateEndpointId && !string.IsNullOrWhiteSpace(primaryMemberId))
+                UpdateEndpointStoredValue("MemberId", primaryMemberId);
 
             if (members.Count > 0)
             {
                 var firstMemberProperties = InfoResponseParse.ToAddMultiMemberByExcelPropertyDictionary(members[0]);
-                foreach (var (key, value) in firstMemberProperties)
-                    sectionValues[key] = value;
-            }
-
-            ConfigReaderNew.UpdateJsonSection(appSettingsFile, AddMultipleMemberByExcelInfoSection, sectionValues);
-
-            foreach (var (key, value) in sectionValues)
-                ConfigReaderNew.UpdateJsonValue(appSettingsFile, key, value);
-
-            if (updateEndpointId && members.Count > 0
-                && !string.IsNullOrWhiteSpace(members[0].MemberId))
-            {
-                UpdateEndpointStoredValue("MemberId", members[0].MemberId);
+                UpsertExtractedKeys(firstMemberProperties);
+                UpdateEndpointStoredValue("MemberCount", members.Count.ToString());
             }
 
             return members;
         }
 
-        private static void UpdateEndpointStoredValue(string updateOnKey, string storedValue) =>
-            ExcelConfigWriter.UpsertEndpointResponse(updateOnKey, storedValue);
-
-        //Dynamic Response Handler
-        private static void UpdateResponseValuesInJsonFile(string jsonFilePath, string Jsonkey, string updateOnKey, string storedValue)
+        /// <summary>
+        /// Persists GetPACFByBusinessUnitID into appsettings BusinessUnitInfo section only.
+        /// Does not write flat top-level keys (EmailId, BusinessUnitId, …) so Login/session stay intact.
+        /// </summary>
+        public static GetPACFByBusinessUnitId_ResponseModel SavePACFBusinessUnitFromResponse(
+            string? responseContent,
+            string appSettingsFile = AppSettingsFile)
         {
-            ConfigReaderNew.LoadConfig(jsonFilePath);
-            var targetFilePath = ConfigReaderNew.GetValue(Jsonkey);
+            var businessUnit = InfoResponseParse.TryGetPACFBusinessUnitInfo(responseContent)
+                ?? throw new InvalidOperationException(
+                    "Could not parse GetPACFByBusinessUnitID from the last API response.");
 
-            if (string.IsNullOrWhiteSpace(targetFilePath))
-            {
-                return;
-            }
+            var properties = InfoResponseParse.ToPACFBusinessUnitPropertyDictionary(businessUnit);
+            ConfigReaderNew.UpdateJsonSection(appSettingsFile, BusinessUnitInfoSection, properties);
 
-            ConfigReaderNew.UpdateJsonValue(targetFilePath, updateOnKey, storedValue);
+            return businessUnit;
         }
 
-        //GetSessionIno and CacheId
+        /// <summary>
+        /// Central store: API key name + full response body in RequestEndPoint.xlsx → Endpoint_Response.
+        /// </summary>
+        public static void SaveApiResponse(
+            string apiKey,
+            string? responseBody,
+            string? httpStatus = null,
+            string? primaryValue = null)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+
+            try
+            {
+                ExcelConfigWriter.UpsertApiResponse(
+                    apiKey,
+                    responseBody ?? string.Empty,
+                    httpStatus,
+                    primaryValue);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or TimeoutException)
+            {
+                // Full response body mirror; do not fail when Excel/WPS locks the workbook.
+                System.Diagnostics.Debug.WriteLine(
+                    $"Excel Endpoint_Response upsert skipped for API key '{apiKey}': {ex.Message}");
+            }
+        }
+
+        private static void UpsertExtractedKeys(IReadOnlyDictionary<string, string> properties)
+        {
+            foreach (var (key, value) in properties)
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    UpdateEndpointStoredValue(key, value);
+            }
+        }
+
+        private static void UpdateEndpointStoredValue(string updateOnKey, string storedValue)
+        {
+            try
+            {
+                ExcelConfigWriter.UpsertEndpointResponse(updateOnKey, storedValue);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or TimeoutException)
+            {
+                // Extracted CacheId/MemberId mirrors; do not fail when VS debug locks the workbook.
+                System.Diagnostics.Debug.WriteLine(
+                    $"Excel Endpoint_Response upsert skipped for '{updateOnKey}': {ex.Message}");
+            }
+        }
+
+        //GetSessionInfo and CacheId — prefer Excel Endpoint_Response (source of truth after store)
         public static string? GetCachedValue(string key, string appSettingsFile = AppSettingsFile)
         {
             if (string.IsNullOrWhiteSpace(key))
-            {
                 return null;
-            }
+
+            var fromExcel = ExcelConfigReader.GetEndpointResponseValue(key);
+            if (!string.IsNullOrWhiteSpace(fromExcel))
+                return fromExcel;
 
             ConfigReaderNew.LoadConfig(appSettingsFile);
 
@@ -168,9 +210,7 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
                 key);
 
             if (!string.IsNullOrWhiteSpace(sectionValue))
-            {
                 return sectionValue;
-            }
 
             var flatValue = ConfigReaderNew.GetJsonValue(appSettingsFile, key);
             return string.IsNullOrWhiteSpace(flatValue) ? null : flatValue;
@@ -180,9 +220,11 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
         public static string? GetMemberIdValue(string key, string appSettingsFile = AppSettingsFile)
         {
             if (string.IsNullOrWhiteSpace(key))
-            {
                 return null;
-            }
+
+            var fromExcel = ExcelConfigReader.GetEndpointResponseValue(key);
+            if (!string.IsNullOrWhiteSpace(fromExcel))
+                return fromExcel;
 
             ConfigReaderNew.LoadConfig(appSettingsFile);
 
@@ -192,14 +234,10 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
                 key);
 
             if (!string.IsNullOrWhiteSpace(existingUserValue))
-            {
                 return existingUserValue;
-            }
 
             var flatValue = ConfigReaderNew.GetJsonValue(appSettingsFile, key);
             return string.IsNullOrWhiteSpace(flatValue) ? null : flatValue;
         }
-
-       
     }
 }

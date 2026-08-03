@@ -15,7 +15,7 @@ public class UserDriver
     private readonly ApiClient _apiClient;
 
     public UserDriver(ApiClient? apiClient = null)
-        {
+    {
         _apiClient = apiClient ?? new ApiClient();
     }
 
@@ -43,10 +43,14 @@ public class UserDriver
         return await _apiClient.GetAsync(endpoint, host: host ?? ApiHostContext.CurrentOrDefault);
     }
 
-        /// <summary>GET with existing token only — does not call login again (token refresh tests).</summary>
+    /// <summary>GET with existing token only — does not call login again (token refresh tests).</summary>
     public async Task<RestResponse> GetWithCurrentTokenAsync(string endpointKey = "get", ApiHost? host = null)
     {
-        ApiAuth.LoadTokenFromAppSettings();
+        if (!TokenManager.HasToken)
+        {
+            ApiAuth.LoadTokenFromAppSettings();
+        }
+
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
         return await _apiClient.GetAsync(endpoint, host: host ?? ApiHostContext.CurrentOrDefault);
     }
@@ -55,7 +59,7 @@ public class UserDriver
     {
         ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
-        
+
         return await _apiClient.SendRequestAsync(endpoint, filename, key, targetValue, header, queryParam, method, null, host ?? ApiHost.Api);
     }
 
@@ -79,18 +83,18 @@ public class UserDriver
         ApiAuth.LoadTokenFromAppSettings();
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
 
-         return await _apiClient.SendFlexibleRequestAsync(
-            endpoint,
-            configFile,
-            urlPlaceholderKeys,
-            targetValue,
-            headerKeys,
-            queryParamKeys,
-            urlSegmentKeys,
-            method,
-            options,
-            host ?? ApiHost.Api,
-            bodyKey);
+        return await _apiClient.SendFlexibleRequestAsync(
+           endpoint,
+           configFile,
+           urlPlaceholderKeys,
+           targetValue,
+           headerKeys,
+           queryParamKeys,
+           urlSegmentKeys,
+           method,
+           options,
+           host ?? ApiHost.Api,
+           bodyKey);
     }
 
     /// <summary>
@@ -144,7 +148,7 @@ public class UserDriver
 
     public Task<RestResponse> GetUsersWithCurrentTokenOnly(string env, string key, string request, ApiHost? host = null) => GetWithCurrentTokenAsync(request, host);
 
-    public Task<RestResponse> PostUser(string env, string key, string request, string jsonBodyFileKey, string bodyKey, ApiHost? host = null) => 
+    public Task<RestResponse> PostUser(string env, string key, string request, string jsonBodyFileKey, string bodyKey, ApiHost? host = null) =>
     PostFromConfigAsync(request, jsonBodyFileKey, bodyKey, host);
 
     [Obsolete("Use ApiAuth.LoadTokenFromAppSettings()")]

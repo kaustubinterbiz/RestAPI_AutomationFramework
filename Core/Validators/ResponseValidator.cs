@@ -8,7 +8,8 @@ public static class ResponseValidator
 {
     public static void ValidateStatusCode(RestResponse response, int expectedStatusCode)
     {
-        ((int)response.StatusCode).Should().Be(expectedStatusCode);
+        ((int)response.StatusCode).Should().Be(expectedStatusCode,
+            "response body was: {0}", response.Content);
     }
 
     public static void ValidateStatus(RestResponse response, string expectedStatus)
