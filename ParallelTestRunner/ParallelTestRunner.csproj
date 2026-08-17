@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EnterpriseApiAutomationFramework.csproj">
+    <ProjectReference Include="..\EnterpriseApiSecurityAutomationFramework.csproj">
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

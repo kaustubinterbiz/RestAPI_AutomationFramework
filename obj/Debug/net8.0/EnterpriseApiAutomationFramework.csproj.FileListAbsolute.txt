@@ -1792,7 +1792,6 @@ C:\Users\ibz\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\refint\En
 C:\Users\ibz\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.pdb
 C:\Users\ibz\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\EnterpriseApiAutomationFramework.genruntimeconfig.cache
 C:\Users\ibz\source\repos\RestAPI_AutomationFramework\obj\Debug\net8.0\ref\EnterpriseApiAutomationFramework.dll
-C:\Users\ibz\source\repos\RestAPI_AutomationFramework\bin\Debug\net8.0\TestData\UploadFiles\~$RequestEndPoint.xlsx
 C:\Users\ibz\AppData\Local\RestAPI_AutomationFramework_testout\testhost.dll
 C:\Users\ibz\AppData\Local\RestAPI_AutomationFramework_testout\testhost.exe
 C:\Users\ibz\AppData\Local\RestAPI_AutomationFramework_testout\appsettings.json

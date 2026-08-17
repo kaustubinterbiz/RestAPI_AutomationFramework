@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj": {}
+    "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj": {}
   },
   "projects": {
-    "c:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj": {
+    "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
+        "projectUniqueName": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
         "projectName": "EnterpriseApiAutomationFramework",
-        "projectPath": "c:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
-        "packagesPath": "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\44690baf47135a0eea7c6bdd2087fb21\\nuget",
-        "outputPath": "c:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\obj\\",
+        "projectPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
+        "packagesPath": "C:\\Users\\ibz\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -142,7 +142,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -4440,16 +4440,16 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\44690baf47135a0eea7c6bdd2087fb21\\nuget": {},
+    "C:\\Users\\ibz\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
-      "projectName": "EnterpriseApiAutomationFramework",
-      "projectPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiAutomationFramework.csproj",
-      "packagesPath": "C:\\Users\\ibz\\AppData\\Local\\Temp\\cursor-sandbox-cache\\44690baf47135a0eea7c6bdd2087fb21\\nuget",
+      "projectUniqueName": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiSecurityAutomationFramework.csproj",
+      "projectName": "EnterpriseApiSecurityAutomationFramework",
+      "projectPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\EnterpriseApiSecurityAutomationFramework.csproj",
+      "packagesPath": "C:\\Users\\ibz\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\ibz\\source\\repos\\RestAPI_AutomationFramework\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
@@ -4581,7 +4581,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

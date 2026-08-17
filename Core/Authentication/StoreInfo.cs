@@ -154,9 +154,9 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
 
             try
-            {
+            { 
                 ExcelConfigWriter.UpsertApiResponse(
-                    apiKey,
+                      apiKey,
                     responseBody ?? string.Empty,
                     httpStatus,
                     primaryValue);
