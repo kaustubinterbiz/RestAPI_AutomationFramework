@@ -34,6 +34,38 @@ public class UserDriver
         SharedTokenProvider.ApplyExpiredTokenForTesting(TokenTestHelper.GetExpiredAccessToken(validToken ?? TokenManager.AccessToken));
 
     /// <summary>
+    /// Captured valid JWT → tamper into unauthorized bearer → upload for next API call (expect 401).
+    /// </summary>
+    public void ApplyTamperedAccessToken(string? validToken = null)
+    {
+        var baseline = validToken ?? TokenManager.AccessToken;
+        if (string.IsNullOrWhiteSpace(baseline))
+        {
+            throw new InvalidOperationException(
+                "ApplyTamperedAccessToken requires a captured valid access token. " +
+                "Run login / 'User has a valid access token' first.");
+        }
+
+        SharedTokenProvider.ApplyExpiredTokenForTesting(
+            TokenTestHelper.GetTamperedAccessToken(baseline));
+    }
+
+    /// <summary>
+    /// GET with an explicit Bearer token (never reloads appsettings / cached valid token).
+    /// </summary>
+    public async Task<RestResponse> GetWithBearerTokenAsync(
+        string bearerToken,
+        string endpointKey = "get",
+        ApiHost? host = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(bearerToken);
+
+        var endpoint = EndpointConfig.GetEndpoint(endpointKey);
+        var options = ApiGetRequestOptions.Create().SetBearerToken(bearerToken);
+        return await _apiClient.GetAsync(endpoint, options, host ?? ApiHostContext.CurrentOrDefault);
+    }
+
+    /// <summary>
     /// Authenticated GET. Loads endpoint from RequestEndPoint.json and sends Authorization: Bearer token.
     /// </summary>
     public async Task<RestResponse> GetAsync(string endpointKey = "get", ApiHost? host = null)

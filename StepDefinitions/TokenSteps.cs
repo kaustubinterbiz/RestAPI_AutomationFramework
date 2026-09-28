@@ -11,6 +11,7 @@ namespace EnterpriseApiAutomationFramework.StepDefinitions;
 public class TokenSteps
 {
     private const string ValidAccessTokenKey = "ValidAccessToken";
+    private const string TamperedAccessTokenKey = "TamperedAccessToken";
 
     private readonly ScenarioContext _scenarioContext;
     private readonly UserDriver _driver;
@@ -48,6 +49,21 @@ public class TokenSteps
         _driver.ApplyExpiredAccessToken(validToken);
     }
 
+    /// <summary>
+    /// Captured valid JWT → tamper into unauthorized bearer → store for next GET (expect 401).
+    /// </summary>
+    [When(@"User applies a tampered access token")]
+    public void WhenUserAppliesATamperedAccessToken()
+    {
+        var validToken = _scenarioContext.Get<string>(ValidAccessTokenKey);
+        validToken.Should().NotBeNullOrWhiteSpace(
+            "capture a valid access token before applying a tampered token");
+
+        var tampered = TokenTestHelper.GetTamperedAccessToken(validToken);
+        _scenarioContext.Set(tampered, TamperedAccessTokenKey);
+        _driver.ApplyTamperedAccessToken(validToken);
+    }
+
     [When(@"User sends GET request with current token only")]
     public async Task WhenUserSendsGetRequestWithCurrentTokenOnly() =>
         await WhenUserSendsGetRequestOnBaseUrlWithCurrentTokenOnly("Api");
@@ -56,6 +72,15 @@ public class TokenSteps
     public async Task WhenUserSendsGetRequestOnBaseUrlWithCurrentTokenOnly(string baseUrlType)
     {
         ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+
+        // After tamper: always send the unauthorized bearer explicitly (never valid cached token).
+        if (_scenarioContext.TryGetValue(TamperedAccessTokenKey, out string tampered)
+            && !string.IsNullOrWhiteSpace(tampered))
+        {
+            _response = await _driver.GetWithBearerTokenAsync(tampered);
+            return;
+        }
+
         _response = await _driver.GetWithCurrentTokenAsync();
     }
 
