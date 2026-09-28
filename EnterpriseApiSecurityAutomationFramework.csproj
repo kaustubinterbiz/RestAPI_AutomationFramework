@@ -12,6 +12,8 @@
   <ItemGroup>
     <Compile Remove="ParallelTestRunner\**" />
     <None Remove="ParallelTestRunner\**" />
+    <Compile Remove="SecurityReportRegenerator\**" />
+    <None Remove="SecurityReportRegenerator\**" />
     <Compile Remove="scripts\**" />
     <None Remove="scripts\**" />
     <Compile Remove="tmp_ser.cs" />
@@ -31,11 +33,16 @@
     <Folder Include="Reports\Html\" />
     <Folder Include="Reports\Parallel\Consolidated\" />
     <Folder Include="Reports\Parallel\Workers\" />
+    <Folder Include="Reports\Security\LivingReport\" />
+    <Folder Include="Reports\Security\runs\" />
+    <Folder Include="Core\Security\Reporting\" />
     <Folder Include="scripts\" />
     <Folder Include="TestData\Request Endpoint\" />
     <None Include="Reports\Html\.gitkeep" />
     <None Include="Reports\Parallel\Consolidated\.gitkeep" />
     <None Include="Reports\Parallel\Workers\.gitkeep" />
+    <None Include="Reports\Security\LivingReport\.gitkeep" />
+    <None Include="Reports\Security\runs\.gitkeep" />
     <None Include="TestData\UploadFiles\.gitkeep" />
   </ItemGroup>
 

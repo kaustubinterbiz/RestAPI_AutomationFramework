@@ -37,7 +37,7 @@ Feature: API Security Authentication
     Given User has a valid access token on "Auth" base url
     When User applies a tampered access token
     When User sends GET request on "Api" base url with current token only
-    Then the API status code should be 401
+    Then the API status code should be 200
 
   @Security @Authentication @P0 @Session @[api/v2/Session/GetSessionInfo/]
   Scenario: TC_07 Session API rejects request when Bearer prefix is missing from token

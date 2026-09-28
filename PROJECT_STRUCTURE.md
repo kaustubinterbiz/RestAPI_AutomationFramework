@@ -111,6 +111,22 @@ This document lists the purpose of each folder and source file in **RestAPI_Auto
 
 ---
 
+## Core — Security living documentation
+
+| File | Purpose |
+|------|---------|
+| `Core/Security/Reporting/SecurityReportCollector.cs` | Collects per-scenario security results to JSON during test run |
+| `Core/Security/Reporting/SecurityLivingReportBuilder.cs` | Builds report model and triggers render |
+| `Core/Security/Reporting/SecurityLivingReportRenderer.cs` | Markdown + HTML living documentation output |
+| `Core/Security/Reporting/SecurityOwaspMapper.cs` | OWASP API Top 10 category + severity mapping |
+| `Core/Security/Reporting/SecurityRemediationCatalog.cs` | C# remediation snippets for failed checks |
+| `Hooks/SecurityReportHooks.cs` | BeforeTestRun / AfterScenario / AfterTestRun hooks |
+| `scripts/run-security-report.ps1` | Run @Security + @Authorization suites and generate report |
+
+**Output:** `Reports/Security/LivingReport/security-living-report_{timestamp}.md|.html`
+
+---
+
 ## Documentation
 
 | File | Purpose |

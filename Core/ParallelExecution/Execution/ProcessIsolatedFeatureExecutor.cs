@@ -3,6 +3,7 @@ using System.Text;
 using EnterpriseApiAutomationFramework.Core.ParallelExecution.Configuration;
 using EnterpriseApiAutomationFramework.Core.ParallelExecution.Models;
 using EnterpriseApiAutomationFramework.Core.ParallelExecution.Reporting;
+using EnterpriseApiAutomationFramework.Core.Security.Reporting;
 
 namespace EnterpriseApiAutomationFramework.Core.ParallelExecution.Execution;
 
@@ -14,15 +15,18 @@ public sealed class ProcessIsolatedFeatureExecutor
     private readonly ParallelExecutionSettings _settings;
     private readonly string _projectPath;
     private readonly string _projectRoot;
+    private readonly string? _securitySessionId;
 
     public ProcessIsolatedFeatureExecutor(
         ParallelExecutionSettings settings,
         string projectPath,
-        string projectRoot)
+        string projectRoot,
+        string? securitySessionId = null)
     {
         _settings = settings;
         _projectPath = projectPath;
         _projectRoot = projectRoot;
+        _securitySessionId = securitySessionId;
     }
 
     public Task<FeatureExecutionResult> ExecuteAsync(
@@ -61,7 +65,8 @@ public sealed class ProcessIsolatedFeatureExecutor
             "--no-build " +
             "--nologo";
 
-        var (exitCode, workerPid) = await RunProcessAsync(_projectRoot, arguments, extentDir, logBuilder, cancellationToken);
+        var (exitCode, workerPid) = await RunProcessAsync(
+            _projectRoot, arguments, extentDir, logBuilder, unit.TestFilterExpression, cancellationToken);
         await File.WriteAllTextAsync(logPath, logBuilder.ToString(), cancellationToken);
 
         var endUtc = DateTime.UtcNow;
@@ -98,11 +103,12 @@ public sealed class ProcessIsolatedFeatureExecutor
         };
     }
 
-    private static async Task<(int ExitCode, int? WorkerPid)> RunProcessAsync(
+    private async Task<(int ExitCode, int? WorkerPid)> RunProcessAsync(
         string projectRoot,
         string arguments,
         string extentReportDir,
         StringBuilder logBuilder,
+        string testFilter,
         CancellationToken cancellationToken)
     {
         var psi = new ProcessStartInfo
@@ -120,6 +126,13 @@ public sealed class ProcessIsolatedFeatureExecutor
         psi.Environment["DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER"] = "1";
         psi.Environment["MSBUILDDISABLENODEREUSE"] = "1";
         psi.Environment["MSBUILDNOINPROCNODE"] = "1";
+
+        if (!string.IsNullOrWhiteSpace(_securitySessionId))
+        {
+            psi.Environment[SecurityReportingConstants.SessionIdEnvVar] = _securitySessionId;
+            psi.Environment[SecurityReportingConstants.DeferRenderEnvVar] = "true";
+            psi.Environment[SecurityReportingConstants.TestFilterEnvVar] = testFilter;
+        }
 
         using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
         var outputLock = new object();

@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Security Living Report — 20260928_205213_876_971c</title>
+<style>
+  :root { --bg:#f0f4f8; --card:#fff; --text:#1e293b; --muted:#64748b; --pass:#059669; --fail:#dc2626; --warn:#d97706; --border:#e2e8f0; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.55; }
+  .top-banner { background: #1e40af; color: #fff; padding: 10px 24px; font-size: 14px; text-align: center; }
+  .page-header { background: linear-gradient(135deg,#0f172a,#1e3a5f); color: #fff; padding: 28px 32px; }
+  .page-header h1 { margin: 0 0 8px; font-size: 1.75rem; }
+  .page-header .meta { margin: 0; opacity: .9; font-size: 14px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 14px; padding: 20px 32px; max-width: 1400px; margin: 0 auto; }
+  .stat-card { background: var(--card); border-radius: 12px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,.07); border-left: 4px solid var(--border); }
+  .stat-card.pass { border-left-color: var(--pass); }
+  .stat-card.fail { border-left-color: var(--fail); }
+  .stat-card.warn { border-left-color: var(--warn); }
+  .stat-card .label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .stat-card .value { font-size: 1.6rem; font-weight: 700; }
+  .tabs { display: flex; gap: 8px; padding: 0 32px; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; }
+  .tab { border: none; background: #cbd5e1; color: #334155; padding: 10px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 14px; font-weight: 600; }
+  .tab.active { background: var(--card); color: #0f172a; box-shadow: 0 -2px 6px rgba(0,0,0,.06); }
+  .panel { display: none; max-width: 1400px; margin: 0 auto 32px; padding: 24px 32px; background: var(--card); border-radius: 0 12px 12px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .panel.active { display: block; }
+  h2 { margin-top: 0; color: #0f172a; font-size: 1.35rem; }
+  h3 { color: #1e3a5f; font-size: 1.1rem; margin-top: 0; }
+  .meta-table, .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .meta-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .meta-table td:first-child { font-weight: 600; width: 200px; color: var(--muted); }
+  .table-wrap { overflow-x: auto; margin-top: 12px; }
+  .data-table th { background: #0f172a; color: #fff; padding: 10px 12px; text-align: left; white-space: nowrap; }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .data-table tr:hover td { background: #f8fafc; }
+  .data-table .endpoint code { font-size: 12px; word-break: break-all; }
+  .status-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .status-pill.pass { background: #d1fae5; color: #065f46; }
+  .status-pill.fail { background: #fee2e2; color: #991b1b; }
+  .sev-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+  .sev-badge.critical { background: #fecaca; color: #7f1d1d; }
+  .sev-badge.high { background: #fed7aa; color: #9a3412; }
+  .sev-badge.medium { background: #fef08a; color: #854d0e; }
+  .sev-badge.low { background: #dcfce7; color: #166534; }
+  .scenario-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; background: #fafbfc; }
+  .scenario-card.fail { border-left: 4px solid var(--fail); }
+  .scenario-card.pass { border-left: 4px solid var(--pass); }
+  .scenario-meta { list-style: none; padding: 0; margin: 0 0 12px; font-size: 14px; }
+  .scenario-meta li { margin: 4px 0; }
+  .step-list { margin: 0; padding-left: 20px; font-size: 14px; }
+  .step-list li { margin-bottom: 8px; }
+  .step-ok::marker { content: "✅ "; }
+  .step-fail::marker { content: "❌ "; }
+  .result-box { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 14px; }
+  details.remediation-block { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; background: #fff; }
+  details.remediation-block summary { cursor: pointer; padding: 14px 18px; font-weight: 600; background: #f1f5f9; border-radius: 10px; }
+  details.remediation-block[open] summary { border-radius: 10px 10px 0 0; border-bottom: 1px solid var(--border); }
+  details.remediation-block .inner { padding: 16px 18px; }
+  pre.code-block { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 8px; overflow: auto; font-size: 12px; line-height: 1.45; margin: 8px 0 16px; white-space: pre-wrap; }
+  .code-label { font-size: 13px; font-weight: 700; margin: 12px 0 6px; color: var(--muted); }
+  .empty-state { color: var(--muted); font-style: italic; padding: 16px; }
+  .fail-reason { color: var(--fail); font-size: 13px; margin-top: 4px; display: block; }
+  .conclusion-verdict { font-size: 1.2rem; font-weight: 700; margin: 12px 0; }
+  .conclusion-footer { margin-top: 24px; color: var(--muted); font-size: 14px; }
+  .table-hint { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+  .status-pill.fail-toggle { cursor: pointer; border: none; font-family: inherit; }
+  .status-pill.fail-toggle:hover { filter: brightness(0.95); }
+  .status-pill.fail-toggle[aria-expanded="true"] { outline: 2px solid #991b1b; }
+  .fail-detail-row td { background: #fef2f2; padding: 12px 16px; }
+  .fail-detail-box { font-size: 13px; line-height: 1.5; margin: 0; }
+  .fail-detail-box dt { font-weight: 600; color: var(--muted); margin-top: 6px; }
+  .fail-detail-box dt:first-child { margin-top: 0; }
+  .fail-detail-box dd { margin: 2px 0 0; }
+</style>
+</head>
+<body>
+<div class="top-banner">
+  <strong>Browser mein open karein</strong> — Chrome ya Edge mein ye dashboard dikhega.
+  Cursor / VS Code mein file khologe to HTML source code dikhega (normal hai).
+</div>
+<header class="page-header">
+<h1>API Security Living Report — Consolidated Run (29 scenarios)</h1>
+<p class="meta">Run ID: <strong>20260928_205213_876_971c</strong> | Mode: <strong>Batch</strong> | Environment: <strong>QA</strong></p>
+<p class="meta">Started: 2026-09-29 02:22:13 (local) | Report file: <strong>security-living-report_20260928_205213_876_971c.html</strong> | <a href="index.html" style="color:#93c5fd">All runs</a></p>
+</header>
+<div class="cards">
+<div class="stat-card warn"><div class="label">Scenarios Passed</div><div class="value">23/29</div></div>
+<div class="stat-card warn"><div class="label">Checks Passed</div><div class="value">57/70</div></div>
+<div class="stat-card fail"><div class="label">Success Rate</div><div class="value">81.4%</div></div>
+<div class="stat-card fail"><div class="label">Failed Scenarios</div><div class="value">6</div></div>
+</div>
+<nav class="tabs" role="tablist">
+<button type="button" class="tab active" data-panel="panel-dashboard">Dashboard</button>
+<button type="button" class="tab" data-panel="panel-conclusion">Run Conclusion</button>
+<button type="button" class="tab" data-panel="panel-scenarios">Scenarios</button>
+<button type="button" class="tab" data-panel="panel-remediation">Remediation</button>
+</nav>
+<section id="panel-dashboard" class="panel active">
+<h2>Executive Summary</h2>
+<table class="meta-table"><tbody>
+<tr><td>Project Name</td><td>Enterprise API Security Automation Framework</td></tr>
+<tr><td>Run Mode</td><td>Batch</td></tr>
+<tr><td>Test Filter</td><td>—</td></tr>
+<tr><td>Execution Date (UTC)</td><td>2026-09-28 20:52:13 UTC</td></tr>
+<tr><td>Completed (UTC)</td><td>2026-09-28 20:53:37 UTC</td></tr>
+<tr><td>Duration</td><td>00:01:23</td></tr>
+<tr><td>Target Environment</td><td>QA</td></tr>
+<tr><td>API Base URL</td><td>https://as-rc-test-api.azurewebsites.net/</td></tr>
+<tr><td>Framework</td><td>C# .NET 8 + Reqnroll + NUnit + RestSharp</td></tr>
+</tbody></table>
+<h3>Summary Table</h3>
+<p class="table-hint">Failed status par click karein — failed step aur reason yahi expand hoga.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr>
+<th>Endpoint</th><th>Method</th><th>Vulnerability</th><th>Scenario</th><th>OWASP</th><th>Status</th><th>Severity</th>
+</tr></thead><tbody>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>CheckEmailAvailibility API rejects request after login when access token payload claim is tampered</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-0" data-fail-toggle="fail-detail-0">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-0" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>CheckEmailAvailibility API rejects request when access token is expired</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-1" data-fail-toggle="fail-detail-1">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-1" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>CheckEmailAvailibility API rejects request when access token is invalid garbage</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-2" data-fail-toggle="fail-detail-2">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-2" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>CheckEmailAvailibility API rejects request when access token is malformed</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-3" data-fail-toggle="fail-detail-3">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-3" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>CheckEmailAvailibility API rejects request when Authorization header is missing</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>CheckEmailAvailibility API rejects request when Bearer prefix is missing from token</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>CheckEmailAvailibility API rejects request when Bearer token is empty</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-23" data-fail-toggle="fail-detail-23">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-23" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-24" data-fail-toggle="fail-detail-24">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-24" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+<dt>Detail</dt><dd>Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-25" data-fail-toggle="fail-detail-25">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-25" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+<dt>Detail</dt><dd>Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-26" data-fail-toggle="fail-detail-26">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-26" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+<dt>Detail</dt><dd>Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-44" data-fail-toggle="fail-detail-44">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-44" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-45" data-fail-toggle="fail-detail-45">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-45" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+<dt>Detail</dt><dd>Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-46" data-fail-toggle="fail-detail-46">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-46" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+<dt>Detail</dt><dd>Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-47" data-fail-toggle="fail-detail-47">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-47" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then all authorization executions should pass</dd>
+<dt>Reason</dt><dd>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+<dt>Expected / Actual</dt><dd><code>401/200</code></dd>
+<dt>Detail</dt><dd>Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>ExistingUser API rejects request after login when access token payload claim is tampered</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>ExistingUser API rejects request when access token is expired</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>ExistingUser API rejects request when access token is invalid garbage</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>ExistingUser API rejects request when access token is malformed</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>ExistingUser API rejects request when Authorization header is missing</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>ExistingUser API rejects request when Bearer prefix is missing from token</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>ExistingUser API rejects request when Bearer token is empty</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>TC_01 Session API rejects request when Authorization header is missing</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>TC_02 Session API rejects request when Bearer token is empty</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>TC_03 Session API rejects request when access token is invalid garbage</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>TC_04 Session API rejects request when access token is malformed</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>TC_05 Session API rejects request when access token is expired</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>TC_06 Session API rejects request after login when access token is tampered</td>
+<td>API2:2023 Broken Authentication</td>
+<td><button type="button" class="status-pill fail fail-toggle" aria-expanded="false" aria-controls="fail-detail-61" data-fail-toggle="fail-detail-61">Fail</button></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr id="fail-detail-61" class="fail-detail-row" hidden>
+<td colspan="7">
+<dl class="fail-detail-box">
+<dt>Failed Step</dt><dd>Then the API status code should be 200</dd>
+<dt>Reason</dt><dd>Expected ((int)response.StatusCode) to be 200 because response body was: &quot;Invalid access token.&quot;, but found 401 (difference of 201).</dd>
+<dt>Expected / Actual</dt><dd><code>200/401</code></dd>
+</dl></td></tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>TC_07 Session API rejects request when Bearer prefix is missing from token</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>NoAuthHeader</td>
+<td>TC_08 Session API rejects request when Authorization header is missing</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>EmptyBearer</td>
+<td>TC_09 Session API rejects request when Bearer token is empty</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>InvalidToken</td>
+<td>TC_10 Session API rejects request when access token is invalid garbage</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MalformedToken</td>
+<td>TC_11 Session API rejects request when access token is malformed</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>ExpiredToken</td>
+<td>TC_12 Session API rejects request when access token is expired</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>TamperedToken</td>
+<td>TC_13 Session API rejects request after login when access token is tampered</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge high">High</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></td>
+<td>GET</td>
+<td>MissingBearer</td>
+<td>TC_14 Session API rejects request when Bearer prefix is missing from token</td>
+<td>API2:2023 Broken Authentication</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge critical">Critical</span></td>
+</tr>
+</tbody></table></div></section>
+<section id="panel-conclusion" class="panel">
+<h2>Run Conclusion</h2>
+<table class="meta-table"><tbody>
+<tr><td>Run ID</td><td>20260928_205213_876_971c</td></tr>
+<tr><td>Run Mode</td><td>Batch</td></tr>
+<tr><td>Test Filter</td><td>—</td></tr>
+<tr><td>Scenarios</td><td>23/29 passed</td></tr>
+<tr><td>Checks</td><td>57/70 passed</td></tr>
+<tr><td>Duration</td><td>00:01:23</td></tr>
+</tbody></table>
+<p class="conclusion-verdict">Final verdict: <span class="status-pill fail">23/29 scenarios passed (79.3%)</span> | Checks success: 81.4%</p>
+<h3>Failed Scenarios</h3>
+<div class="table-wrap"><table class="data-table"><thead><tr>
+<th>Scenario</th><th>Failed Step</th><th>Reason</th><th>Expected/Actual</th>
+</tr></thead><tbody>
+<tr>
+<td>CheckEmailAvailibility API rejects request after login when access token payload claim is tampered</td>
+<td><code>Then all authorization executions should pass</code></td>
+<td>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</td>
+<td><code>401/200</code></td>
+</tr>
+<tr>
+<td>CheckEmailAvailibility API rejects request when access token is expired</td>
+<td><code>Then all authorization executions should pass</code></td>
+<td>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</td>
+<td><code>401/200</code></td>
+</tr>
+<tr>
+<td>CheckEmailAvailibility API rejects request when access token is invalid garbage</td>
+<td><code>Then all authorization executions should pass</code></td>
+<td>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</td>
+<td><code>401/200</code></td>
+</tr>
+<tr>
+<td>CheckEmailAvailibility API rejects request when access token is malformed</td>
+<td><code>Then all authorization executions should pass</code></td>
+<td>Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</td>
+<td><code>401/200</code></td>
+</tr>
+<tr>
+<td>Execute all authentication security tests from Excel in one run</td>
+<td><code>Then all authorization executions should pass</code></td>
+<td>Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</td>
+<td><code>401/200</code></td>
+</tr>
+<tr>
+<td>TC_06 Session API rejects request after login when access token is tampered</td>
+<td><code>Then the API status code should be 200</code></td>
+<td>Expected ((int)response.StatusCode) to be 200 because response body was: &quot;Invalid access token.&quot;, but found 401 (difference of 201).</td>
+<td><code>200/401</code></td>
+</tr>
+</tbody></table></div>
+<p class="conclusion-footer">Run concluded at 2026-09-29 02:23:37 (local).</p>
+</section>
+<section id="panel-scenarios" class="panel">
+<h2>Detailed Scenario Breakdown</h2>
+<article class="scenario-card fail">
+<h3>CheckEmailAvailibility API rejects request after login when access token payload claim is tampered</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill fail">Fail</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-06&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-06, applied TamperedToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-fail"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+<span class="fail-reason">Reason: Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</span>
+</li>
+</ol>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for TamperedToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>Scenario Error</strong><br/>System.InvalidOperationException : One or more authorization executions failed:
+- AUTH-GETCHECKAVABILITY-06 | TamperedToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+</article>
+<article class="scenario-card fail">
+<h3>CheckEmailAvailibility API rejects request when access token is expired</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill fail">Fail</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-05&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-05, applied ExpiredToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-fail"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+<span class="fail-reason">Reason: Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</span>
+</li>
+</ol>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for ExpiredToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>Scenario Error</strong><br/>System.InvalidOperationException : One or more authorization executions failed:
+- AUTH-GETCHECKAVABILITY-05 | ExpiredToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+</article>
+<article class="scenario-card fail">
+<h3>CheckEmailAvailibility API rejects request when access token is invalid garbage</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill fail">Fail</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-03&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-03, applied InvalidToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-fail"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+<span class="fail-reason">Reason: Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</span>
+</li>
+</ol>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for InvalidToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>Scenario Error</strong><br/>System.InvalidOperationException : One or more authorization executions failed:
+- AUTH-GETCHECKAVABILITY-03 | InvalidToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+</article>
+<article class="scenario-card fail">
+<h3>CheckEmailAvailibility API rejects request when access token is malformed</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill fail">Fail</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-04&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-04, applied MalformedToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-fail"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+<span class="fail-reason">Reason: Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</span>
+</li>
+</ol>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for MalformedToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>Scenario Error</strong><br/>System.InvalidOperationException : One or more authorization executions failed:
+- AUTH-GETCHECKAVABILITY-04 | MalformedToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>CheckEmailAvailibility API rejects request when Authorization header is missing</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-01&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-01, applied NoAuthHeader mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>CheckEmailAvailibility API rejects request when Bearer prefix is missing from token</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-07&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-07, applied MissingBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>CheckEmailAvailibility API rejects request when Bearer token is empty</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Member/CheckEmailAvailibility?EmailID={ValidateCheckExistingEmail}&amp;BusinessUnitID={ValidateBusinessUnitId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETCHECKAVABILITY-02&quot;<br/><em>Framework loaded Excel row AUTH-GETCHECKAVABILITY-02, applied EmptyBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card fail">
+<h3>Execute all authentication security tests from Excel in one run</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill fail">Fail</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security executes all authentication tests from Excel<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-fail"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+<span class="fail-reason">Reason: Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}</span>
+</li>
+</ol>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for InvalidToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MalformedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for ExpiredToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for TamperedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for InvalidToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for MalformedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for ExpiredToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for TamperedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for InvalidToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for MalformedToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for ExpiredToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for TamperedToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for InvalidToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MalformedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for ExpiredToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for TamperedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for InvalidToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for MalformedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for ExpiredToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for TamperedToken test (expected 401).
+</div>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for InvalidToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for MalformedToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for ExpiredToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>401</code> | Actual: <code>200</code><br/>
+Expected HTTP 401, but API returned 200 for TamperedToken. This indicates missing or weak authentication/authorization enforcement. Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+<br/><strong>Detail:</strong> Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+<div class="result-box">
+<strong>Scenario Error</strong><br/>System.InvalidOperationException : One or more authorization executions failed:
+- AUTH-GETCHECKAVABILITY-03 | InvalidToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-04 | MalformedToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-05 | ExpiredToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-06 | TamperedToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-10 | InvalidToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=InvalidToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-11 | MalformedToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=MalformedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-12 | ExpiredToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=ExpiredToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+- AUTH-GETCHECKAVABILITY-13 | TamperedToken | GET getCheckAvability: expected 401, actual 200 — Expected HTTP [401], got 200. Scenario=TamperedToken. Body={&quot;IsAvailableUserEmail&quot;:false,&quot;MemberId&quot;:&quot;46867269-f480-49b0-9459-06a9586250fc&quot;,&quot;IsSameBusinessUnitMemebr&quot;:true}
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request after login when access token payload claim is tampered</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-06&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-06, applied TamperedToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for TamperedToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request when access token is expired</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-05&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-05, applied ExpiredToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for ExpiredToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request when access token is invalid garbage</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-03&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-03, applied InvalidToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for InvalidToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request when access token is malformed</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-04&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-04, applied MalformedToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>400</code><br/>
+API correctly rejected or accepted the request with HTTP 400 for MalformedToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request when Authorization header is missing</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-01&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-01, applied NoAuthHeader mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request when Bearer prefix is missing from token</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-07&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-07, applied MissingBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>ExistingUser API rejects request when Bearer token is empty</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/Account/ExistingUser?emailId={EmailId}</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GETEXISTINGUSER-02&quot;<br/><em>Framework loaded Excel row AUTH-GETEXISTINGUSER-02, applied EmptyBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_01 Session API rejects request when Authorization header is missing</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-01&quot;<br/><em>Framework loaded Excel row AUTH-GET-01, applied NoAuthHeader mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_02 Session API rejects request when Bearer token is empty</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-02&quot;<br/><em>Framework loaded Excel row AUTH-GET-02, applied EmptyBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_03 Session API rejects request when access token is invalid garbage</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-03&quot;<br/><em>Framework loaded Excel row AUTH-GET-03, applied InvalidToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for InvalidToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_04 Session API rejects request when access token is malformed</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-04&quot;<br/><em>Framework loaded Excel row AUTH-GET-04, applied MalformedToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MalformedToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_05 Session API rejects request when access token is expired</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-05&quot;<br/><em>Framework loaded Excel row AUTH-GET-05, applied ExpiredToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for ExpiredToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card fail">
+<h3>TC_06 Session API rejects request after login when access token is tampered</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill fail">Fail</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>Given</strong> Given User has a valid access token on &quot;Auth&quot; base url<br/><em>Baseline login on Auth host; valid JWT stored for subsequent mutation.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User applies a tampered access token<br/><em>Valid JWT captured, then replaced with unauthorized bearer for negative test.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request on &quot;Api&quot; base url with current token only<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-fail"><strong>Then</strong> Then the API status code should be 200<br/><em>Step executed as defined in Gherkin scenario.</em>
+<span class="fail-reason">Reason: Expected ((int)response.StatusCode) to be 200 because response body was: &quot;Invalid access token.&quot;, but found 401 (difference of 201).</span>
+</li>
+</ol>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill fail">Fail</span><br/>
+Expected: <code>200</code> | Actual: <code>401</code><br/>
+Expected HTTP 200, but API returned 401 for TamperedToken. This indicates missing or weak authentication/authorization enforcement. Expected ((int)response.StatusCode) to be 200 because response body was: &quot;Invalid access token.&quot;, but found 401 (difference of 201).
+<br/><strong>Detail:</strong> Expected ((int)response.StatusCode) to be 200 because response body was: &quot;Invalid access token.&quot;, but found 401 (difference of 201).
+</div>
+<div class="result-box">
+<strong>Scenario Error</strong><br/>Expected ((int)response.StatusCode) to be 200 because response body was: &quot;Invalid access token.&quot;, but found 401 (difference of 201).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_07 Session API rejects request when Bearer prefix is missing from token</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-07&quot;<br/><em>Framework loaded Excel row AUTH-GET-07, applied MissingBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_08 Session API rejects request when Authorization header is missing</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-08&quot;<br/><em>Framework loaded Excel row AUTH-GET-08, applied NoAuthHeader mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>NoAuthHeader</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for NoAuthHeader test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_09 Session API rejects request when Bearer token is empty</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-09&quot;<br/><em>Framework loaded Excel row AUTH-GET-09, applied EmptyBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>EmptyBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for EmptyBearer test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_10 Session API rejects request when access token is invalid garbage</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-10&quot;<br/><em>Framework loaded Excel row AUTH-GET-10, applied InvalidToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>InvalidToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for InvalidToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_11 Session API rejects request when access token is malformed</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-11&quot;<br/><em>Framework loaded Excel row AUTH-GET-11, applied MalformedToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MalformedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MalformedToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_12 Session API rejects request when access token is expired</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-12&quot;<br/><em>Framework loaded Excel row AUTH-GET-12, applied ExpiredToken mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>ExpiredToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for ExpiredToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_13 Session API rejects request after login when access token is tampered</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> High</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>Given</strong> Given User has a valid access token on &quot;Auth&quot; base url<br/><em>Baseline login on Auth host; valid JWT stored for subsequent mutation.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User applies a tampered access token<br/><em>Valid JWT captured, then replaced with unauthorized bearer for negative test.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request on &quot;Api&quot; base url with current token only<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the API status code should be 401<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>TamperedToken</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for TamperedToken test (expected 401).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>TC_14 Session API rejects request when Bearer prefix is missing from token</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> API Security Authentication | <strong>Suite:</strong> Authentication</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> GET <code>https://as-rc-test-api.azurewebsites.net/api/v2/Session/GetSessionInfo/</code></li>
+<li><strong>OWASP:</strong> API2:2023 Broken Authentication | <strong>Severity:</strong> Critical</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When API Security runs authentication test &quot;AUTH-GET-14&quot;<br/><em>Framework loaded Excel row AUTH-GET-14, applied MissingBearer mutation, called protected API, compared status code.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then all authorization executions should pass<br/><em>Soft-assert aggregator verified all row-level executions passed.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>MissingBearer</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>401</code> | Actual: <code>401</code><br/>
+API correctly rejected or accepted the request with HTTP 401 for MissingBearer test (expected 401).
+</div>
+</article>
+</section>
+<section id="panel-remediation" class="panel">
+<h2>Actionable Remediation (.NET C#)</h2>
+<p>Failed checks ke liye neeche C# fixes expand karke dekho (click to open).</p>
+<details class="remediation-block">
+<summary>Validate JWT signature, issuer, audience, and lifetime</summary>
+<div class="inner">
+<div class="code-label">Vulnerable C# (ASP.NET Core)</div>
+<pre class="code-block">// Program.cs — token parsed but not validated
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =&gt;
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = false
+        };
+    });</pre>
+<div class="code-label">Secured C# (ASP.NET Core)</div>
+<pre class="code-block">// Program.cs — full JWT validation (Azure AD B2C example)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =&gt;
+    {
+        options.Authority = configuration[&quot;AzureAdB2C:Authority&quot;];
+        options.Audience = configuration[&quot;AzureAdB2C:ClientId&quot;];
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.FromMinutes(2)
+        };
+    });</pre>
+</div></details>
+</section>
+<script>
+(function(){
+  var tabs = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var id = tab.getAttribute('data-panel');
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      var panel = document.getElementById(id);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('[data-fail-toggle]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-fail-toggle');
+      var row = document.getElementById(id);
+      if (!row) return;
+      var open = row.hidden;
+      row.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+})();
+</script>
+</body></html>

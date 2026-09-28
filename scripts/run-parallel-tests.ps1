@@ -10,4 +10,17 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "Parallel run completed. Open Reports/Parallel/Consolidated/ for the merged report." -ForegroundColor Green
+Write-Host "Parallel run completed. Open Reports/Parallel/Consolidated/ for the parallel dashboard." -ForegroundColor Green
+
+$manifestPath = Join-Path $root "Reports\Security\runs\manifest.json"
+$reportDir = Join-Path $root "Reports\Security\LivingReport"
+
+if (Test-Path $manifestPath) {
+    $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+    $parallelRun = $manifest | Where-Object { $_.runMode -eq "ParallelBatch" } | Select-Object -First 1
+    if ($parallelRun) {
+        $securityHtml = Join-Path $reportDir $parallelRun.htmlFile
+        Write-Host "Security consolidated report: $securityHtml" -ForegroundColor Yellow
+        Write-Host "Run ID                      : $($parallelRun.runId)" -ForegroundColor Yellow
+    }
+}
