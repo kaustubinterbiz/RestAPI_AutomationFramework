@@ -23,17 +23,21 @@ public class SecurityReportHooks
         _featureContext = featureContext;
     }
 
-    [BeforeScenario("@Security", Order = 1)]
-    [BeforeScenario("@Authorization", Order = 1)]
+    [BeforeScenario(Order = 1)]
     public void BeforeSecurityScenario()
     {
+        if (!SecurityReportCollector.IsEnabled)
+            return;
+
         _scenarioContext.Set(new List<string>(), CapturedStepsKey);
     }
 
-    [AfterStep("@Security", Order = 9000)]
-    [AfterStep("@Authorization", Order = 9000)]
+    [AfterStep(Order = 9000)]
     public void AfterSecurityStep()
     {
+        if (!SecurityReportCollector.IsEnabled)
+            return;
+
         if (!_scenarioContext.TryGetValue(CapturedStepsKey, out List<string> steps))
         {
             steps = new List<string>();
@@ -77,20 +81,23 @@ public class SecurityReportHooks
         }
     }
 
-    [AfterScenario("@Security", Order = 9000)]
-    [AfterScenario("@Authorization", Order = 9000)]
+    [AfterScenario(Order = 9000)]
     public void AfterSecurityScenario()
     {
         if (!SecurityReportCollector.IsEnabled)
             return;
 
         var tags = _scenarioContext.ScenarioInfo.Tags.ToList();
-        var suite = tags.Any(t => t.Equals("Security", StringComparison.OrdinalIgnoreCase))
-            ? "Authentication"
-            : "Authorization";
+        var suite = ResolveSuite(tags);
 
         var trackerResults = AuthorizationExecutionTracker.GetResults(_scenarioContext).ToList();
         var (lastExpected, lastActual) = ResolveLastStatusCodes();
+        var stepTexts = _scenarioContext.TryGetValue(CapturedStepsKey, out List<string> capturedSteps)
+            ? capturedSteps
+            : new List<string>();
+
+        if (!lastExpected.HasValue)
+            lastExpected = SecurityScenarioEnricher.InferExpectedStatusFromSteps(stepTexts);
 
         var testResult = TestContext.CurrentContext.Result.Outcome.Status;
         var overallFailed = testResult == NUnit.Framework.Interfaces.TestStatus.Failed;
@@ -100,9 +107,7 @@ public class SecurityReportHooks
             FeatureName = _featureContext.FeatureInfo.Title,
             ScenarioName = _scenarioContext.ScenarioInfo.Title,
             Tags = tags,
-            StepTexts = _scenarioContext.TryGetValue(CapturedStepsKey, out List<string> capturedSteps)
-                ? capturedSteps
-                : new List<string>(),
+            StepTexts = stepTexts,
             TrackerResults = trackerResults,
             OverallFailed = overallFailed,
             ScenarioError = overallFailed ? TestContext.CurrentContext.Result.Message : null,
@@ -165,4 +170,24 @@ public class SecurityReportHooks
         && execution.ExpectedStatus.HasValue
         && execution.ActualStatus.HasValue
         && execution.ExpectedStatus != execution.ActualStatus;
+
+    private static string ResolveSuite(IReadOnlyList<string> tags)
+    {
+        if (tags.Any(t => t.Equals("Patient", StringComparison.OrdinalIgnoreCase)))
+        {
+            if (tags.Any(t => t.Equals("IDOR", StringComparison.OrdinalIgnoreCase)))
+                return "Patient Security / IDOR";
+            if (tags.Any(t => t.Equals("InputValidation", StringComparison.OrdinalIgnoreCase)))
+                return "Patient Security / InputValidation";
+            return "Patient Security / Authentication";
+        }
+
+        if (tags.Any(t => t.Equals("Security", StringComparison.OrdinalIgnoreCase)))
+            return "Authentication";
+
+        if (tags.Any(t => t.Equals("Authorization", StringComparison.OrdinalIgnoreCase)))
+            return "Authorization";
+
+        return "Functional";
+    }
 }

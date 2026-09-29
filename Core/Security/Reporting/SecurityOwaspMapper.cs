@@ -7,12 +7,22 @@ public static class SecurityOwaspMapper
 {
     public const string BrokenAuthentication = "API2:2023 Broken Authentication";
     public const string BrokenFunctionLevelAuthorization = "API5:2023 Broken Function Level Authorization";
+    public const string BrokenObjectPropertyLevelAuthorization = "API1:2023 Broken Object Level Authorization";
+    public const string UnrestrictedResourceConsumption = "API4:2023 Unrestricted Resource Consumption";
+    public const string UnsafeConsumptionOfApis = "API10:2023 Unsafe Consumption of APIs";
 
     public static (string OwaspCategory, SecuritySeverity Severity, string RemediationKey) Map(
         string vulnerabilityType,
         string suite)
     {
         var normalized = vulnerabilityType.Trim();
+
+        if (suite.Equals("Functional", StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals("FunctionalApi", StringComparison.OrdinalIgnoreCase)
+            || IsFunctionalType(normalized))
+        {
+            return ("Functional / Regression", SecuritySeverity.Informational, "functional");
+        }
 
         if (normalized.Equals("EndpointAccess", StringComparison.OrdinalIgnoreCase)
             || normalized.Equals("PermissionMatrix", StringComparison.OrdinalIgnoreCase)
@@ -27,8 +37,15 @@ public static class SecurityOwaspMapper
             "NOAUTHHEADER" or "EMPTYBEARER" or "MISSINGBEARER" or "EMPTYTOKEN" =>
                 (BrokenAuthentication, SecuritySeverity.Critical, "missing_auth"),
 
-            "INVALIDTOKEN" or "MALFORMEDTOKEN" or "EXPIREDTOKEN" or "TAMPEREDTOKEN" =>
+            "INVALIDTOKEN" or "MALFORMEDTOKEN" or "EXPIREDTOKEN" or "TAMPEREDTOKEN"
+                or "TAMPEREDSIGNATURE" or "WRONGISSUERAUDIENCE" or "MISSINGCLAIM" =>
                 (BrokenAuthentication, SecuritySeverity.High, "invalid_jwt"),
+
+            "IDORCROSSORG" =>
+                (BrokenObjectPropertyLevelAuthorization, SecuritySeverity.Critical, "idor"),
+
+            "INPUTVALIDATION" =>
+                (UnsafeConsumptionOfApis, SecuritySeverity.Medium, "input_validation"),
 
             "VALIDTOKEN" =>
                 (BrokenAuthentication, SecuritySeverity.Informational, "valid_control"),
@@ -57,4 +74,11 @@ public static class SecurityOwaspMapper
     private static bool IsRbacType(string type) =>
         type.Contains("Role", StringComparison.OrdinalIgnoreCase)
         || type.Equals("EndpointAccess", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsFunctionalType(string type) =>
+        type.Equals("Login", StringComparison.OrdinalIgnoreCase)
+        || type.Equals("TokenRefresh", StringComparison.OrdinalIgnoreCase)
+        || type.Equals("TokenExpired", StringComparison.OrdinalIgnoreCase)
+        || type.Equals("AddMember", StringComparison.OrdinalIgnoreCase)
+        || type.Equals("BusinessUnit", StringComparison.OrdinalIgnoreCase);
 }

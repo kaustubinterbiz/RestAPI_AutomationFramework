@@ -105,6 +105,27 @@ public static class TokenTestHelper
         return GetInvalidAccessToken();
     }
 
+    /// <summary>Valid JWT with altered signature segment (Patient P0 auth matrix).</summary>
+    public static string GetSignatureTamperedAccessToken(string validJwt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(validJwt);
+        return JwtTokenHelper.WithTamperedSignature(validJwt);
+    }
+
+    /// <summary>Valid JWT with wrong iss/aud (Patient P0 auth matrix).</summary>
+    public static string GetWrongIssuerAudienceToken(string validJwt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(validJwt);
+        return JwtTokenHelper.WithWrongIssuerAudience(validJwt);
+    }
+
+    /// <summary>Valid JWT with business/member claims stripped (Patient P0 auth matrix).</summary>
+    public static string GetMissingClaimToken(string validJwt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(validJwt);
+        return JwtTokenHelper.WithoutBusinessClaims(validJwt);
+    }
+
     private static string TamperToken(string validToken) =>
         validToken.TrimEnd() + "X";
 }

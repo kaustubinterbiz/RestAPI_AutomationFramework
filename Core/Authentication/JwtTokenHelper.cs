@@ -83,6 +83,54 @@ internal static class JwtTokenHelper
     /// Starts from a genuine JWT, modifies a payload claim, keeps the original signature.
     /// Prefer <paramref name="preferredClaim"/> (default <c>sub</c>); otherwise first mutable claim.
     /// </summary>
+    /// <summary>Valid JWT with last signature character flipped (signature validation should fail).</summary>
+    public static string WithTamperedSignature(string jwt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(jwt);
+        if (!TryGetParts(jwt, out var parts) || parts.Length < 3)
+            throw new ArgumentException("WithTamperedSignature requires a three-part JWT.", nameof(jwt));
+
+        var signature = parts[2];
+        var last = signature[^1] == 'a' ? 'b' : 'a';
+        return $"{parts[0]}.{parts[1]}.{signature[..^1]}{last}";
+    }
+
+    /// <summary>JWT with iss/aud replaced to simulate cross-tenant token.</summary>
+    public static string WithWrongIssuerAudience(string jwt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(jwt);
+        if (!TryGetParts(jwt, out var parts) || parts.Length < 3)
+            throw new ArgumentException("WithWrongIssuerAudience requires a three-part JWT.", nameof(jwt));
+
+        var payload = ParsePayloadObject(parts[1]);
+        payload["iss"] = "https://wrong-tenant.example.com/";
+        payload["aud"] = "00000000-0000-0000-0000-000000000099";
+        var newPayload = EncodeBase64Url(Encoding.UTF8.GetBytes(payload.ToJsonString()));
+        return $"{parts[0]}.{newPayload}.{parts[2]}";
+    }
+
+    /// <summary>JWT with businessunit/member-like claims removed for missing-claim tests.</summary>
+    public static string WithoutBusinessClaims(string jwt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(jwt);
+        if (!TryGetParts(jwt, out var parts) || parts.Length < 3)
+            throw new ArgumentException("WithoutBusinessClaims requires a three-part JWT.", nameof(jwt));
+
+        var payload = ParsePayloadObject(parts[1]);
+        foreach (var key in payload.ToList().Select(p => p.Key))
+        {
+            if (key.Contains("business", StringComparison.OrdinalIgnoreCase)
+                || key.Contains("member", StringComparison.OrdinalIgnoreCase)
+                || key.Contains("unit", StringComparison.OrdinalIgnoreCase))
+            {
+                payload.Remove(key);
+            }
+        }
+
+        var newPayload = EncodeBase64Url(Encoding.UTF8.GetBytes(payload.ToJsonString()));
+        return $"{parts[0]}.{newPayload}.{parts[2]}";
+    }
+
     public static string TamperPayloadClaim(string jwt, string preferredClaim = "sub")
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(jwt);

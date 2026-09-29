@@ -143,6 +143,22 @@ public IActionResult DeleteTag(Guid id) { ... }
                 Title = "Positive control — no remediation required",
                 VulnerableCode = "// N/A — this scenario verifies a valid token is accepted.",
                 SecuredCode = "// Keep current JWT + [Authorize] configuration; monitor in CI."
+            },
+            ["functional"] = new SecurityRemediationEntry
+            {
+                Key = "functional",
+                Title = "Functional / regression failure — investigate API or test data",
+                VulnerableCode = """
+// Functional scenario failed — not a JWT-gate defect.
+// Typical causes: wrong test data, environment drift, API contract change,
+// missing prerequisite (login/session), or assertion mismatch.
+""",
+                SecuredCode = """
+// 1. Re-run the single scenario with verbose logging.
+// 2. Compare actual vs expected status/body in the Living Report failure row.
+// 3. Fix test data (Excel/appsettings) or API behaviour; re-run full suite.
+// 4. Security JWT-gate failures use missing_auth / invalid_jwt remediation instead.
+"""
             }
         };
 

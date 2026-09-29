@@ -1,4 +1,4 @@
-    Feature:Login, Session and Existing User Testing
+Feature: Getting Access Token and Validating API with Access Token
       Pass base URL type or feature name in steps (Auth = B2C, Api = application).
 
     @Auth @SuperAdmin @LoginByAdmin

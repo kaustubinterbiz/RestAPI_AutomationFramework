@@ -1,4 +1,4 @@
-Feature: API Security Authentication
+Feature: Authentication for Sessions/GetSessionInfo and  Account/ExistingUser and Member/CheckEmailAvailibility API Security Authentication Tests
   JWT rejection checks on protected Api endpoints.
   Each scenario: apply missing/bad token → call Api → expect reject (ExpectedStatus from Excel).
   Data source: TestData/UploadFiles/ApiSecurityAuthMatrix.xlsx
@@ -86,32 +86,32 @@ Feature: API Security Authentication
   # =========================================================
 
   @Security @Authentication @P0 @Account @[api/Account/ExistingUser]
-  Scenario: ExistingUser API rejects request when Authorization header is missing
+  Scenario: TC_01 ExistingUser API rejects request when Authorization header is missing
     When API Security runs authentication test "AUTH-GETEXISTINGUSER-01"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Account @[api/Account/ExistingUser]
-  Scenario: ExistingUser API rejects request when Bearer token is empty
+  Scenario: TC_02 ExistingUser API rejects request when Bearer token is empty
     When API Security runs authentication test "AUTH-GETEXISTINGUSER-02"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Account @[api/Account/ExistingUser]
-  Scenario: ExistingUser API rejects request when access token is invalid garbage
+  Scenario: TC_03 ExistingUser API rejects request when access token is invalid garbage
     When API Security runs authentication test "AUTH-GETEXISTINGUSER-03"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Account @[api/Account/ExistingUser]
-  Scenario: ExistingUser API rejects request when access token is malformed
+  Scenario: TC_04 ExistingUser API rejects request when access token is malformed
     When API Security runs authentication test "AUTH-GETEXISTINGUSER-04"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Account @[api/Account/ExistingUser]
-  Scenario: ExistingUser API rejects request when access token is expired
+  Scenario: TC_05 ExistingUser API rejects request when access token is expired
     When API Security runs authentication test "AUTH-GETEXISTINGUSER-05"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Account @[api/Account/ExistingUser]
-  Scenario: ExistingUser API rejects request after login when access token payload claim is tampered
+  Scenario: TC_06 ExistingUser API rejects request after login when access token payload claim is tampered
     When API Security runs authentication test "AUTH-GETEXISTINGUSER-06"
     Then all authorization executions should pass
 
@@ -125,37 +125,37 @@ Feature: API Security Authentication
   # =========================================================
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request when Authorization header is missing
+  Scenario: TC_01 CheckEmailAvailibility API rejects request when Authorization header is missing
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-01"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request when Bearer token is empty
+  Scenario: TC_02 CheckEmailAvailibility API rejects request when Bearer token is empty
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-02"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request when access token is invalid garbage
+  Scenario: TC_03 CheckEmailAvailibility API rejects request when access token is invalid garbage
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-03"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request when access token is malformed
+  Scenario: TC_04 CheckEmailAvailibility API rejects request when access token is malformed
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-04"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request when access token is expired
+  Scenario: TC_05 CheckEmailAvailibility API rejects request when access token is expired
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-05"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request after login when access token payload claim is tampered
+  Scenario: TC_06 CheckEmailAvailibility API rejects request after login when access token payload claim is tampered
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-06"
     Then all authorization executions should pass
 
   @Security @Authentication @P0 @Member @[api/Member/CheckEmailAvailibility]
-  Scenario: CheckEmailAvailibility API rejects request when Bearer prefix is missing from token
+  Scenario: TC_07 CheckEmailAvailibility API rejects request when Bearer prefix is missing from token
     When API Security runs authentication test "AUTH-GETCHECKAVABILITY-07"
     Then all authorization executions should pass
 

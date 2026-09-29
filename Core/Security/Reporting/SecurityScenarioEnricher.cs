@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using EnterpriseApiAutomationFramework.Core.Authorization;
 using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Security.Authentication;
+using EnterpriseApiAutomationFramework.Core.Security.Patient;
 
 namespace EnterpriseApiAutomationFramework.Core.Security.Reporting;
 
@@ -11,7 +12,7 @@ namespace EnterpriseApiAutomationFramework.Core.Security.Reporting;
 public static class SecurityScenarioEnricher
 {
     private static readonly Regex ApiPathTagRegex = new(@"^\[?(api/[^\]]+)\]?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    private static readonly Regex AuthTestIdRegex = new(@"AUTH-[A-Z0-9]+-\d+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex AuthTestIdRegex = new(@"(AUTH|IDOR|IV)-\d+-\d+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public static IReadOnlyList<SecurityExecutionResult> BuildExecutions(
         SecurityScenarioCapture capture,
@@ -27,16 +28,19 @@ public static class SecurityScenarioEnricher
 
         if (capture.LastActualStatus.HasValue)
         {
+            var expected = capture.LastExpectedStatus
+                ?? (!capture.OverallFailed ? capture.LastActualStatus : null);
+
             return
             [
                 MapSingleExecution(
                     capture,
                     suite,
                     apiBaseUrl,
-                    capture.VulnerabilityType ?? "EndpointAccess",
+                    capture.VulnerabilityType ?? ResolveDefaultVulnerability(suite),
                     capture.EndpointKey ?? "unknown",
                     capture.HttpMethod ?? "GET",
-                    capture.LastExpectedStatus,
+                    expected,
                     capture.LastActualStatus,
                     capture.ScenarioError)
             ];
@@ -48,7 +52,7 @@ public static class SecurityScenarioEnricher
                 capture,
                 suite,
                 apiBaseUrl,
-                capture.VulnerabilityType ?? "Unknown",
+                capture.VulnerabilityType ?? ResolveDefaultVulnerability(suite),
                 capture.EndpointKey ?? ExtractEndpointFromTags(capture.Tags) ?? "unknown",
                 capture.HttpMethod ?? "GET",
                 null,
@@ -56,6 +60,22 @@ public static class SecurityScenarioEnricher
                 capture.ScenarioError ?? "No execution data recorded.",
                 passedOverride: !capture.OverallFailed)
         ];
+    }
+
+    public static int? InferExpectedStatusFromSteps(IReadOnlyList<string> stepTexts)
+    {
+        foreach (var step in stepTexts)
+        {
+            var match = Regex.Match(
+                step,
+                @"(?:the API status code should be|Status code should be|Authorization status code should be)\s+(\d+)",
+                RegexOptions.IgnoreCase);
+
+            if (match.Success && int.TryParse(match.Groups[1].Value, out var code))
+                return code;
+        }
+
+        return null;
     }
 
     public static void InferMetadataFromSteps(SecurityScenarioCapture capture)
@@ -80,6 +100,15 @@ public static class SecurityScenarioEnricher
                 capture.VulnerabilityType = entry.ScenarioType;
                 capture.EndpointKey = entry.EndpointKey;
                 capture.HttpMethod = entry.HttpMethod;
+                return;
+            }
+
+            var patientEntry = PatientSecurityMatrixReader.FindByTestCaseId(capture.TestCaseId);
+            if (patientEntry != null)
+            {
+                capture.VulnerabilityType = patientEntry.ScenarioType;
+                capture.EndpointKey = patientEntry.EndpointKey;
+                capture.HttpMethod = patientEntry.HttpMethod;
                 return;
             }
         }
@@ -118,8 +147,121 @@ public static class SecurityScenarioEnricher
             capture.VulnerabilityType = ApiSecurityAuthConstants.ScenarioTamperedToken;
             capture.HttpMethod = "GET";
             capture.EndpointKey = ExtractEndpointFromTags(capture.Tags) ?? "get";
+            return;
         }
+
+        InferFunctionalMetadata(capture);
     }
+
+    private static void InferFunctionalMetadata(SecurityScenarioCapture capture)
+    {
+        if (!string.IsNullOrWhiteSpace(capture.VulnerabilityType))
+            return;
+
+        var tagEndpoint = ExtractEndpointFromTags(capture.Tags);
+        if (!string.IsNullOrWhiteSpace(tagEndpoint))
+            capture.EndpointKey = tagEndpoint;
+
+        capture.HttpMethod ??= InferHttpMethodFromSteps(capture.StepTexts);
+
+        capture.VulnerabilityType = InferFunctionalVulnerabilityType(capture);
+
+        if (string.IsNullOrWhiteSpace(capture.EndpointKey))
+            capture.EndpointKey = InferEndpointKeyFromFeature(capture.FeatureName, capture.StepTexts);
+    }
+
+    private static string InferFunctionalVulnerabilityType(SecurityScenarioCapture capture)
+    {
+        var tags = capture.Tags;
+        var feature = capture.FeatureName;
+        var steps = string.Join(' ', capture.StepTexts);
+
+        if (tags.Any(t => t.Equals("token-expired", StringComparison.OrdinalIgnoreCase)))
+            return "TokenExpired";
+
+        if (tags.Any(t => t.Equals("token-refresh", StringComparison.OrdinalIgnoreCase)))
+            return "TokenRefresh";
+
+        if (tags.Any(t => t.Contains("Login", StringComparison.OrdinalIgnoreCase)))
+            return "Login";
+
+        if (tags.Any(t => t.Contains("AddMember", StringComparison.OrdinalIgnoreCase)))
+            return "AddMember";
+
+        if (tags.Any(t => t.Contains("BusinessUnit", StringComparison.OrdinalIgnoreCase)))
+            return "BusinessUnit";
+
+        if (feature.Contains("Token Refresh", StringComparison.OrdinalIgnoreCase))
+            return "TokenRefresh";
+
+        if (feature.Contains("Login", StringComparison.OrdinalIgnoreCase)
+            || feature.Contains("Access Token", StringComparison.OrdinalIgnoreCase))
+            return "Login";
+
+        if (feature.Contains("Add Member", StringComparison.OrdinalIgnoreCase))
+            return "AddMember";
+
+        if (feature.Contains("Business Unit", StringComparison.OrdinalIgnoreCase))
+            return "BusinessUnit";
+
+        if (steps.Contains("expired access token", StringComparison.OrdinalIgnoreCase))
+            return "TokenExpired";
+
+        if (steps.Contains("LoginAsync", StringComparison.OrdinalIgnoreCase)
+            || steps.Contains("valid login", StringComparison.OrdinalIgnoreCase)
+            || steps.Contains("generates token", StringComparison.OrdinalIgnoreCase))
+            return "Login";
+
+        return "FunctionalApi";
+    }
+
+    private static string InferHttpMethodFromSteps(IReadOnlyList<string> stepTexts)
+    {
+        var joined = string.Join(' ', stepTexts);
+
+        if (Regex.IsMatch(joined, @"\bPOST\b|sends POST|Send POST", RegexOptions.IgnoreCase))
+            return "POST";
+
+        if (Regex.IsMatch(joined, @"\bPUT\b|sends PUT", RegexOptions.IgnoreCase))
+            return "PUT";
+
+        if (Regex.IsMatch(joined, @"\bDELETE\b|sends DELETE", RegexOptions.IgnoreCase))
+            return "DELETE";
+
+        if (Regex.IsMatch(joined, @"\bPATCH\b|sends PATCH", RegexOptions.IgnoreCase))
+            return "PATCH";
+
+        return "GET";
+    }
+
+    private static string InferEndpointKeyFromFeature(string featureName, IReadOnlyList<string> stepTexts)
+    {
+        var joined = string.Join(' ', stepTexts);
+
+        var endpointMatch = Regex.Match(
+            joined,
+            @"endpoint ""([^""]+)""|request ""([^""]+)""|key ""([^""]+)""",
+            RegexOptions.IgnoreCase);
+
+        if (endpointMatch.Success)
+        {
+            foreach (Group g in endpointMatch.Groups)
+            {
+                if (g.Index > 0 && !string.IsNullOrWhiteSpace(g.Value))
+                    return g.Value;
+            }
+        }
+
+        if (featureName.Contains("Business Unit", StringComparison.OrdinalIgnoreCase))
+            return "getPACFByBusinessUnitID";
+
+        return "unknown";
+    }
+
+    private static string ResolveDefaultVulnerability(string suite) =>
+        suite.Equals("Functional", StringComparison.OrdinalIgnoreCase)
+            ? "FunctionalApi"
+            : "EndpointAccess";
 
     public static IReadOnlyList<SecurityStepExecution> BuildStepNarratives(
         SecurityScenarioCapture capture,
@@ -344,6 +486,13 @@ public static class SecurityScenarioEnricher
 
         if (stepText.Contains("Authorization status code should be", StringComparison.OrdinalIgnoreCase))
             return "Validated HTTP status from last authorization API call against expected matrix value.";
+
+        if (stepText.Contains("the API status code should be", StringComparison.OrdinalIgnoreCase)
+            || stepText.Contains("Status code should be", StringComparison.OrdinalIgnoreCase))
+            return "Validated HTTP status from last API response against expected value.";
+
+        if (stepText.StartsWith("When User sends", StringComparison.OrdinalIgnoreCase))
+            return $"Sent {capture.HttpMethod ?? "HTTP"} request to {capture.EndpointKey ?? "configured endpoint"}.";
 
         return "Step executed as defined in Gherkin scenario.";
     }

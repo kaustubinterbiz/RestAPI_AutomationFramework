@@ -126,13 +126,6 @@ public static class SecurityLivingReportRenderer
         sb.AppendLine("</head>");
         sb.AppendLine("<body>");
 
-        sb.AppendLine("""
-<div class="top-banner">
-  <strong>Browser mein open karein</strong> — Chrome ya Edge mein ye dashboard dikhega.
-  Cursor / VS Code mein file khologe to HTML source code dikhega (normal hai).
-</div>
-""");
-
         var title = report.TotalScenarios > 1
             ? $"API Security Living Report — Consolidated Run ({report.TotalScenarios} scenarios)"
             : "API Security Living Documentation Report";
@@ -154,7 +147,6 @@ public static class SecurityLivingReportRenderer
         sb.AppendLine("<button type=\"button\" class=\"tab active\" data-panel=\"panel-dashboard\">Dashboard</button>");
         sb.AppendLine("<button type=\"button\" class=\"tab\" data-panel=\"panel-conclusion\">Run Conclusion</button>");
         sb.AppendLine("<button type=\"button\" class=\"tab\" data-panel=\"panel-scenarios\">Scenarios</button>");
-        sb.AppendLine("<button type=\"button\" class=\"tab\" data-panel=\"panel-remediation\">Remediation</button>");
         sb.AppendLine("</nav>");
 
         // Panel 1 — Dashboard
@@ -175,7 +167,7 @@ public static class SecurityLivingReportRenderer
         sb.AppendLine("</tbody></table>");
 
         sb.AppendLine("<h3>Summary Table</h3>");
-        sb.AppendLine("<p class=\"table-hint\">Failed status par click karein — failed step aur reason yahi expand hoga.</p>");
+        sb.AppendLine("<p class=\"table-hint\">Click the Fail status to see why the scenario failed (failed step and reason expand below).</p>");
         sb.AppendLine("<div class=\"table-wrap\"><table class=\"data-table\"><thead><tr>");
         sb.AppendLine("<th>Endpoint</th><th>Method</th><th>Vulnerability</th><th>Scenario</th><th>OWASP</th><th>Status</th><th>Severity</th>");
         sb.AppendLine("</tr></thead><tbody>");
@@ -232,12 +224,6 @@ public static class SecurityLivingReportRenderer
             RenderScenarioHtmlCard(sb, scenario);
         sb.AppendLine("</section>");
 
-        // Panel 3 — Remediation (collapsible — C# snippets hidden until expanded)
-        sb.AppendLine("<section id=\"panel-remediation\" class=\"panel\">");
-        sb.AppendLine("<h2>Actionable Remediation (.NET C#)</h2>");
-        RenderRemediationHtml(sb, report);
-        sb.AppendLine("</section>");
-
         sb.AppendLine(GetHtmlTabScript());
         sb.AppendLine("</body></html>");
         return sb.ToString();
@@ -249,7 +235,6 @@ public static class SecurityLivingReportRenderer
   :root { --bg:#f0f4f8; --card:#fff; --text:#1e293b; --muted:#64748b; --pass:#059669; --fail:#dc2626; --warn:#d97706; --border:#e2e8f0; }
   * { box-sizing: border-box; }
   body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.55; }
-  .top-banner { background: #1e40af; color: #fff; padding: 10px 24px; font-size: 14px; text-align: center; }
   .page-header { background: linear-gradient(135deg,#0f172a,#1e3a5f); color: #fff; padding: 28px 32px; }
   .page-header h1 { margin: 0 0 8px; font-size: 1.75rem; }
   .page-header .meta { margin: 0; opacity: .9; font-size: 14px; }
