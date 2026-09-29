@@ -2,6 +2,7 @@ using EnterpriseApiAutomationFramework.Core.ParallelExecution.Configuration;
 using EnterpriseApiAutomationFramework.Core.ParallelExecution.Discovery;
 using EnterpriseApiAutomationFramework.Core.ParallelExecution.Models;
 using EnterpriseApiAutomationFramework.Core.ParallelExecution.Reporting;
+using EnterpriseApiAutomationFramework.Core.Security.Reporting;
 
 namespace EnterpriseApiAutomationFramework.Core.ParallelExecution.Execution;
 
@@ -28,6 +29,17 @@ public sealed class ParallelOrchestrator
 
         var runStartUtc = DateTime.UtcNow;
         var runId = runStartUtc.ToString("yyyyMMdd_HHmmss");
+        var securitySessionId = SecurityReportCollector.IsEnabled
+            ? SecurityReportCollector.GenerateRunId()
+            : null;
+
+        if (!string.IsNullOrWhiteSpace(securitySessionId))
+        {
+            Environment.SetEnvironmentVariable(SecurityReportingConstants.SessionIdEnvVar, securitySessionId);
+            Environment.SetEnvironmentVariable(SecurityReportingConstants.DeferRenderEnvVar, "true");
+            Environment.SetEnvironmentVariable(SecurityReportingConstants.TestFilterEnvVar, "ParallelExecution");
+        }
+
         var units = ParallelExecutionDiscovery.Discover(_projectRoot, _settings);
 
         if (units.Count == 0)
@@ -37,7 +49,8 @@ public sealed class ParallelOrchestrator
 
         await BuildProjectAsync(cancellationToken);
 
-        var executor = new ProcessIsolatedFeatureExecutor(_settings, _projectPath, _projectRoot);
+        var executor = new ProcessIsolatedFeatureExecutor(
+            _settings, _projectPath, _projectRoot, securitySessionId);
         var maxAttempts = Math.Max(1, _settings.RetryCount + 1);
         var maxParallel = ParallelWorkScheduler.ResolveParallelism(units.Count, _settings.MaxDegreeOfParallelism);
 
@@ -58,6 +71,13 @@ public sealed class ParallelOrchestrator
             $"[Parallel] Completed. Wall-clock: {statistics.WallClockDurationMs:F0}ms | " +
             $"Sum of units: {statistics.SumOfUnitDurationsMs:F0}ms | " +
             $"Concurrency achieved: {statistics.AchievedConcurrency}");
+
+        if (!string.IsNullOrWhiteSpace(securitySessionId))
+        {
+            SecurityRunMerger.MergeAndRender(securitySessionId);
+            Environment.SetEnvironmentVariable(SecurityReportingConstants.DeferRenderEnvVar, null);
+            Environment.SetEnvironmentVariable(SecurityReportingConstants.SessionIdEnvVar, null);
+        }
 
         var reportBuilder = new ConsolidatedReportBuilder(_settings, _projectRoot);
         return await reportBuilder.BuildAsync(runId, runStartUtc, runEndUtc, results, statistics);

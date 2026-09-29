@@ -1,4 +1,5 @@
 using EnterpriseApiAutomationFramework.Core.Authentication;
+using EnterpriseApiAutomationFramework.Core.Security.Reporting;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
 using FluentAssertions;
@@ -33,6 +34,7 @@ public class TokenSteps
         ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
         SharedTokenProvider.InvalidateAllCaches();
         _response = await _driver.LoginAsync();
+        CaptureResponse();
         ResponseValidator.ValidateStatus(_response, "OK");
 
         var token = ResolveAccessToken(_response);
@@ -78,10 +80,12 @@ public class TokenSteps
             && !string.IsNullOrWhiteSpace(tampered))
         {
             _response = await _driver.GetWithBearerTokenAsync(tampered);
+            CaptureResponse();
             return;
         }
 
         _response = await _driver.GetWithCurrentTokenAsync();
+        CaptureResponse();
     }
 
     [When(@"User sends GET request for feature ""(.*)"" with current token only")]
@@ -89,6 +93,7 @@ public class TokenSteps
     {
         ApiHostStepHelper.ApplyFeatureName(featureName);
         _response = await _driver.GetWithCurrentTokenAsync();
+        CaptureResponse();
     }
 
     [When(@"User refreshes the access token")]
@@ -101,6 +106,7 @@ public class TokenSteps
         ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
         SharedTokenProvider.InvalidateAllCaches();
         _response = await _driver.RefreshAccessTokenAsync();
+        CaptureResponse();
         ResponseValidator.ValidateStatus(_response, "OK");
 
         var token = ResolveAccessToken(_response);
@@ -114,22 +120,26 @@ public class TokenSteps
     {
         ApiHostStepHelper.ApplyFeatureName("Access Token Refresh");
         _response = await _driver.GetAsync();
+        CaptureResponse();
     }
-
-    //[When(@"User sends GET request for feature ""(.*)""")]
-    //public async Task WhenUserSendsGetRequestForFeature(string featureName)
-    //{
-    //    ApiHostStepHelper.ApplyFeatureName(featureName);
-    //    _response = await _driver.GetUsers("appsettings.json", "EndpointJson", "get");
-    //}
 
     [Then(@"Response should indicate token error ""(.*)""")]
     public void ThenResponseShouldIndicateTokenError(string expectedFragment) =>
         ResponseValidator.ValidateExpiredOrInvalidTokenError(_response!, expectedFragment);
 
     [Then(@"the API status code should be (.*)")]
-    public void ThenTheApiStatusCodeShouldBe(int statusCode) =>
+    public void ThenTheApiStatusCodeShouldBe(int statusCode)
+    {
+        CaptureResponse();
+        _scenarioContext.Set(statusCode, SecurityReportingConstants.LastExpectedStatusKey);
         ResponseValidator.ValidateStatusCode(_response!, statusCode);
+    }
+
+    private void CaptureResponse()
+    {
+        if (_response != null)
+            TokenContext.SetLastResponse(_scenarioContext, _response);
+    }
 
     private static string? ResolveAccessToken(RestResponse? response)
     {

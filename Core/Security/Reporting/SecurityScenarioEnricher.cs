@@ -1,0 +1,437 @@
+using System.Text.RegularExpressions;
+using EnterpriseApiAutomationFramework.Core.Authorization;
+using EnterpriseApiAutomationFramework.Core.Helpers;
+using EnterpriseApiAutomationFramework.Core.Security.Authentication;
+
+namespace EnterpriseApiAutomationFramework.Core.Security.Reporting;
+
+/// <summary>
+/// Enriches raw scenario captures with endpoint URLs, OWASP metadata, and narratives.
+/// </summary>
+public static class SecurityScenarioEnricher
+{
+    private static readonly Regex ApiPathTagRegex = new(@"^\[?(api/[^\]]+)\]?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex AuthTestIdRegex = new(@"AUTH-[A-Z0-9]+-\d+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    public static IReadOnlyList<SecurityExecutionResult> BuildExecutions(
+        SecurityScenarioCapture capture,
+        string suite,
+        string apiBaseUrl)
+    {
+        if (capture.TrackerResults.Count > 0)
+        {
+            return capture.TrackerResults
+                .Select(r => MapTrackerResult(r, capture, suite, apiBaseUrl))
+                .ToList();
+        }
+
+        if (capture.LastActualStatus.HasValue)
+        {
+            return
+            [
+                MapSingleExecution(
+                    capture,
+                    suite,
+                    apiBaseUrl,
+                    capture.VulnerabilityType ?? "EndpointAccess",
+                    capture.EndpointKey ?? "unknown",
+                    capture.HttpMethod ?? "GET",
+                    capture.LastExpectedStatus,
+                    capture.LastActualStatus,
+                    capture.ScenarioError)
+            ];
+        }
+
+        return
+        [
+            MapSingleExecution(
+                capture,
+                suite,
+                apiBaseUrl,
+                capture.VulnerabilityType ?? "Unknown",
+                capture.EndpointKey ?? ExtractEndpointFromTags(capture.Tags) ?? "unknown",
+                capture.HttpMethod ?? "GET",
+                null,
+                null,
+                capture.ScenarioError ?? "No execution data recorded.",
+                passedOverride: !capture.OverallFailed)
+        ];
+    }
+
+    public static void InferMetadataFromSteps(SecurityScenarioCapture capture)
+    {
+        foreach (var step in capture.StepTexts)
+        {
+            var authMatch = AuthTestIdRegex.Match(step);
+            if (authMatch.Success)
+            {
+                capture.TestCaseId = authMatch.Value;
+                break;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(capture.TestCaseId))
+        {
+            var entry = ApiSecurityAuthMatrixReader.GetAuthenticationRows(enabledOnly: false)
+                .FirstOrDefault(r => string.Equals(r.TestCaseId, capture.TestCaseId, StringComparison.OrdinalIgnoreCase));
+
+            if (entry != null)
+            {
+                capture.VulnerabilityType = entry.ScenarioType;
+                capture.EndpointKey = entry.EndpointKey;
+                capture.HttpMethod = entry.HttpMethod;
+                return;
+            }
+        }
+
+        var endpointMatch = Regex.Match(
+            string.Join(' ', capture.StepTexts),
+            @"endpoint ""([^""]+)"" method ""([^""]+)"" role ""([^""]+)""",
+            RegexOptions.IgnoreCase);
+
+        if (endpointMatch.Success)
+        {
+            capture.EndpointKey = endpointMatch.Groups[1].Value;
+            capture.HttpMethod = endpointMatch.Groups[2].Value;
+            capture.Role = endpointMatch.Groups[3].Value;
+            capture.VulnerabilityType = "EndpointAccess";
+            return;
+        }
+
+        var tokenMatch = Regex.Match(
+            string.Join(' ', capture.StepTexts),
+            @"token scenario ""([^""]+)"" for role ""([^""]+)""",
+            RegexOptions.IgnoreCase);
+
+        if (tokenMatch.Success)
+        {
+            capture.VulnerabilityType = tokenMatch.Groups[1].Value;
+            capture.Role = tokenMatch.Groups[2].Value;
+            capture.HttpMethod = "GET";
+            capture.EndpointKey = "get";
+            return;
+        }
+
+        var allSteps = string.Join(' ', capture.StepTexts);
+        if (allSteps.Contains("tampered access token", StringComparison.OrdinalIgnoreCase))
+        {
+            capture.VulnerabilityType = ApiSecurityAuthConstants.ScenarioTamperedToken;
+            capture.HttpMethod = "GET";
+            capture.EndpointKey = ExtractEndpointFromTags(capture.Tags) ?? "get";
+        }
+    }
+
+    public static IReadOnlyList<SecurityStepExecution> BuildStepNarratives(
+        SecurityScenarioCapture capture,
+        IReadOnlyList<SecurityExecutionResult> executions)
+    {
+        var overallFailed = capture.OverallFailed;
+        var failureReason = ResolveFailureReason(capture, executions);
+        var failedStepText = ResolveFailedStepText(capture, overallFailed);
+        var steps = new List<SecurityStepExecution>();
+
+        for (var i = 0; i < capture.StepTexts.Count; i++)
+        {
+            var text = capture.StepTexts[i];
+            var stepType = InferStepType(text);
+            var narrative = BuildNarrative(text, capture, executions);
+            var isFailedStep = overallFailed && string.Equals(text, failedStepText, StringComparison.OrdinalIgnoreCase);
+            var status = isFailedStep
+                ? SecurityTestStatus.Fail
+                : overallFailed && i == capture.StepTexts.Count - 1
+                    ? SecurityTestStatus.Fail
+                    : overallFailed && stepType is "Then" or "And"
+                        ? SecurityTestStatus.Fail
+                        : SecurityTestStatus.Pass;
+
+            if (!overallFailed)
+                status = SecurityTestStatus.Pass;
+
+            steps.Add(new SecurityStepExecution
+            {
+                StepText = text,
+                StepType = stepType,
+                Narrative = narrative,
+                Status = status,
+                FailureReason = isFailedStep ? failureReason : null
+            });
+        }
+
+        return steps;
+    }
+
+    public static (string? FailedStepText, string? FailureSummary) ResolveFailureDetails(
+        SecurityScenarioCapture capture,
+        IReadOnlyList<SecurityExecutionResult> executions,
+        IReadOnlyList<SecurityStepExecution> steps)
+    {
+        if (!capture.OverallFailed && !executions.Any(e => e.Status == SecurityTestStatus.Fail))
+            return (null, null);
+
+        var failedStep = steps.FirstOrDefault(s => s.Status == SecurityTestStatus.Fail)?.StepText
+            ?? ResolveFailedStepText(capture, true);
+        var reason = ResolveFailureReason(capture, executions);
+        var summary = BuildFailureSummary(capture, executions, reason);
+        return (failedStep, summary);
+    }
+
+    private static string? ResolveFailedStepText(SecurityScenarioCapture capture, bool overallFailed)
+    {
+        if (!overallFailed)
+            return null;
+
+        var aggregator = capture.StepTexts.FirstOrDefault(s =>
+            s.Contains("all authorization executions should pass", StringComparison.OrdinalIgnoreCase));
+        if (aggregator != null)
+            return aggregator;
+
+        for (var i = capture.StepTexts.Count - 1; i >= 0; i--)
+        {
+            var stepType = InferStepType(capture.StepTexts[i]);
+            if (stepType is "Then" or "And")
+                return capture.StepTexts[i];
+        }
+
+        return capture.StepTexts.Count > 0 ? capture.StepTexts[^1] : null;
+    }
+
+    private static string? ResolveFailureReason(
+        SecurityScenarioCapture capture,
+        IReadOnlyList<SecurityExecutionResult> executions)
+    {
+        var trackerFailure = capture.TrackerResults.FirstOrDefault(r => !r.Passed);
+        if (trackerFailure != null && !string.IsNullOrWhiteSpace(trackerFailure.ErrorMessage))
+            return trackerFailure.ErrorMessage;
+
+        var execFailure = executions.FirstOrDefault(e => e.Status == SecurityTestStatus.Fail);
+        if (execFailure != null)
+        {
+            if (!string.IsNullOrWhiteSpace(execFailure.ErrorMessage))
+                return execFailure.ErrorMessage;
+            if (!string.IsNullOrWhiteSpace(execFailure.ResultReason))
+                return execFailure.ResultReason;
+        }
+
+        return capture.ScenarioError;
+    }
+
+    private static string? BuildFailureSummary(
+        SecurityScenarioCapture capture,
+        IReadOnlyList<SecurityExecutionResult> executions,
+        string? primaryReason)
+    {
+        if (!string.IsNullOrWhiteSpace(primaryReason))
+            return primaryReason.Length > 200 ? primaryReason[..200] + "..." : primaryReason;
+
+        var failedExec = executions.FirstOrDefault(e => e.Status == SecurityTestStatus.Fail);
+        if (failedExec?.ExpectedStatus.HasValue == true && failedExec.ActualStatus.HasValue)
+            return $"Expected {failedExec.ExpectedStatus}, actual {failedExec.ActualStatus}";
+
+        return capture.ScenarioError;
+    }
+
+    private static SecurityExecutionResult MapTrackerResult(
+        AuthorizationExecutionTracker.AuthorizationExecutionResult result,
+        SecurityScenarioCapture capture,
+        string suite,
+        string apiBaseUrl)
+    {
+        var vulnerability = ExtractVulnerabilityFromLabel(result.Label)
+            ?? capture.VulnerabilityType
+            ?? (result.Label.Contains(' ') && !result.Label.Contains('|') ? "EndpointAccess" : "Unknown");
+        var (endpointKey, method) = ParseLabelEndpoint(result.Label, capture);
+        return MapSingleExecution(
+            capture,
+            suite,
+            apiBaseUrl,
+            vulnerability,
+            endpointKey,
+            method,
+            result.ExpectedStatus,
+            result.ActualStatus,
+            result.ErrorMessage,
+            result.Passed);
+    }
+
+    private static SecurityExecutionResult MapSingleExecution(
+        SecurityScenarioCapture capture,
+        string suite,
+        string apiBaseUrl,
+        string vulnerabilityType,
+        string endpointKey,
+        string httpMethod,
+        int? expectedStatus,
+        int? actualStatus,
+        string? errorMessage,
+        bool? passedOverride = null)
+    {
+        var endpointPath = TryResolveEndpoint(endpointKey);
+        var fullUrl = CombineUrl(apiBaseUrl, endpointPath);
+        var (owasp, severity, remediationKey) = SecurityOwaspMapper.Map(vulnerabilityType, suite);
+        var passed = passedOverride ?? (expectedStatus.HasValue && actualStatus.HasValue && expectedStatus == actualStatus);
+
+        return new SecurityExecutionResult
+        {
+            Label = $"{vulnerabilityType} | {httpMethod} {endpointKey}",
+            VulnerabilityType = vulnerabilityType,
+            HttpMethod = httpMethod.ToUpperInvariant(),
+            EndpointPath = endpointPath,
+            FullEndpointUrl = fullUrl,
+            OwaspCategory = owasp,
+            Severity = severity,
+            Status = passed ? SecurityTestStatus.Pass : SecurityTestStatus.Fail,
+            ExpectedStatus = expectedStatus,
+            ActualStatus = actualStatus,
+            ErrorMessage = errorMessage,
+            RemediationKey = remediationKey,
+            ResultReason = BuildResultReason(passed, vulnerabilityType, expectedStatus, actualStatus, errorMessage)
+        };
+    }
+
+    private static string BuildResultReason(
+        bool passed,
+        string vulnerabilityType,
+        int? expected,
+        int? actual,
+        string? errorMessage)
+    {
+        if (passed)
+        {
+            return actual.HasValue
+                ? $"API correctly rejected or accepted the request with HTTP {actual} for {vulnerabilityType} test (expected {expected})."
+                : $"Control verified successfully for {vulnerabilityType}.";
+        }
+
+        if (expected.HasValue && actual.HasValue)
+        {
+            return $"Expected HTTP {expected}, but API returned {actual} for {vulnerabilityType}. " +
+                   $"This indicates missing or weak authentication/authorization enforcement. {errorMessage}".Trim();
+        }
+
+        return errorMessage ?? $"Security check failed for {vulnerabilityType}.";
+    }
+
+    private static string BuildNarrative(
+        string stepText,
+        SecurityScenarioCapture capture,
+        IReadOnlyList<SecurityExecutionResult> executions)
+    {
+        if (stepText.Contains("API Security runs authentication test", StringComparison.OrdinalIgnoreCase))
+        {
+            var id = capture.TestCaseId ?? "matrix row";
+            var vuln = capture.VulnerabilityType ?? "JWT mutation";
+            return $"Framework loaded Excel row {id}, applied {vuln} mutation, called protected API, compared status code.";
+        }
+
+        if (stepText.Contains("Authorization test runs for endpoint", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"Logged in as role '{capture.Role}', called {capture.HttpMethod} {capture.EndpointKey}, validated RBAC status.";
+        }
+
+        if (stepText.Contains("Authorization executes all", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"Executed all enabled Excel rows ({executions.Count} checks recorded in this scenario).";
+        }
+
+        if (stepText.Contains("valid access token", StringComparison.OrdinalIgnoreCase))
+            return "Baseline login on Auth host; valid JWT stored for subsequent mutation.";
+
+        if (stepText.Contains("tampered access token", StringComparison.OrdinalIgnoreCase))
+            return "Valid JWT captured, then replaced with unauthorized bearer for negative test.";
+
+        if (stepText.Contains("all authorization executions should pass", StringComparison.OrdinalIgnoreCase))
+            return "Soft-assert aggregator verified all row-level executions passed.";
+
+        if (stepText.Contains("Authorization status code should be", StringComparison.OrdinalIgnoreCase))
+            return "Validated HTTP status from last authorization API call against expected matrix value.";
+
+        return "Step executed as defined in Gherkin scenario.";
+    }
+
+    private static string InferStepType(string stepText)
+    {
+        if (stepText.StartsWith("Given ", StringComparison.OrdinalIgnoreCase)) return "Given";
+        if (stepText.StartsWith("When ", StringComparison.OrdinalIgnoreCase)) return "When";
+        if (stepText.StartsWith("Then ", StringComparison.OrdinalIgnoreCase)) return "Then";
+        if (stepText.StartsWith("And ", StringComparison.OrdinalIgnoreCase)) return "And";
+        return "Step";
+    }
+
+    private static string? ExtractVulnerabilityFromLabel(string label)
+    {
+        var parts = label.Split('|', StringSplitOptions.TrimEntries);
+        return parts.Length >= 2 ? parts[1] : null;
+    }
+
+    private static (string EndpointKey, string Method) ParseLabelEndpoint(
+        string label,
+        SecurityScenarioCapture capture)
+    {
+        var parts = label.Split('|', StringSplitOptions.TrimEntries);
+        if (parts.Length >= 3)
+        {
+            var methodEndpoint = parts[2].Split(' ', 2, StringSplitOptions.TrimEntries);
+            if (methodEndpoint.Length == 2)
+                return (methodEndpoint[1], methodEndpoint[0]);
+        }
+
+        // Authorization matrix format: "SuperAdmin GET get"
+        var tokens = label.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (tokens.Length >= 3)
+            return (tokens[2], tokens[1]);
+
+        return (capture.EndpointKey ?? "get", capture.HttpMethod ?? "GET");
+    }
+
+    private static string TryResolveEndpoint(string endpointKey)
+    {
+        try
+        {
+            return ExcelConfigReader.GetEndpoint(endpointKey);
+        }
+        catch
+        {
+            return endpointKey;
+        }
+    }
+
+    private static string CombineUrl(string baseUrl, string endpointPath)
+    {
+        var baseNormalized = baseUrl.TrimEnd('/');
+        var path = endpointPath.StartsWith('/') ? endpointPath : "/" + endpointPath;
+        return baseNormalized + path;
+    }
+
+    private static string? ExtractEndpointFromTags(IReadOnlyList<string> tags)
+    {
+        foreach (var tag in tags)
+        {
+            var match = ApiPathTagRegex.Match(tag.Trim());
+            if (match.Success)
+                return match.Groups[1].Value;
+        }
+
+        return null;
+    }
+}
+
+/// <summary>Mutable capture DTO used by hooks before enrichment.</summary>
+public sealed class SecurityScenarioCapture
+{
+    public required string FeatureName { get; init; }
+    public required string ScenarioName { get; init; }
+    public required IReadOnlyList<string> Tags { get; init; }
+    public required IReadOnlyList<string> StepTexts { get; init; }
+    public required IReadOnlyList<AuthorizationExecutionTracker.AuthorizationExecutionResult> TrackerResults { get; init; }
+    public bool OverallFailed { get; init; }
+    public string? ScenarioError { get; init; }
+    public TimeSpan Duration { get; init; }
+    public int? LastExpectedStatus { get; init; }
+    public int? LastActualStatus { get; init; }
+
+    public string? TestCaseId { get; set; }
+    public string? VulnerabilityType { get; set; }
+    public string? EndpointKey { get; set; }
+    public string? HttpMethod { get; set; }
+    public string? Role { get; set; }
+}

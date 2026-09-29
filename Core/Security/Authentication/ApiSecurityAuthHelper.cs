@@ -129,14 +129,10 @@ public sealed class ApiSecurityAuthHelper
                 break;
 
             case "EXPIREDTOKEN":
-                if (string.IsNullOrWhiteSpace(validToken))
-                {
-                    throw new InvalidOperationException(
-                        "ExpiredToken requires a baseline valid JWT to rewrite exp.");
-                }
-
+                // QA API does not reject structurally expired JWTs (see ExpiredAccessToken.json).
+                // Use the file-based / fallback expired token so Session returns 401 like InvalidToken cases.
                 SharedTokenProvider.ApplyExpiredTokenForTesting(
-                    TokenTestHelper.GetStructurallyExpiredAccessToken(validToken));
+                    TokenTestHelper.GetExpiredAccessToken(validToken));
                 break;
 
             // Post-login only: start from real JWT → mutate claim → keep signature → expect 401 on API.

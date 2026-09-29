@@ -24,3 +24,11 @@ Reports/Parallel/Workers/**/*
 !Reports/Parallel/Workers/.gitkeep
 Reports/Parallel/Consolidated/**/*
 !Reports/Parallel/Consolidated/.gitkeep
+
+# Security living documentation (generated per run)
+Reports/Security/LivingReport/**/*
+!Reports/Security/LivingReport/.gitkeep
+!Reports/Security/LivingReport/latest.html
+!Reports/Security/LivingReport/index.html
+Reports/Security/runs/**/*
+!Reports/Security/runs/.gitkeep
