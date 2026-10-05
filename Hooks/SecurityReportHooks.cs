@@ -88,7 +88,7 @@ public class SecurityReportHooks
             return;
 
         var tags = _scenarioContext.ScenarioInfo.Tags.ToList();
-        var suite = ResolveSuite(tags);
+        var suite = ResolveSuite(tags, _scenarioContext.ScenarioInfo.Title);
 
         var trackerResults = AuthorizationExecutionTracker.GetResults(_scenarioContext).ToList();
         var (lastExpected, lastActual) = ResolveLastStatusCodes();
@@ -101,6 +101,7 @@ public class SecurityReportHooks
 
         var testResult = TestContext.CurrentContext.Result.Outcome.Status;
         var overallFailed = testResult == NUnit.Framework.Interfaces.TestStatus.Failed;
+        var rawError = overallFailed ? TestContext.CurrentContext.Result.Message : null;
 
         var capture = new SecurityScenarioCapture
         {
@@ -110,7 +111,7 @@ public class SecurityReportHooks
             StepTexts = stepTexts,
             TrackerResults = trackerResults,
             OverallFailed = overallFailed,
-            ScenarioError = overallFailed ? TestContext.CurrentContext.Result.Message : null,
+            ScenarioError = SanitizeScenarioError(rawError, stepTexts, _scenarioContext.ScenarioInfo.Title, lastExpected, lastActual),
             Duration = TimeSpan.Zero,
             LastExpectedStatus = lastExpected,
             LastActualStatus = lastActual
@@ -165,15 +166,47 @@ public class SecurityReportHooks
         return (lastExpected, lastActual);
     }
 
+    private static string? SanitizeScenarioError(
+        string? rawError,
+        IReadOnlyList<string> stepTexts,
+        string scenarioName,
+        int? expected,
+        int? actual)
+    {
+        if (string.IsNullOrWhiteSpace(rawError))
+            return null;
+
+        var capture = new SecurityScenarioCapture
+        {
+            FeatureName = string.Empty,
+            ScenarioName = scenarioName,
+            Tags = Array.Empty<string>(),
+            StepTexts = stepTexts,
+            TrackerResults = Array.Empty<AuthorizationExecutionTracker.AuthorizationExecutionResult>(),
+            OverallFailed = true,
+            Duration = TimeSpan.Zero
+        };
+
+        PatientListAuthReportHelper.TryEnrichMetadata(capture);
+        if (PatientListAuthReportHelper.TryDescribeFailure(capture, expected, actual, out var described))
+            return described;
+
+        return PatientListAuthReportHelper.SanitizeAssertionError(rawError);
+    }
+
     private static bool HasRealStatusMismatch(SecurityExecutionResult execution) =>
         execution.Status == SecurityTestStatus.Fail
         && execution.ExpectedStatus.HasValue
         && execution.ActualStatus.HasValue
         && execution.ExpectedStatus != execution.ActualStatus;
 
-    private static string ResolveSuite(IReadOnlyList<string> tags)
+    private static string ResolveSuite(IReadOnlyList<string> tags, string scenarioName)
     {
-        if (tags.Any(t => t.Equals("Patient", StringComparison.OrdinalIgnoreCase)))
+        var isPatientSecurity = tags.Any(t => t.Equals("Patient", StringComparison.OrdinalIgnoreCase))
+            || PatientListAuthReportHelper.IsPatScenarioName(scenarioName)
+            || tags.Any(t => t.Contains("api/v2/Patient", StringComparison.OrdinalIgnoreCase));
+
+        if (isPatientSecurity)
         {
             if (tags.Any(t => t.Equals("IDOR", StringComparison.OrdinalIgnoreCase)))
                 return "Patient Security / IDOR";

@@ -14,6 +14,8 @@ public sealed class ApiGetRequestOptions
 
     public string? BearerToken { get; private set; }
 
+    public bool AllowEmptyBearer { get; private set; }
+
     /// <summary>When true and no explicit token, uses <see cref="Authentication.TokenManager"/> if available.</summary>
     public bool UseCachedTokenWhenTokenNotProvided { get; set; } = true;
 
@@ -30,6 +32,16 @@ public sealed class ApiGetRequestOptions
     {
         BearerTokenProvided = true;
         BearerToken = bearerToken;
+        AllowEmptyBearer = false;
+        return this;
+    }
+
+    public ApiGetRequestOptions SetEmptyBearer()
+    {
+        BearerTokenProvided = true;
+        BearerToken = string.Empty;
+        AllowEmptyBearer = true;
+        UseCachedTokenWhenTokenNotProvided = false;
         return this;
     }
 
@@ -45,7 +57,7 @@ public sealed class ApiGetRequestOptions
             throw new ArgumentException("GET body was provided but is empty.", nameof(Body));
         }
 
-        if (BearerTokenProvided && string.IsNullOrWhiteSpace(BearerToken))
+        if (BearerTokenProvided && !AllowEmptyBearer && string.IsNullOrWhiteSpace(BearerToken))
         {
             throw new ArgumentException(
                 "Bearer token was provided but is null or empty.",

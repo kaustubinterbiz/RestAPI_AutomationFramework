@@ -4,6 +4,7 @@ using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
+using EnterpriseApiAutomationFramework.Core.Security.Reporting;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
 using NUnit.Framework;
@@ -101,7 +102,7 @@ public class UserSteps
             host: host));
     }
 
-    [When(@"User sends flexible ""(.*)"" request on ""(.*)"" base url for endpoint ""(.*)"" with url placeholders ""(.*)"" target ""(.*)"" headers ""(.*)"" query params ""(.*)"" body ""(.*)""")]
+    [When(@"User sends flexible ""([^""]*)"" request on ""([^""]*)"" base url for endpoint ""([^""]*)"" with url placeholders ""([^""]*)"" target ""([^""]*)"" headers ""([^""]*)"" query params ""([^""]*)"" body ""([^""]*)""$")]
     public async Task FlexibleGetRequestWithAllParts(
         Method methodType,
         string baseUrlType,
@@ -141,6 +142,106 @@ public class UserSteps
             host: host,
             options: options,
             bodyKey: bodyKey));
+    }
+
+    [When(@"User sends flexible ""([^""]*)"" request on ""([^""]*)"" base url for endpoint ""([^""]*)"" with url placeholders ""([^""]*)"" target ""([^""]*)"" headers ""([^""]*)"" query params ""([^""]*)"" body ""([^""]*)"" url segments ""([^""]*)"" token ""([^""]*)""")]
+    public async Task FlexibleRequestWithSegmentsAndToken(
+        Method methodType,
+        string baseUrlType,
+        string endpointKey,
+        string urlPlaceholderKeys,
+        string targetValue,
+        string headerKeys,
+        string queryParamKeys,
+        string body,
+        string urlSegments,
+        string tokenModeText)
+    {
+        EnsurePatientListExcel(endpointKey);
+
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        var tokenMode = FlexibleTokenModeParser.Parse(tokenModeText);
+        ApiGetRequestOptions? options = null;
+        var bodyKey = ToOptionalKey(body);
+
+        if (string.Equals(bodyKey, PatientListRequestHelper.BodySheetKey, StringComparison.OrdinalIgnoreCase))
+        {
+            options = ApiGetRequestOptions.Create().SetBody(PatientListRequestHelper.ResolvePatientListBodyJson());
+            bodyKey = null;
+        }
+
+        IReadOnlyDictionary<string, string>? urlSegmentOverrides = null;
+        string? urlSegmentKeys = ToOptionalKey(urlSegments);
+        if (string.Equals(endpointKey, "patientList", StringComparison.OrdinalIgnoreCase))
+        {
+            urlSegmentOverrides = PatientListRequestHelper.ResolvePatientListUrlSegments();
+            urlSegmentKeys = null;
+        }
+
+        SaveResponse(await _driver.SendFlexibleRequestAsync(
+            configFile: "appsettings.json",
+            urlPlaceholderKeys: ToOptionalKey(urlPlaceholderKeys),
+            targetValue: ToOptionalKey(targetValue),
+            headerKeys: ToOptionalKey(headerKeys),
+            queryParamKeys: ToOptionalKey(queryParamKeys),
+            urlSegmentKeys: urlSegmentKeys,
+            method: methodType,
+            endpointKey: endpointKey,
+            host: host,
+            options: options,
+            bodyKey: bodyKey,
+            tokenMode: tokenMode,
+            urlSegmentOverrides: urlSegmentOverrides));
+    }
+
+    private static int _patientListExcelInitialized;
+
+    private static void EnsurePatientListExcel(string endpointKey)
+    {
+        if (!string.Equals(endpointKey, "patientList", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        if (Interlocked.CompareExchange(ref _patientListExcelInitialized, 1, 0) == 0)
+        {
+            ExcelConfigBootstrap.EnsureRequestEndPointWorkbook();
+            ExcelConfigBootstrap.EnsureRequestBodyWorkbook();
+
+            try
+            {
+                _ = ExcelConfigReader.GetEndpoint("patientList");
+            }
+            catch
+            {
+                ExcelReader.AddRow(
+                    TestConfigDefaults.EndpointExcelFile,
+                    TestConfigDefaults.EndpointSheet,
+                    new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        [TestConfigDefaults.KeyColumn] = "patientList",
+                        [TestConfigDefaults.ValueColumn] = "api/v2/Patient/{businessunitId}/Patients"
+                    });
+            }
+        }
+
+        UpsertPatientListBodyTemplate();
+    }
+
+    private static void UpsertPatientListBodyTemplate()
+    {
+        var filePath = FileUploadHelper.GetFilePath(TestConfigDefaults.BodyExcelFile);
+        ExcelReader.WithWorkbook(filePath, workbook =>
+        {
+            var sheetName = PatientListRequestHelper.BodySheetKey;
+            if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+            {
+                sheet = workbook.AddWorksheet(sheetName);
+                sheet.Cell(1, 1).Value = TestConfigDefaults.FieldColumn;
+                sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+            }
+
+            sheet.Cell(2, 1).Value = TestConfigDefaults.BodyRawJsonMarker;
+            sheet.Cell(2, 2).Value = PatientListRequestHelper.PatientListBodyTemplate;
+        }, save: true);
     }
 
     private static string? ToOptionalKey(string value) =>
@@ -284,8 +385,11 @@ public class UserSteps
     }
 
     [Then(@"Status code should be (.*)")]
-    public void ValidateStatusCode(int statusCode) =>
+    public void ValidateStatusCode(int statusCode)
+    {
+        _context.Set(statusCode, SecurityReportingConstants.LastExpectedStatusKey);
         ResponseValidator.ValidateStatusCode(TokenContext.GetLastResponse(_context), statusCode);
+    }
 
     [Then("Status should be (.*)")]
     public void ThenStatusShouldBe(string status) =>

@@ -16,6 +16,11 @@ public static class ApiHostResolver
         "Api", "App", "Application", "ApiBaseUrl", "Rovicare"
     };
 
+    private static readonly HashSet<string> ApimKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Apim", "ApimBaseUrl", "APIM"
+    };
+
     public static bool TryResolveFromKey(string? baseUrlTypeKey, out ApiHost host)
     {
         host = ApiHost.Api;
@@ -39,6 +44,12 @@ public static class ApiHostResolver
             return true;
         }
 
+        if (ApimKeys.Contains(key))
+        {
+            host = ApiHost.Apim;
+            return true;
+        }
+
         return false;
     }
 
@@ -50,7 +61,7 @@ public static class ApiHostResolver
         }
 
         throw new ArgumentException(
-            $"Unknown base URL type '{baseUrlTypeKey}'. Use Auth or Api (aliases: B2C, Login, App, Application).");
+            $"Unknown base URL type '{baseUrlTypeKey}'. Use Auth, Api, or Apim (aliases: B2C, Login, App, Application, ApimBaseUrl).");
     }
 
     public static ApiHost? ResolveFromTags(IEnumerable<string> tags)

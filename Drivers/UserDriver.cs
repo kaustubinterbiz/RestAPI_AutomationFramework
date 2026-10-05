@@ -50,6 +50,20 @@ public class UserDriver
             TokenTestHelper.GetTamperedAccessToken(baseline));
     }
 
+    public void ApplyWrongIssuerAudienceAccessToken(string? validToken = null)
+    {
+        var baseline = validToken ?? RequireBaselineToken();
+        SharedTokenProvider.ApplyExpiredTokenForTesting(
+            TokenTestHelper.GetWrongIssuerAudienceToken(baseline));
+    }
+
+    public void ApplyMissingClaimAccessToken(string? validToken = null)
+    {
+        var baseline = validToken ?? RequireBaselineToken();
+        SharedTokenProvider.ApplyExpiredTokenForTesting(
+            TokenTestHelper.GetMissingClaimToken(baseline));
+    }
+
     /// <summary>
     /// GET with an explicit Bearer token (never reloads appsettings / cached valid token).
     /// </summary>
@@ -110,9 +124,14 @@ public class UserDriver
         string endpointKey = "get",
         ApiGetRequestOptions? options = null,
         ApiHost? host = null,
-        string? bodyKey = null)
+        string? bodyKey = null,
+        FlexibleTokenMode tokenMode = FlexibleTokenMode.Cached,
+        IReadOnlyDictionary<string, string>? urlSegmentOverrides = null)
     {
-        ApiAuth.LoadTokenFromAppSettings();
+        if (tokenMode == FlexibleTokenMode.Cached)
+            ApiAuth.LoadTokenFromAppSettings();
+
+        var mergedOptions = MergeFlexibleTokenOptions(options, tokenMode);
         var endpoint = EndpointConfig.GetEndpoint(endpointKey);
 
         return await _apiClient.SendFlexibleRequestAsync(
@@ -124,9 +143,62 @@ public class UserDriver
            queryParamKeys,
            urlSegmentKeys,
            method,
-           options,
+           mergedOptions,
            host ?? ApiHost.Api,
-           bodyKey);
+           bodyKey,
+           urlSegmentOverrides);
+    }
+
+    private static ApiGetRequestOptions MergeFlexibleTokenOptions(
+        ApiGetRequestOptions? options,
+        FlexibleTokenMode tokenMode)
+    {
+        var merged = options ?? ApiGetRequestOptions.Create();
+
+        switch (tokenMode)
+        {
+            case FlexibleTokenMode.Cached:
+                return merged;
+
+            case FlexibleTokenMode.None:
+                merged.UseCachedTokenWhenTokenNotProvided = false;
+                return merged;
+
+            case FlexibleTokenMode.Empty:
+                return merged.SetEmptyBearer();
+
+            case FlexibleTokenMode.Garbage:
+                merged.UseCachedTokenWhenTokenNotProvided = false;
+                return merged.SetBearerToken(TokenTestHelper.GetGarbageAccessToken());
+
+            case FlexibleTokenMode.Malformed:
+                merged.UseCachedTokenWhenTokenNotProvided = false;
+                return merged.SetBearerToken(TokenTestHelper.GetMalformedAccessToken());
+
+            case FlexibleTokenMode.Current:
+                merged.UseCachedTokenWhenTokenNotProvided = false;
+                var token = TokenManager.AccessToken;
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    throw new InvalidOperationException(
+                        "Flexible token mode 'current' requires a token in TokenManager. " +
+                        "Run login or apply a token mutation step first.");
+                }
+
+                return merged.SetBearerToken(token);
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(tokenMode), tokenMode, "Unsupported flexible token mode.");
+        }
+    }
+
+    private static string RequireBaselineToken()
+    {
+        if (!string.IsNullOrWhiteSpace(TokenManager.AccessToken))
+            return TokenManager.AccessToken;
+
+        throw new InvalidOperationException(
+            "A valid access token is required. Run login and store token first.");
     }
 
     /// <summary>

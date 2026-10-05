@@ -27,13 +27,14 @@ public sealed class RestClientFactory
         {
             ApiHost.Auth => _settings.AuthBaseUrl,
             ApiHost.Api => _settings.ApiBaseUrl,
+            ApiHost.Apim => _settings.ApimBaseUrl,
             _ => throw new ArgumentOutOfRangeException(nameof(host), host, "Unknown API host.")
         };
 
         if (string.IsNullOrWhiteSpace(baseUrl))
         {
             throw new InvalidOperationException(
-                $"Base URL for {host} is not configured. Set ApiUrls in appsettings (AuthBaseUrl / ApiBaseUrl).");
+                $"Base URL for {host} is not configured. Set ApiUrls in appsettings (AuthBaseUrl / ApiBaseUrl / ApimBaseUrl).");
         }
 
         var normalized = baseUrl.TrimEnd('/') + "/";

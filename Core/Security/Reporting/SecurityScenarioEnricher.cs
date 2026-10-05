@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using EnterpriseApiAutomationFramework.Core.Authorization;
+using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Security.Authentication;
 using EnterpriseApiAutomationFramework.Core.Security.Patient;
@@ -31,6 +32,8 @@ public static class SecurityScenarioEnricher
             var expected = capture.LastExpectedStatus
                 ?? (!capture.OverallFailed ? capture.LastActualStatus : null);
 
+            var errorMessage = ResolveExecutionErrorMessage(capture, expected, capture.LastActualStatus);
+
             return
             [
                 MapSingleExecution(
@@ -42,7 +45,7 @@ public static class SecurityScenarioEnricher
                     capture.HttpMethod ?? "GET",
                     expected,
                     capture.LastActualStatus,
-                    capture.ScenarioError)
+                    errorMessage)
             ];
         }
 
@@ -140,6 +143,9 @@ public static class SecurityScenarioEnricher
             capture.EndpointKey = "get";
             return;
         }
+
+        if (PatientListAuthReportHelper.TryEnrichMetadata(capture))
+            return;
 
         var allSteps = string.Join(' ', capture.StepTexts);
         if (allSteps.Contains("tampered access token", StringComparison.OrdinalIgnoreCase))
@@ -277,14 +283,10 @@ public static class SecurityScenarioEnricher
             var text = capture.StepTexts[i];
             var stepType = InferStepType(text);
             var narrative = BuildNarrative(text, capture, executions);
-            var isFailedStep = overallFailed && string.Equals(text, failedStepText, StringComparison.OrdinalIgnoreCase);
-            var status = isFailedStep
-                ? SecurityTestStatus.Fail
-                : overallFailed && i == capture.StepTexts.Count - 1
-                    ? SecurityTestStatus.Fail
-                    : overallFailed && stepType is "Then" or "And"
-                        ? SecurityTestStatus.Fail
-                        : SecurityTestStatus.Pass;
+            var isFailedStep = overallFailed
+                && !string.IsNullOrWhiteSpace(failedStepText)
+                && string.Equals(text, failedStepText, StringComparison.OrdinalIgnoreCase);
+            var status = isFailedStep ? SecurityTestStatus.Fail : SecurityTestStatus.Pass;
 
             if (!overallFailed)
                 status = SecurityTestStatus.Pass;
@@ -310,8 +312,8 @@ public static class SecurityScenarioEnricher
         if (!capture.OverallFailed && !executions.Any(e => e.Status == SecurityTestStatus.Fail))
             return (null, null);
 
-        var failedStep = steps.FirstOrDefault(s => s.Status == SecurityTestStatus.Fail)?.StepText
-            ?? ResolveFailedStepText(capture, true);
+        var failedStep = ResolveFailedStepText(capture, true)
+            ?? steps.LastOrDefault(s => s.Status == SecurityTestStatus.Fail)?.StepText;
         var reason = ResolveFailureReason(capture, executions);
         var summary = BuildFailureSummary(capture, executions, reason);
         return (failedStep, summary);
@@ -348,13 +350,20 @@ public static class SecurityScenarioEnricher
         var execFailure = executions.FirstOrDefault(e => e.Status == SecurityTestStatus.Fail);
         if (execFailure != null)
         {
-            if (!string.IsNullOrWhiteSpace(execFailure.ErrorMessage))
-                return execFailure.ErrorMessage;
             if (!string.IsNullOrWhiteSpace(execFailure.ResultReason))
                 return execFailure.ResultReason;
+            if (!string.IsNullOrWhiteSpace(execFailure.ErrorMessage))
+                return execFailure.ErrorMessage;
         }
 
-        return capture.ScenarioError;
+        if (PatientListAuthReportHelper.TryDescribeFailure(
+                capture,
+                capture.LastExpectedStatus,
+                capture.LastActualStatus,
+                out var patientReason))
+            return patientReason;
+
+        return PatientListAuthReportHelper.SanitizeAssertionError(capture.ScenarioError);
     }
 
     private static string? BuildFailureSummary(
@@ -363,7 +372,10 @@ public static class SecurityScenarioEnricher
         string? primaryReason)
     {
         if (!string.IsNullOrWhiteSpace(primaryReason))
-            return primaryReason.Length > 200 ? primaryReason[..200] + "..." : primaryReason;
+        {
+            var limit = PatientListAuthReportHelper.IsPatientListAuthScenario(capture) ? 500 : 200;
+            return primaryReason.Length > limit ? primaryReason[..limit] + "..." : primaryReason;
+        }
 
         var failedExec = executions.FirstOrDefault(e => e.Status == SecurityTestStatus.Fail);
         if (failedExec?.ExpectedStatus.HasValue == true && failedExec.ActualStatus.HasValue)
@@ -405,10 +417,25 @@ public static class SecurityScenarioEnricher
         int? expectedStatus,
         int? actualStatus,
         string? errorMessage,
+        bool? passedOverride = null) =>
+        MapSingleExecutionInternal(capture, suite, apiBaseUrl, vulnerabilityType, endpointKey, httpMethod,
+            expectedStatus, actualStatus, errorMessage, passedOverride);
+
+    private static SecurityExecutionResult MapSingleExecutionInternal(
+        SecurityScenarioCapture capture,
+        string suite,
+        string apiBaseUrl,
+        string vulnerabilityType,
+        string endpointKey,
+        string httpMethod,
+        int? expectedStatus,
+        int? actualStatus,
+        string? errorMessage,
         bool? passedOverride = null)
     {
         var endpointPath = TryResolveEndpoint(endpointKey);
-        var fullUrl = CombineUrl(apiBaseUrl, endpointPath);
+        var effectiveBaseUrl = ResolveApiBaseUrl(capture, apiBaseUrl);
+        var fullUrl = CombineUrl(effectiveBaseUrl, endpointPath);
         var (owasp, severity, remediationKey) = SecurityOwaspMapper.Map(vulnerabilityType, suite);
         var passed = passedOverride ?? (expectedStatus.HasValue && actualStatus.HasValue && expectedStatus == actualStatus);
 
@@ -426,17 +453,32 @@ public static class SecurityScenarioEnricher
             ActualStatus = actualStatus,
             ErrorMessage = errorMessage,
             RemediationKey = remediationKey,
-            ResultReason = BuildResultReason(passed, vulnerabilityType, expectedStatus, actualStatus, errorMessage)
+            ResultReason = BuildResultReason(capture, passed, vulnerabilityType, expectedStatus, actualStatus, errorMessage)
         };
     }
 
+    private static string? ResolveExecutionErrorMessage(
+        SecurityScenarioCapture capture,
+        int? expected,
+        int? actual)
+    {
+        if (PatientListAuthReportHelper.TryDescribeFailure(capture, expected, actual, out var described))
+            return described;
+
+        return PatientListAuthReportHelper.SanitizeAssertionError(capture.ScenarioError);
+    }
+
     private static string BuildResultReason(
+        SecurityScenarioCapture capture,
         bool passed,
         string vulnerabilityType,
         int? expected,
         int? actual,
         string? errorMessage)
     {
+        if (PatientListAuthReportHelper.TryDescribeFailure(capture, expected, actual, out var patientReason))
+            return patientReason;
+
         if (passed)
         {
             return actual.HasValue
@@ -446,11 +488,14 @@ public static class SecurityScenarioEnricher
 
         if (expected.HasValue && actual.HasValue)
         {
+            var sanitized = PatientListAuthReportHelper.SanitizeAssertionError(errorMessage);
+            var suffix = string.IsNullOrWhiteSpace(sanitized) ? string.Empty : $" Details: {sanitized}";
             return $"Expected HTTP {expected}, but API returned {actual} for {vulnerabilityType}. " +
-                   $"This indicates missing or weak authentication/authorization enforcement. {errorMessage}".Trim();
+                   $"This indicates missing or weak authentication/authorization enforcement.{suffix}".Trim();
         }
 
-        return errorMessage ?? $"Security check failed for {vulnerabilityType}.";
+        return PatientListAuthReportHelper.SanitizeAssertionError(errorMessage)
+               ?? $"Security check failed for {vulnerabilityType}.";
     }
 
     private static string BuildNarrative(
@@ -478,8 +523,32 @@ public static class SecurityScenarioEnricher
         if (stepText.Contains("valid access token", StringComparison.OrdinalIgnoreCase))
             return "Baseline login on Auth host; valid JWT stored for subsequent mutation.";
 
+        if (stepText.Contains("sends flexible", StringComparison.OrdinalIgnoreCase)
+            && stepText.Contains("patientList", StringComparison.OrdinalIgnoreCase))
+        {
+            var tokenMode = FlexibleTokenModeFromStep(stepText);
+            return tokenMode switch
+            {
+                "none" => "POST Patient List without Authorization header; expects 401.",
+                "empty" => "POST Patient List with Authorization: Bearer (empty); expects 401.",
+                "garbage" => "POST Patient List with garbage JWT (abc.def.ghi); expects 401.",
+                "malformed" => "POST Patient List with malformed JWT; expects 401.",
+                "current" => $"POST Patient List using mutated JWT from prior step ({capture.VulnerabilityType ?? "token mutation"}); expects 401.",
+                _ => "POST Patient List with configured auth token mode; expects 401."
+            };
+        }
+
+        if (stepText.Contains("expired access token", StringComparison.OrdinalIgnoreCase))
+            return "Valid JWT replaced with expired token before Patient List POST.";
+
         if (stepText.Contains("tampered access token", StringComparison.OrdinalIgnoreCase))
-            return "Valid JWT captured, then replaced with unauthorized bearer for negative test.";
+            return "Valid JWT captured, then signature/payload tampered for negative test.";
+
+        if (stepText.Contains("wrong issuer audience access token", StringComparison.OrdinalIgnoreCase))
+            return "Valid JWT replaced with wrong issuer/audience before Patient List POST.";
+
+        if (stepText.Contains("missing claim access token", StringComparison.OrdinalIgnoreCase))
+            return "Valid JWT stripped of a required claim before Patient List POST.";
 
         if (stepText.Contains("all authorization executions should pass", StringComparison.OrdinalIgnoreCase))
             return "Soft-assert aggregator verified all row-level executions passed.";
@@ -495,6 +564,12 @@ public static class SecurityScenarioEnricher
             return $"Sent {capture.HttpMethod ?? "HTTP"} request to {capture.EndpointKey ?? "configured endpoint"}.";
 
         return "Step executed as defined in Gherkin scenario.";
+    }
+
+    private static string? FlexibleTokenModeFromStep(string stepText)
+    {
+        var match = Regex.Match(stepText, @"token ""([^""]+)""", RegexOptions.IgnoreCase);
+        return match.Success ? match.Groups[1].Value.Trim().ToLowerInvariant() : null;
     }
 
     private static string InferStepType(string stepText)
@@ -542,6 +617,17 @@ public static class SecurityScenarioEnricher
         {
             return endpointKey;
         }
+    }
+
+    private static string ResolveApiBaseUrl(SecurityScenarioCapture capture, string defaultBaseUrl)
+    {
+        if (PatientListAuthReportHelper.IsPatientListAuthScenario(capture)
+            && !string.IsNullOrWhiteSpace(AppConfiguration.ApiUrls.ApimBaseUrl))
+        {
+            return AppConfiguration.ApiUrls.ApimBaseUrl;
+        }
+
+        return defaultBaseUrl;
     }
 
     private static string CombineUrl(string baseUrl, string endpointPath)

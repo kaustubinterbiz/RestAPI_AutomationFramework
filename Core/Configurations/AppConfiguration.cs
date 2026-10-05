@@ -66,6 +66,7 @@ public static class AppConfiguration
             "BaseUrl" => ApiUrls.ApiBaseUrl,
             "AuthBaseUrl" => ApiUrls.AuthBaseUrl,
             "ApiBaseUrl" => ApiUrls.ApiBaseUrl,
+            "ApimBaseUrl" => ApiUrls.ApimBaseUrl,
             _ => Instance[key] ?? string.Empty
         };
     }

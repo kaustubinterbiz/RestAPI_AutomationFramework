@@ -1,4 +1,4 @@
-Feature: Authentication for Sessions/GetSessionInfo and  Account/ExistingUser and Member/CheckEmailAvailibility API Security Authentication Tests
+Feature: Authentication
   JWT rejection checks on protected Api endpoints.
   Each scenario: apply missing/bad token → call Api → expect reject (ExpectedStatus from Excel).
   Data source: TestData/UploadFiles/ApiSecurityAuthMatrix.xlsx

@@ -322,7 +322,8 @@ public sealed class ApiClient
     Method method,
     ApiGetRequestOptions? options,
     ApiHost host,
-    string? bodyKey = null)
+    string? bodyKey = null,
+    IReadOnlyDictionary<string, string>? urlSegmentOverrides = null)
     {
         options ??= ApiGetRequestOptions.Create();
         options.ValidateProvidedValues();
@@ -332,7 +333,12 @@ public sealed class ApiClient
         Dictionary<string, string>? urlSegments = null;
         Dictionary<string, string>? queryParams = null;
 
-        if (!string.IsNullOrWhiteSpace(urlSegmentKeys))
+        if (urlSegmentOverrides is { Count: > 0 })
+        {
+            urlSegments = new Dictionary<string, string>(urlSegmentOverrides, StringComparer.OrdinalIgnoreCase);
+            resolvedEndpoint = endpoint;
+        }
+        else if (!string.IsNullOrWhiteSpace(urlSegmentKeys))
         {
             // MODE 1: URL segments only
             urlSegments = RequestBuilder.ResolvePartsFromConfig(urlSegmentKeys, config);
@@ -505,7 +511,12 @@ public sealed class ApiClient
         stopwatch.Stop();
 
         var settings = AppConfiguration.ApiUrls;
-        var baseUrl = host == ApiHost.Auth ? settings.AuthBaseUrl : settings.ApiBaseUrl;
+        var baseUrl = host switch
+        {
+            ApiHost.Auth => settings.AuthBaseUrl,
+            ApiHost.Apim => settings.ApimBaseUrl,
+            _ => settings.ApiBaseUrl
+        };
 
         ReportExecutionContext.RecordApiCall(new ApiCallRecord(
             request.Method.ToString() ?? "UNKNOWN",

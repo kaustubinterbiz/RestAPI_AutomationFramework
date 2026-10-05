@@ -45,11 +45,8 @@ public class TokenSteps
     }
 
     [When(@"User applies an expired access token")]
-    public void WhenUserAppliesAnExpiredAccessToken()
-    {
-        var validToken = _scenarioContext.Get<string>(ValidAccessTokenKey);
-        _driver.ApplyExpiredAccessToken(validToken);
-    }
+    public void WhenUserAppliesAnExpiredAccessToken() =>
+        _driver.ApplyExpiredAccessToken(ResolveBaselineToken());
 
     /// <summary>
     /// Captured valid JWT → tamper into unauthorized bearer → store for next GET (expect 401).
@@ -57,14 +54,19 @@ public class TokenSteps
     [When(@"User applies a tampered access token")]
     public void WhenUserAppliesATamperedAccessToken()
     {
-        var validToken = _scenarioContext.Get<string>(ValidAccessTokenKey);
-        validToken.Should().NotBeNullOrWhiteSpace(
-            "capture a valid access token before applying a tampered token");
-
+        var validToken = ResolveBaselineToken();
         var tampered = TokenTestHelper.GetTamperedAccessToken(validToken);
         _scenarioContext.Set(tampered, TamperedAccessTokenKey);
         _driver.ApplyTamperedAccessToken(validToken);
     }
+
+    [When(@"User applies a wrong issuer audience access token")]
+    public void WhenUserAppliesAWrongIssuerAudienceAccessToken() =>
+        _driver.ApplyWrongIssuerAudienceAccessToken(ResolveBaselineToken());
+
+    [When(@"User applies a missing claim access token")]
+    public void WhenUserAppliesAMissingClaimAccessToken() =>
+        _driver.ApplyMissingClaimAccessToken(ResolveBaselineToken());
 
     [When(@"User sends GET request with current token only")]
     public async Task WhenUserSendsGetRequestWithCurrentTokenOnly() =>
@@ -149,5 +151,26 @@ public class TokenSteps
         }
 
         return LoginResponseParser.TryGetAccessToken(response?.Content);
+    }
+
+    private string ResolveBaselineToken()
+    {
+        if (_scenarioContext.TryGetValue(ValidAccessTokenKey, out string valid)
+            && !string.IsNullOrWhiteSpace(valid))
+        {
+            return valid;
+        }
+
+        if (_scenarioContext.TryGetValue(TokenContext.StoredAccessTokenKey, out string stored)
+            && !string.IsNullOrWhiteSpace(stored))
+        {
+            return stored;
+        }
+
+        if (!string.IsNullOrWhiteSpace(TokenManager.AccessToken))
+            return TokenManager.AccessToken;
+
+        throw new InvalidOperationException(
+            "A valid access token is required. Run login and store token first.");
     }
 }

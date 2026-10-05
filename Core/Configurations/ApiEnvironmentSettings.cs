@@ -10,5 +10,7 @@ public sealed class ApiEnvironmentSettings
 
     public string ApiBaseUrl { get; set; } = string.Empty;
 
+    public string ApimBaseUrl { get; set; } = string.Empty;
+
     public int TimeoutMilliseconds { get; set; } = 30_000;
 }

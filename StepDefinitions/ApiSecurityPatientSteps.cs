@@ -17,7 +17,7 @@ public class ApiSecurityPatientSteps
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(testCaseId);
 
-        var entry = PatientSecurityMatrixReader.FindByTestCaseId(testCaseId)
+               var entry = PatientSecurityMatrixReader.FindByTestCaseId(testCaseId)
             ?? throw new InvalidOperationException(
                 $"No Patient security row found for TestCaseId '{testCaseId}'.");
 
