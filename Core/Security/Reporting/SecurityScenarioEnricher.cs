@@ -67,11 +67,11 @@ public static class SecurityScenarioEnricher
 
     public static int? InferExpectedStatusFromSteps(IReadOnlyList<string> stepTexts)
     {
-        foreach (var step in stepTexts)
+        for (var i = stepTexts.Count - 1; i >= 0; i--)
         {
             var match = Regex.Match(
-                step,
-                @"(?:the API status code should be|Status code should be|Authorization status code should be)\s+(\d+)",
+                stepTexts[i],
+                @"(?:cross-org user must be denied GetFeatureBasedData access with status code|the API status code should be|Status code should be|Authorization status code should be)\s+(\d+)",
                 RegexOptions.IgnoreCase);
 
             if (match.Success && int.TryParse(match.Groups[1].Value, out var code))
@@ -523,6 +523,48 @@ public static class SecurityScenarioEnricher
         if (stepText.Contains("valid access token", StringComparison.OrdinalIgnoreCase))
             return "Baseline login on Auth host; valid JWT stored for subsequent mutation.";
 
+        if (stepText.Contains("GetFeatureBasedData request", StringComparison.OrdinalIgnoreCase))
+        {
+            var tokenMode = FlexibleTokenModeFromStep(stepText);
+            var dataTypeMatch = Regex.Match(stepText, @"data type ""([^""]+)""", RegexOptions.IgnoreCase);
+            var dataType = dataTypeMatch.Success ? dataTypeMatch.Groups[1].Value : "?";
+            return tokenMode switch
+            {
+                "current" => $"POST GetFeatureBasedData (dataType={dataType}) with login token from prior Auth step.",
+                _ => $"POST GetFeatureBasedData (dataType={dataType}) with token mode '{tokenMode ?? "default"}'."
+            };
+        }
+
+        if (stepText.Contains("sends flexible", StringComparison.OrdinalIgnoreCase)
+            && stepText.Contains("patientGetFeatureBasedData", StringComparison.OrdinalIgnoreCase))
+        {
+            var tokenMode = FlexibleTokenModeFromStep(stepText);
+            return tokenMode switch
+            {
+                "none" => "POST GetFeatureBasedData without Authorization header; expects 401.",
+                "empty" => "POST GetFeatureBasedData with Authorization: Bearer (empty); expects 401.",
+                "garbage" => "POST GetFeatureBasedData with garbage JWT (abc.def.ghi); expects 401.",
+                "malformed" => "POST GetFeatureBasedData with malformed JWT; expects 401.",
+                "current" => $"POST GetFeatureBasedData using mutated JWT from prior step ({capture.VulnerabilityType ?? "token mutation"}); expects 401.",
+                _ => "POST GetFeatureBasedData with configured auth token mode; expects 401."
+            };
+        }
+
+        if (stepText.Contains("sends flexible", StringComparison.OrdinalIgnoreCase)
+            && stepText.Contains("patientGetFhirData", StringComparison.OrdinalIgnoreCase))
+        {
+            var tokenMode = FlexibleTokenModeFromStep(stepText);
+            return tokenMode switch
+            {
+                "none" => "POST GetFhirData without Authorization header; expects 401.",
+                "empty" => "POST GetFhirData with Authorization: Bearer (empty); expects 401.",
+                "garbage" => "POST GetFhirData with garbage JWT (abc.def.ghi); expects 401.",
+                "malformed" => "POST GetFhirData with malformed JWT; expects 401.",
+                "current" => $"POST GetFhirData using mutated JWT from prior step ({capture.VulnerabilityType ?? "token mutation"}); expects 401.",
+                _ => "POST GetFhirData with configured auth token mode; expects 401."
+            };
+        }
+
         if (stepText.Contains("sends flexible", StringComparison.OrdinalIgnoreCase)
             && stepText.Contains("patientList", StringComparison.OrdinalIgnoreCase))
         {
@@ -539,16 +581,16 @@ public static class SecurityScenarioEnricher
         }
 
         if (stepText.Contains("expired access token", StringComparison.OrdinalIgnoreCase))
-            return "Valid JWT replaced with expired token before Patient List POST.";
+            return DescribeTokenMutationStep(stepText, "expired token");
 
         if (stepText.Contains("tampered access token", StringComparison.OrdinalIgnoreCase))
-            return "Valid JWT captured, then signature/payload tampered for negative test.";
+            return DescribeTokenMutationStep(stepText, "tampered signature/payload");
 
         if (stepText.Contains("wrong issuer audience access token", StringComparison.OrdinalIgnoreCase))
-            return "Valid JWT replaced with wrong issuer/audience before Patient List POST.";
+            return DescribeTokenMutationStep(stepText, "wrong issuer/audience");
 
         if (stepText.Contains("missing claim access token", StringComparison.OrdinalIgnoreCase))
-            return "Valid JWT stripped of a required claim before Patient List POST.";
+            return DescribeTokenMutationStep(stepText, "missing required claim");
 
         if (stepText.Contains("all authorization executions should pass", StringComparison.OrdinalIgnoreCase))
             return "Soft-assert aggregator verified all row-level executions passed.";
@@ -564,6 +606,17 @@ public static class SecurityScenarioEnricher
             return $"Sent {capture.HttpMethod ?? "HTTP"} request to {capture.EndpointKey ?? "configured endpoint"}.";
 
         return "Step executed as defined in Gherkin scenario.";
+    }
+
+    private static string DescribeTokenMutationStep(string stepText, string mutationLabel)
+    {
+        if (stepText.Contains("patientGetFeatureBasedData", StringComparison.OrdinalIgnoreCase))
+            return $"Valid JWT replaced with {mutationLabel} before GetFeatureBasedData POST.";
+
+        if (stepText.Contains("patientGetFhirData", StringComparison.OrdinalIgnoreCase))
+            return $"Valid JWT replaced with {mutationLabel} before GetFhirData POST.";
+
+        return $"Valid JWT replaced with {mutationLabel} before Patient List POST.";
     }
 
     private static string? FlexibleTokenModeFromStep(string stepText)

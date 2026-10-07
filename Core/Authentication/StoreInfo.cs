@@ -32,6 +32,8 @@ namespace EnterpriseApiAutomationFramework.Core.Authentication
             if (updateEndpointId)
                 UpsertExtractedKeys(properties);
 
+            ConfigReaderNew.UpdateJsonSection(appSettingsFile, SessionInfoSection, properties);
+
             return sessionInfo;
         }
 

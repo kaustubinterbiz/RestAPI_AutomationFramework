@@ -1,46 +1,46 @@
 using System.Text.RegularExpressions;
+using EnterpriseApiAutomationFramework.Core.Helpers;
 using EnterpriseApiAutomationFramework.Core.Security.Authentication;
 using EnterpriseApiAutomationFramework.Core.Security.Patient;
 
 namespace EnterpriseApiAutomationFramework.Core.Security.Reporting;
 
 /// <summary>
-/// Maps Patient List flexible-step auth scenarios (PAT-01–08) to vulnerability types
-/// and human-readable failure descriptions for the security living report.
+/// Maps Patient List, GetFhirData, and GetFeatureBasedData flexible-step auth scenarios (PAT/FHIR/FBD-01–08)
+/// to vulnerability types and human-readable failure descriptions for the security living report.
 /// </summary>
 public static class PatientListAuthReportHelper
 {
     private static readonly Regex PatScenarioRegex = new(@"\bPAT-(\d+)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex FhirScenarioRegex = new(@"\bFHIR-(\d+)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex FbdScenarioRegex = new(@"\bFBD-(\d+)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex FbdAuthScenarioRegex = new(@"\bFBD-AUTH-(\d+)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex FbdCrossScenarioRegex = new(@"\bFBD-CROSS-(\d+)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex FlexibleTokenRegex = new(@"token ""([^""]+)""", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex ResponseBodySuffixRegex = new(
         @",?\s*response body was:\s*[\s\S]*$",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-    public static bool IsPatientListAuthScenario(SecurityScenarioCapture capture)
-    {
-        if (PatScenarioRegex.IsMatch(capture.ScenarioName))
-            return true;
-
-        if (capture.FeatureName.Contains("Patient List", StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        var joined = string.Join(' ', capture.StepTexts);
-        return joined.Contains("endpoint \"patientList\"", StringComparison.OrdinalIgnoreCase);
-    }
+    public static bool IsPatientListAuthScenario(SecurityScenarioCapture capture) =>
+        IsFlexiblePatientAuthScenario(capture);
 
     public static bool IsPatScenarioName(string scenarioName) =>
-        PatScenarioRegex.IsMatch(scenarioName);
+        PatScenarioRegex.IsMatch(scenarioName)
+        || FhirScenarioRegex.IsMatch(scenarioName)
+        || FbdScenarioRegex.IsMatch(scenarioName)
+        || FbdAuthScenarioRegex.IsMatch(scenarioName)
+        || FbdCrossScenarioRegex.IsMatch(scenarioName);
 
     public static bool TryEnrichMetadata(SecurityScenarioCapture capture)
     {
-        if (!IsPatientListAuthScenario(capture))
+        if (!IsFlexiblePatientAuthScenario(capture))
             return false;
 
-        var patMatch = PatScenarioRegex.Match(capture.ScenarioName);
-        if (patMatch.Success)
-            capture.TestCaseId = patMatch.Value.ToUpperInvariant();
+        var scenarioId = ExtractScenarioId(capture.ScenarioName);
+        if (!string.IsNullOrWhiteSpace(scenarioId))
+            capture.TestCaseId = scenarioId;
 
-        capture.EndpointKey = "patientList";
+        capture.EndpointKey = ResolveEndpointKey(capture);
         capture.HttpMethod = "POST";
         capture.VulnerabilityType = InferVulnerabilityType(capture.StepTexts);
         return true;
@@ -75,19 +75,27 @@ public static class PatientListAuthReportHelper
     {
         description = string.Empty;
 
-        if (!IsPatientListAuthScenario(capture))
+        if (!IsFlexiblePatientAuthScenario(capture))
             return false;
 
         if (!expectedStatus.HasValue || !actualStatus.HasValue)
             return false;
 
-        var testCaseId = capture.TestCaseId ?? ExtractPatId(capture.ScenarioName) ?? "PAT-??";
+        if (FbdCrossScenarioRegex.IsMatch(capture.ScenarioName))
+            return TryDescribeCrossOrgFailure(capture, expectedStatus.Value, actualStatus.Value, out description);
+
+        if (FbdAuthScenarioRegex.IsMatch(capture.ScenarioName))
+            return TryDescribeAuthorizedAccessFailure(capture, expectedStatus.Value, actualStatus.Value, out description);
+
+        var testCaseId = capture.TestCaseId ?? ExtractScenarioId(capture.ScenarioName) ?? "PAT-??";
         var vulnerability = capture.VulnerabilityType ?? InferVulnerabilityType(capture.StepTexts);
+        var apiLabel = ResolveApiLabel(capture);
+        var endpointPath = ResolveEndpointPath(capture);
         var passed = expectedStatus == actualStatus;
 
         description = passed
-            ? BuildPassDescription(testCaseId, vulnerability, actualStatus.Value)
-            : BuildFailDescription(testCaseId, vulnerability, expectedStatus.Value, actualStatus.Value);
+            ? BuildPassDescription(testCaseId, apiLabel, vulnerability, actualStatus.Value)
+            : BuildFailDescription(testCaseId, apiLabel, endpointPath, vulnerability, expectedStatus.Value, actualStatus.Value);
 
         return true;
     }
@@ -109,12 +117,85 @@ public static class PatientListAuthReportHelper
         return cleaned;
     }
 
+    private static bool IsFlexiblePatientAuthScenario(SecurityScenarioCapture capture)
+    {
+        if (PatScenarioRegex.IsMatch(capture.ScenarioName)
+            || FhirScenarioRegex.IsMatch(capture.ScenarioName)
+            || FbdScenarioRegex.IsMatch(capture.ScenarioName)
+            || FbdAuthScenarioRegex.IsMatch(capture.ScenarioName)
+            || FbdCrossScenarioRegex.IsMatch(capture.ScenarioName))
+        {
+            return true;
+        }
+
+        if (capture.FeatureName.Contains("Patient List", StringComparison.OrdinalIgnoreCase)
+            || capture.FeatureName.Contains("GetFhirData", StringComparison.OrdinalIgnoreCase)
+            || capture.FeatureName.Contains("GetFeatureBasedData", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var joined = string.Join(' ', capture.StepTexts);
+        return joined.Contains("endpoint \"patientList\"", StringComparison.OrdinalIgnoreCase)
+            || joined.Contains($"endpoint \"{GetFhirDataRequestHelper.EndpointKey}\"", StringComparison.OrdinalIgnoreCase)
+            || joined.Contains($"endpoint \"{GetFeatureBasedDataRequestHelper.EndpointKey}\"", StringComparison.OrdinalIgnoreCase)
+            || joined.Contains("GetFeatureBasedData request", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ResolveEndpointKey(SecurityScenarioCapture capture)
+    {
+        var joined = string.Join(' ', capture.StepTexts);
+        if (joined.Contains($"endpoint \"{GetFeatureBasedDataRequestHelper.EndpointKey}\"", StringComparison.OrdinalIgnoreCase)
+            || joined.Contains("GetFeatureBasedData request", StringComparison.OrdinalIgnoreCase)
+            || capture.FeatureName.Contains("GetFeatureBasedData", StringComparison.OrdinalIgnoreCase)
+            || FbdScenarioRegex.IsMatch(capture.ScenarioName)
+            || FbdAuthScenarioRegex.IsMatch(capture.ScenarioName)
+            || FbdCrossScenarioRegex.IsMatch(capture.ScenarioName))
+        {
+            return GetFeatureBasedDataRequestHelper.EndpointKey;
+        }
+
+        if (joined.Contains($"endpoint \"{GetFhirDataRequestHelper.EndpointKey}\"", StringComparison.OrdinalIgnoreCase)
+            || capture.FeatureName.Contains("GetFhirData", StringComparison.OrdinalIgnoreCase)
+            || FhirScenarioRegex.IsMatch(capture.ScenarioName))
+        {
+            return GetFhirDataRequestHelper.EndpointKey;
+        }
+
+        return "patientList";
+    }
+
+    private static string ResolveApiLabel(SecurityScenarioCapture capture) =>
+        ResolveEndpointKey(capture) switch
+        {
+            var key when string.Equals(key, GetFeatureBasedDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase)
+                => "GetFeatureBasedData API",
+            var key when string.Equals(key, GetFhirDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase)
+                => "GetFhirData API",
+            _ => "Patient List API"
+        };
+
+    private static string ResolveEndpointPath(SecurityScenarioCapture capture) =>
+        ResolveEndpointKey(capture) switch
+        {
+            var key when string.Equals(key, GetFeatureBasedDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase)
+                => "POST /api/v2/Patient/{patientId}/{dataType}",
+            var key when string.Equals(key, GetFhirDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase)
+                => "POST /api/v2/Patient/{businessunitId}/GetFhirData",
+            _ => "POST /api/v2/Patient/{businessunitId}/Patients"
+        };
+
     private static string? ParseFlexibleTokenMode(IReadOnlyList<string> stepTexts)
     {
         for (var i = stepTexts.Count - 1; i >= 0; i--)
         {
-            if (!stepTexts[i].Contains("patientList", StringComparison.OrdinalIgnoreCase))
+            if (!stepTexts[i].Contains("patientList", StringComparison.OrdinalIgnoreCase)
+                && !stepTexts[i].Contains(GetFhirDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase)
+                && !stepTexts[i].Contains(GetFeatureBasedDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase)
+                && !stepTexts[i].Contains("GetFeatureBasedData request", StringComparison.OrdinalIgnoreCase))
+            {
                 continue;
+            }
 
             var match = FlexibleTokenRegex.Match(stepTexts[i]);
             if (match.Success)
@@ -139,20 +220,75 @@ public static class PatientListAuthReportHelper
         if (joinedSteps.Contains("expired access token", StringComparison.OrdinalIgnoreCase))
             return ApiSecurityAuthConstants.ScenarioExpiredToken;
 
+        if (joinedSteps.Contains("BannerRole", StringComparison.OrdinalIgnoreCase))
+            return PatientSecurityConstants.ScenarioIdorCrossOrg;
+
         return ApiSecurityAuthConstants.ScenarioInvalidToken;
     }
 
-    private static string? ExtractPatId(string scenarioName)
+    private static string? ExtractScenarioId(string scenarioName)
     {
-        var match = PatScenarioRegex.Match(scenarioName);
-        return match.Success ? match.Value.ToUpperInvariant() : null;
+        var fbdCrossMatch = FbdCrossScenarioRegex.Match(scenarioName);
+        if (fbdCrossMatch.Success)
+            return fbdCrossMatch.Value.ToUpperInvariant();
+
+        var fbdAuthMatch = FbdAuthScenarioRegex.Match(scenarioName);
+        if (fbdAuthMatch.Success)
+            return fbdAuthMatch.Value.ToUpperInvariant();
+
+        var fbdMatch = FbdScenarioRegex.Match(scenarioName);
+        if (fbdMatch.Success)
+            return fbdMatch.Value.ToUpperInvariant();
+
+        var fhirMatch = FhirScenarioRegex.Match(scenarioName);
+        if (fhirMatch.Success)
+            return fhirMatch.Value.ToUpperInvariant();
+
+        var patMatch = PatScenarioRegex.Match(scenarioName);
+        return patMatch.Success ? patMatch.Value.ToUpperInvariant() : null;
     }
 
-    private static string BuildPassDescription(string testCaseId, string vulnerability, int actualStatus) =>
-        $"[{testCaseId}] Patient List API correctly returned HTTP {actualStatus} for {FormatVulnerabilityLabel(vulnerability)}. JWT authentication gate is enforced.";
+    private static bool TryDescribeAuthorizedAccessFailure(
+        SecurityScenarioCapture capture,
+        int expectedStatus,
+        int actualStatus,
+        out string description)
+    {
+        description = string.Empty;
+        var testCaseId = capture.TestCaseId ?? ExtractScenarioId(capture.ScenarioName) ?? "FBD-AUTH-??";
+        var passed = expectedStatus == actualStatus;
+
+        description = passed
+            ? $"[{testCaseId}] HospitalRole login token correctly returned HTTP {actualStatus} for GetFeatureBasedData authorized access."
+            : $"[{testCaseId}] HospitalRole authorized GetFeatureBasedData call failed — expected HTTP {expectedStatus}, got HTTP {actualStatus}.";
+
+        return true;
+    }
+
+    private static bool TryDescribeCrossOrgFailure(
+        SecurityScenarioCapture capture,
+        int expectedStatus,
+        int actualStatus,
+        out string description)
+    {
+        description = string.Empty;
+        var testCaseId = capture.TestCaseId ?? ExtractScenarioId(capture.ScenarioName) ?? "FBD-CROSS-??";
+        var passed = expectedStatus == actualStatus;
+
+        description = passed
+            ? $"[{testCaseId}] BannerRole was correctly denied HTTP {expectedStatus} when accessing Hospital patientId via GetFeatureBasedData."
+            : $"[{testCaseId}] SECURITY BREACH — BannerRole received HTTP {actualStatus} for Hospital-owned patientId (expected HTTP {expectedStatus}). Cross-organization PHI access is not blocked.";
+
+        return true;
+    }
+
+    private static string BuildPassDescription(string testCaseId, string apiLabel, string vulnerability, int actualStatus) =>
+        $"[{testCaseId}] {apiLabel} correctly returned HTTP {actualStatus} for {FormatVulnerabilityLabel(vulnerability)}. JWT authentication gate is enforced.";
 
     private static string BuildFailDescription(
         string testCaseId,
+        string apiLabel,
+        string endpointPath,
         string vulnerability,
         int expectedStatus,
         int actualStatus)
@@ -160,9 +296,9 @@ public static class PatientListAuthReportHelper
         var condition = DescribeAuthCondition(vulnerability);
         var breachDetail = DescribeSecurityBreach(vulnerability, actualStatus);
 
-        return $"[{testCaseId}] SECURITY BREACH — Patient List API returned HTTP {actualStatus} when {condition} (expected HTTP {expectedStatus}). " +
+        return $"[{testCaseId}] SECURITY BREACH — {apiLabel} returned HTTP {actualStatus} when {condition} (expected HTTP {expectedStatus}). " +
                $"{breachDetail} " +
-               $"Root cause: JWT validation is missing or bypassed on POST /api/v2/Patient/{{businessunitId}}/Patients (OWASP API2: Broken Authentication).";
+               $"Root cause: JWT validation is missing or bypassed on {endpointPath} (OWASP API2: Broken Authentication).";
     }
 
     private static string DescribeSecurityBreach(string vulnerability, int actualStatus)

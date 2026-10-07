@@ -169,9 +169,51 @@ public static class ExcelConfigBootstrap
     /// <summary>
     /// Ensures LoginRequest.xlsx RoleGroups sheet exists and AddMemberRole rows are seeded/migrated.
     /// </summary>
+    /// <summary>
+    /// Ensures BannerRole exists in LoginRequest.xlsx (cross-org GetFeatureBasedData tests).
+    /// </summary>
+    public static void EnsureBannerRole()
+    {
+        EnsureLoginRequestWorkbook();
+
+        if (ExcelConfigReader.TryGetLoginRoleRow("BannerRole", out _))
+            return;
+
+        if (!ExcelConfigReader.TryGetLoginRoleRow("HospitalRole", out var hospitalRole))
+        {
+            throw new InvalidOperationException(
+                "Cannot seed BannerRole: HospitalRole row is missing from LoginRequest.xlsx.");
+        }
+
+        var rowData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            [TestConfigDefaults.RoleColumn] = "BannerRole",
+            ["username"] = "Banner1@rovicare.com",
+            ["password"] = "RoviPass@123"
+        };
+
+        foreach (var field in TestConfigDefaults.LoginCredentialColumns)
+        {
+            if (string.Equals(field, "username", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(field, "password", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (hospitalRole.TryGetValue(field, out var value) && !string.IsNullOrWhiteSpace(value))
+                rowData[field] = value;
+        }
+
+        ExcelReader.AddRow(
+            TestConfigDefaults.LoginExcelFile,
+            TestConfigDefaults.LoginRolesSheet,
+            rowData);
+    }
+
     public static void EnsureRoleGroupsSheet()
     {
         EnsureLoginRequestWorkbook();
+        EnsureBannerRole();
 
         var excelPath = GetWorkbookWritePath(TestConfigDefaults.LoginExcelFile);
         ExcelReader.WithWorkbook(excelPath, workbook =>

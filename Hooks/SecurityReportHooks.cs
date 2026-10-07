@@ -212,6 +212,9 @@ public class SecurityReportHooks
                 return "Patient Security / IDOR";
             if (tags.Any(t => t.Equals("InputValidation", StringComparison.OrdinalIgnoreCase)))
                 return "Patient Security / InputValidation";
+            if (tags.Any(t => t.Equals("CrossOrg", StringComparison.OrdinalIgnoreCase))
+                || tags.Any(t => t.Equals("Authorization", StringComparison.OrdinalIgnoreCase)))
+                return "Patient Security / Authorization";
             return "Patient Security / Authentication";
         }
 

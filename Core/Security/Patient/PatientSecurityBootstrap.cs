@@ -23,6 +23,7 @@ public static class PatientSecurityBootstrap
         var endpoints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["patientGetFhirData"] = "api/v2/Patient/{businessunitId}/GetFhirData",
+            ["patientGetFeatureBasedData"] = "api/v2/Patient/{patientId}/{dataType}",
             ["patientGetByDataType"] = "api/v2/Patient/{patientId}/{dataType}",
             ["patientUpdateByDataType"] = "api/v2/Patient/{patientId}/{dataType}",
             ["patientFacesheet"] = "api/v2/Patient/Facesheet/{patientId}/{businessunitId}",
@@ -35,22 +36,13 @@ public static class PatientSecurityBootstrap
 
         foreach (var (key, path) in endpoints)
         {
-            try
-            {
-                _ = ExcelConfigReader.GetEndpoint(key);
-                continue;
-            }
-            catch
-            {
-                // add below
-            }
-
-            ExcelReader.AddRow(
+            ExcelConfigWriter.UpsertBySearchColumn(
                 TestConfigDefaults.EndpointExcelFile,
                 TestConfigDefaults.EndpointSheet,
+                TestConfigDefaults.KeyColumn,
+                key,
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
-                    [TestConfigDefaults.KeyColumn] = key,
                     [TestConfigDefaults.ValueColumn] = path
                 });
         }
@@ -60,7 +52,8 @@ public static class PatientSecurityBootstrap
     {
         var bodies = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["patientGetFhirData_Body"] = """{"businessUnitIds":["67793c57-831f-11ea-bd7d-04d9f5ab62dc"],"currentBusinessUnitId":"67793c57-831f-11ea-bd7d-04d9f5ab62dc"}""",
+            ["patientGetFhirData_Body"] = """{"businessUnitIds":["{{BusinessUnitId}}"],"currentBusinessUnitId":"{{BusinessUnitId}}"}""",
+            ["patientGetFeatureBasedData_Body"] = """{"PatientDemographic":{"Filter":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10}},"AllergyIntolerance":{"FilterModel":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10}},"Condition":{"Filter":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10}},"Coverage":{"Filter":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10}},"Immunization":{"Filter":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10}},"MedicationRequest":{"Filter":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10}},"ProgressNote":{"Filter":{"BusinessUnitId":"{{BusinessUnitId}}","Limit":10,"ShowAllProgressNotes":false},"Output":{"ProgressNote":true}}}""",
             ["patientUpdate_Body"] = """{"firstName":"SecurityTest","lastName":"Patient"}""",
             ["patientFacesheet_Body"] = """{"includeAllSections":true}""",
             ["patientDelete_Body"] = """{"0":"1"}""",

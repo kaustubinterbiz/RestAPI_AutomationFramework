@@ -4,6 +4,7 @@ using EnterpriseApiAutomationFramework.Core.Builders;
 using EnterpriseApiAutomationFramework.Core.Clients;
 using EnterpriseApiAutomationFramework.Core.Configurations;
 using EnterpriseApiAutomationFramework.Core.Helpers;
+using EnterpriseApiAutomationFramework.Core.Security.Patient;
 using EnterpriseApiAutomationFramework.Core.Security.Reporting;
 using EnterpriseApiAutomationFramework.Core.Validators;
 using EnterpriseApiAutomationFramework.Drivers;
@@ -79,6 +80,9 @@ public class UserSteps
     [When("User sends POST request on {string} base url with {string}")]
     public async Task WhenUserSendsPOSTRequestOnBaseUrlWith(string baseUrlType,string loginRoleKey)
     {
+        if (string.Equals(loginRoleKey, "BannerRole", StringComparison.OrdinalIgnoreCase))
+            ExcelConfigBootstrap.EnsureBannerRole();
+
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
 
         SaveResponse(host == ApiHost.Auth
@@ -157,7 +161,7 @@ public class UserSteps
         string urlSegments,
         string tokenModeText)
     {
-        EnsurePatientListExcel(endpointKey);
+        EnsurePatientEndpointExcel(endpointKey);
 
         var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
         var tokenMode = FlexibleTokenModeParser.Parse(tokenModeText);
@@ -169,12 +173,37 @@ public class UserSteps
             options = ApiGetRequestOptions.Create().SetBody(PatientListRequestHelper.ResolvePatientListBodyJson());
             bodyKey = null;
         }
+        else if (string.Equals(bodyKey, GetFhirDataRequestHelper.BodySheetKey, StringComparison.OrdinalIgnoreCase))
+        {
+            options = ApiGetRequestOptions.Create().SetBody(GetFhirDataRequestHelper.ResolveGetFhirDataBodyJson());
+            bodyKey = null;
+        }
+        else if (string.Equals(bodyKey, GetFeatureBasedDataRequestHelper.BodySheetKey, StringComparison.OrdinalIgnoreCase))
+        {
+            options = ApiGetRequestOptions.Create().SetBody(GetFeatureBasedDataRequestHelper.ResolveGetFeatureBasedDataBodyJson());
+            bodyKey = null;
+        }
+        else if (string.Equals(bodyKey, PatientSearchRequestHelper.BodySheetKey, StringComparison.OrdinalIgnoreCase))
+        {
+            options = ApiGetRequestOptions.Create().SetBody(PatientSearchRequestHelper.ResolvePatientSearchBodyJson());
+            bodyKey = null;
+        }
 
         IReadOnlyDictionary<string, string>? urlSegmentOverrides = null;
         string? urlSegmentKeys = ToOptionalKey(urlSegments);
         if (string.Equals(endpointKey, "patientList", StringComparison.OrdinalIgnoreCase))
         {
             urlSegmentOverrides = PatientListRequestHelper.ResolvePatientListUrlSegments();
+            urlSegmentKeys = null;
+        }
+        else if (string.Equals(endpointKey, GetFhirDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase))
+        {
+            urlSegmentOverrides = GetFhirDataRequestHelper.ResolveGetFhirDataUrlSegments();
+            urlSegmentKeys = null;
+        }
+        else if (string.Equals(endpointKey, GetFeatureBasedDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase))
+        {
+            urlSegmentOverrides = GetFeatureBasedDataRequestHelper.ResolveGetFeatureBasedDataUrlSegments();
             urlSegmentKeys = null;
         }
 
@@ -194,13 +223,88 @@ public class UserSteps
             urlSegmentOverrides: urlSegmentOverrides));
     }
 
-    private static int _patientListExcelInitialized;
-
-    private static void EnsurePatientListExcel(string endpointKey)
+    [When(@"User sends Patient Search request on ""([^""]*)"" with insurance ""([^""]*)"" sort ""([^""]*)"" by ""([^""]*)"" token ""([^""]*)""")]
+    public async Task WhenUserSendsPatientSearchRequestWithFilters(
+        string baseUrlType,
+        string insurance,
+        string sort,
+        string by,
+        string tokenModeText)
     {
-        if (!string.Equals(endpointKey, "patientList", StringComparison.OrdinalIgnoreCase))
-            return;
+        EnsurePatientSearchExcel();
 
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        var tokenMode = FlexibleTokenModeParser.Parse(tokenModeText);
+        var options = ApiGetRequestOptions.Create()
+            .SetBody(PatientSearchRequestHelper.ResolvePatientSearchBodyJson(insurance, sort, by));
+
+        SaveResponse(await _driver.SendFlexibleRequestAsync(
+            configFile: "appsettings.json",
+            urlPlaceholderKeys: null,
+            targetValue: null,
+            headerKeys: "CacheId",
+            queryParamKeys: null,
+            urlSegmentKeys: null,
+            method: Method.Post,
+            endpointKey: PatientSearchRequestHelper.EndpointKey,
+            host: host,
+            options: options,
+            bodyKey: null,
+            tokenMode: tokenMode,
+            urlSegmentOverrides: null));
+    }
+
+    [When(@"User sends GetFeatureBasedData request on ""([^""]*)"" for data type ""([^""]*)"" with token ""([^""]*)""")]
+    public async Task WhenUserSendsGetFeatureBasedDataRequest(
+        string baseUrlType,
+        string dataType,
+        string tokenModeText)
+    {
+        ExcelConfigBootstrap.EnsureBannerRole();
+        EnsureGetFeatureBasedDataExcel();
+
+        var host = ApiHostStepHelper.ApplyBaseUrlType(baseUrlType);
+        var tokenMode = FlexibleTokenModeParser.Parse(tokenModeText);
+        var urlSegmentOverrides = GetFeatureBasedDataRequestHelper.ResolveGetFeatureBasedDataUrlSegments(
+            dataTypeOverride: dataType);
+        var options = ApiGetRequestOptions.Create()
+            .SetBody(GetFeatureBasedDataRequestHelper.ResolveGetFeatureBasedDataBodyJson());
+
+        SaveResponse(await _driver.SendFlexibleRequestAsync(
+            configFile: "appsettings.json",
+            urlPlaceholderKeys: null,
+            targetValue: null,
+            headerKeys: "CacheId",
+            queryParamKeys: null,
+            urlSegmentKeys: null,
+            method: Method.Post,
+            endpointKey: GetFeatureBasedDataRequestHelper.EndpointKey,
+            host: host,
+            options: options,
+            bodyKey: null,
+            tokenMode: tokenMode,
+            urlSegmentOverrides: urlSegmentOverrides));
+    }
+
+    private static int _patientListExcelInitialized;
+    private static int _getFhirDataExcelInitialized;
+    private static int _getFeatureBasedDataExcelInitialized;
+    private static int _patientSearchExcelInitialized;
+
+    private static void EnsurePatientEndpointExcel(string endpointKey)
+    {
+        if (string.Equals(endpointKey, "patientList", StringComparison.OrdinalIgnoreCase))
+            EnsurePatientListExcel();
+        else if (string.Equals(endpointKey, GetFhirDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase))
+            EnsureGetFhirDataExcel();
+        else if (string.Equals(endpointKey, GetFeatureBasedDataRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase))
+            EnsureGetFeatureBasedDataExcel();
+        else if (string.Equals(endpointKey, PatientSearchRequestHelper.EndpointKey, StringComparison.OrdinalIgnoreCase))
+            EnsurePatientSearchExcel();
+    }
+
+    private static void EnsurePatientListExcel()
+    {
         if (Interlocked.CompareExchange(ref _patientListExcelInitialized, 1, 0) == 0)
         {
             ExcelConfigBootstrap.EnsureRequestEndPointWorkbook();
@@ -226,6 +330,77 @@ public class UserSteps
         UpsertPatientListBodyTemplate();
     }
 
+    private static void EnsureGetFhirDataExcel()
+    {
+        if (Interlocked.CompareExchange(ref _getFhirDataExcelInitialized, 1, 0) == 0)
+        {
+            ExcelConfigBootstrap.EnsureRequestEndPointWorkbook();
+            ExcelConfigBootstrap.EnsureRequestBodyWorkbook();
+
+            try
+            {
+                _ = ExcelConfigReader.GetEndpoint(GetFhirDataRequestHelper.EndpointKey);
+            }
+            catch
+            {
+                ExcelReader.AddRow(
+                    TestConfigDefaults.EndpointExcelFile,
+                    TestConfigDefaults.EndpointSheet,
+                    new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        [TestConfigDefaults.KeyColumn] = GetFhirDataRequestHelper.EndpointKey,
+                        [TestConfigDefaults.ValueColumn] = "api/v2/Patient/{businessunitId}/GetFhirData"
+                    });
+            }
+        }
+
+        UpsertGetFhirDataBodyTemplate();
+    }
+
+    private static void EnsureGetFeatureBasedDataExcel()
+    {
+        if (Interlocked.CompareExchange(ref _getFeatureBasedDataExcelInitialized, 1, 0) == 0)
+        {
+            ExcelConfigBootstrap.EnsureRequestEndPointWorkbook();
+            ExcelConfigBootstrap.EnsureRequestBodyWorkbook();
+
+            const string endpointPath = "api/v2/Patient/{patientId}/{dataType}";
+            ExcelConfigWriter.UpsertBySearchColumn(
+                TestConfigDefaults.EndpointExcelFile,
+                TestConfigDefaults.EndpointSheet,
+                TestConfigDefaults.KeyColumn,
+                GetFeatureBasedDataRequestHelper.EndpointKey,
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [TestConfigDefaults.ValueColumn] = endpointPath
+                });
+        }
+
+        UpsertGetFeatureBasedDataBodyTemplate();
+    }
+
+    private static void EnsurePatientSearchExcel()
+    {
+        if (Interlocked.CompareExchange(ref _patientSearchExcelInitialized, 1, 0) == 0)
+        {
+            ExcelConfigBootstrap.EnsureRequestEndPointWorkbook();
+            ExcelConfigBootstrap.EnsureRequestBodyWorkbook();
+
+            ExcelConfigWriter.UpsertBySearchColumn(
+                TestConfigDefaults.EndpointExcelFile,
+                TestConfigDefaults.EndpointSheet,
+                TestConfigDefaults.KeyColumn,
+                PatientSearchRequestHelper.EndpointKey,
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [TestConfigDefaults.ValueColumn] = "api/v2/Patient/Search/1"
+                });
+        }
+
+        UpsertPatientSearchBodyTemplate();
+        UpsertPatientSearchFilterRows();
+    }
+
     private static void UpsertPatientListBodyTemplate()
     {
         var filePath = FileUploadHelper.GetFilePath(TestConfigDefaults.BodyExcelFile);
@@ -242,6 +417,88 @@ public class UserSteps
             sheet.Cell(2, 1).Value = TestConfigDefaults.BodyRawJsonMarker;
             sheet.Cell(2, 2).Value = PatientListRequestHelper.PatientListBodyTemplate;
         }, save: true);
+    }
+
+    private static void UpsertGetFhirDataBodyTemplate()
+    {
+        var filePath = FileUploadHelper.GetFilePath(TestConfigDefaults.BodyExcelFile);
+        ExcelReader.WithWorkbook(filePath, workbook =>
+        {
+            var sheetName = GetFhirDataRequestHelper.BodySheetKey;
+            if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+            {
+                sheet = workbook.AddWorksheet(sheetName);
+                sheet.Cell(1, 1).Value = TestConfigDefaults.FieldColumn;
+                sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+            }
+
+            sheet.Cell(2, 1).Value = TestConfigDefaults.BodyRawJsonMarker;
+            sheet.Cell(2, 2).Value = GetFhirDataRequestHelper.GetFhirDataBodyTemplate;
+        }, save: true);
+    }
+
+    private static void UpsertGetFeatureBasedDataBodyTemplate()
+    {
+        var filePath = FileUploadHelper.GetFilePath(TestConfigDefaults.BodyExcelFile);
+        ExcelReader.WithWorkbook(filePath, workbook =>
+        {
+            var sheetName = GetFeatureBasedDataRequestHelper.BodySheetKey;
+            if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+            {
+                sheet = workbook.AddWorksheet(sheetName);
+                sheet.Cell(1, 1).Value = TestConfigDefaults.FieldColumn;
+                sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+            }
+
+            sheet.Cell(2, 1).Value = TestConfigDefaults.BodyRawJsonMarker;
+            sheet.Cell(2, 2).Value = GetFeatureBasedDataRequestHelper.GetFeatureBasedDataBodyTemplate;
+        }, save: true);
+    }
+
+    private static void UpsertPatientSearchBodyTemplate()
+    {
+        var filePath = FileUploadHelper.GetFilePath(TestConfigDefaults.BodyExcelFile);
+        ExcelReader.WithWorkbook(filePath, workbook =>
+        {
+            var sheetName = PatientSearchRequestHelper.BodySheetKey;
+            if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+            {
+                sheet = workbook.AddWorksheet(sheetName);
+                sheet.Cell(1, 1).Value = TestConfigDefaults.FieldColumn;
+                sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+            }
+
+            sheet.Cell(2, 1).Value = TestConfigDefaults.BodyRawJsonMarker;
+            sheet.Cell(2, 2).Value = PatientSearchRequestHelper.PatientSearchBodyTemplate;
+        }, save: true);
+    }
+
+    private static void UpsertPatientSearchFilterRows()
+    {
+        var filePath = FileUploadHelper.GetFilePath(TestConfigDefaults.BodyExcelFile);
+        ExcelReader.WithWorkbook(filePath, workbook =>
+        {
+            var sheetName = PatientSearchRequestHelper.FilterSheetKey;
+            if (!workbook.TryGetWorksheet(sheetName, out var sheet))
+            {
+                sheet = workbook.AddWorksheet(sheetName);
+                sheet.Cell(1, 1).Value = TestConfigDefaults.KeyColumn;
+                sheet.Cell(1, 2).Value = TestConfigDefaults.ValueColumn;
+            }
+        }, save: true);
+
+        foreach (var (key, value) in PatientSearchRequestHelper.DefaultFilterValues)
+        {
+            ExcelConfigWriter.UpsertBySearchColumn(
+                TestConfigDefaults.BodyExcelFile,
+                PatientSearchRequestHelper.FilterSheetKey,
+                TestConfigDefaults.KeyColumn,
+                key,
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [TestConfigDefaults.ValueColumn] = value
+                });
+        }
     }
 
     private static string? ToOptionalKey(string value) =>
@@ -389,6 +646,34 @@ public class UserSteps
     {
         _context.Set(statusCode, SecurityReportingConstants.LastExpectedStatusKey);
         ResponseValidator.ValidateStatusCode(TokenContext.GetLastResponse(_context), statusCode);
+    }
+
+    [Then(@"cross-org user must be denied GetFeatureBasedData access with status code (.*)")]
+    public void ThenCrossOrgUserMustBeDeniedGetFeatureBasedDataAccess(int expectedStatus)
+    {
+        _context.Set(expectedStatus, SecurityReportingConstants.LastExpectedStatusKey);
+
+        var response = TokenContext.GetLastResponse(_context);
+        var actualStatus = (int)response.StatusCode;
+
+        if (actualStatus == expectedStatus)
+            return;
+
+        var hospitalPatientId = GetFeatureBasedDataRequestHelper.ResolvePatientId();
+        var content = response.Content ?? string.Empty;
+        var hasPhiLeak = content.Contains(hospitalPatientId, StringComparison.OrdinalIgnoreCase)
+            && content.Contains("\"FirstName\":", StringComparison.Ordinal)
+            && !content.Contains("\"FirstName\":null", StringComparison.Ordinal);
+
+        var phiNote = PatientSecurityPhiAssert.ValidateNoSensitiveLeak(content);
+        if (hasPhiLeak || phiNote != null)
+        {
+            Assert.Fail(
+                $"SECURITY BREACH: Cross-org user received HTTP {actualStatus} with hospital patient data " +
+                $"(patientId={hospitalPatientId}). Expected HTTP {expectedStatus}.{(phiNote != null ? $" {phiNote}" : string.Empty)}");
+        }
+
+        ResponseValidator.ValidateStatusCode(response, expectedStatus);
     }
 
     [Then("Status should be (.*)")]
