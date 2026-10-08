@@ -8,6 +8,7 @@ namespace EnterpriseApiAutomationFramework.Core.Helpers;
 /// Read and write Excel files stored in TestData/UploadFiles/.
 /// Pass only the filename and sheet name — folder path is auto-resolved.
 /// First row of every sheet is always treated as the header row.
+/// When Excel is open, reads use the last saved content on disk (not unsaved in-app edits).
 /// </summary>
 public static class ExcelReader
 {
@@ -42,9 +43,15 @@ public static class ExcelReader
     internal static T WithWorkbook<T>(string filePath, Func<XLWorkbook, T> body, bool save)
     {
         var fullPath = Path.GetFullPath(filePath);
-        return WithFileMutex(fullPath, () => RunWithRetry(() => save
-            ? MutateInMemory(fullPath, body)
-            : ReadInMemory(fullPath, body)));
+        return WithFileMutex(fullPath, () => RunWithRetry(() =>
+        {
+            if (!save)
+                ExcelOpenFileDetector.WarnIfWorkbookPossiblyOpen(fullPath);
+
+            return save
+                ? MutateInMemory(fullPath, body)
+                : ReadInMemory(fullPath, body);
+        }));
     }
 
     internal static void WithWorkbook(string filePath, Action<XLWorkbook> body, bool save) =>
@@ -75,14 +82,8 @@ public static class ExcelReader
     }
 
     /// <summary>Reads the whole file into memory, tolerating other open handles, then closes it.</summary>
-    private static byte[] ReadAllBytesShared(string fullPath)
-    {
-        using var fs = new FileStream(
-            fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using var ms = new MemoryStream();
-        fs.CopyTo(ms);
-        return ms.ToArray();
-    }
+    private static byte[] ReadAllBytesShared(string fullPath) =>
+        WorkbookFileAccess.ReadAllBytesAllowSharing(fullPath);
 
     /// <summary>
     /// Writes bytes to <paramref name="fullPath"/> without holding the handle open.

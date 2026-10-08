@@ -15,6 +15,20 @@ public static class FileUploadHelper
     }
 
     /// <summary>
+    /// Path for multipart uploads: temp snapshot via shared read when possible (Excel may be open).
+    /// Falls back to <see cref="GetFilePath"/> when snapshot creation fails.
+    /// </summary>
+    public static string GetUploadPath(string fileName)
+    {
+        var sourcePath = GetFilePath(fileName);
+        if (!File.Exists(sourcePath))
+            return sourcePath;
+
+        var snapshot = WorkbookFileAccess.TryCreateUploadSnapshot(Path.GetFullPath(sourcePath));
+        return snapshot ?? sourcePath;
+    }
+
+    /// <summary>
     /// Builds a FileUploadRequest by resolving the file path automatically.
     /// </summary>
     /// <param name="endpointKey">Key from RequestEndPoint.json (e.g. "UploadDocument").</param>
@@ -33,7 +47,7 @@ public static class FileUploadHelper
         {
             Endpoint          = endpointKey,
             FileParameterName = fileParameterName,
-            FilePath          = GetFilePath(fileName),
+            FilePath          = GetUploadPath(fileName),
             FormFields        = formFields,
             Headers           = headers
         };

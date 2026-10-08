@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Security Living Report — 20261007_132451_978_869f</title>
+<title>Security Living Report — 20261008_112158_229_8a33</title>
 <style>
   :root { --bg:#f0f4f8; --card:#fff; --text:#1e293b; --muted:#64748b; --pass:#059669; --fail:#dc2626; --warn:#d97706; --border:#e2e8f0; }
   * { box-sizing: border-box; }
@@ -74,13 +74,13 @@
 </head>
 <body>
 <header class="page-header">
-<h1>API Security Living Documentation Report</h1>
-<p class="meta">Run ID: <strong>20261007_132451_978_869f</strong> | Mode: <strong>SingleScenario</strong> | Environment: <strong>QA</strong></p>
-<p class="meta">Started: 2026-10-07 18:54:51 (local) | Report file: <strong>security-living-report_20261007_132451_978_869f.html</strong> | <a href="index.html" style="color:#93c5fd">All runs</a></p>
+<h1>API Security Living Report — Consolidated Run (18 scenarios)</h1>
+<p class="meta">Run ID: <strong>20261008_112158_229_8a33</strong> | Mode: <strong>Batch</strong> | Environment: <strong>QA</strong></p>
+<p class="meta">Started: 2026-10-08 16:51:58 (local) | Report file: <strong>security-living-report_20261008_112158_229_8a33.html</strong> | <a href="index.html" style="color:#93c5fd">All runs</a></p>
 </header>
 <div class="cards">
-<div class="stat-card pass"><div class="label">Scenarios Passed</div><div class="value">1/1</div></div>
-<div class="stat-card pass"><div class="label">Checks Passed</div><div class="value">1/1</div></div>
+<div class="stat-card pass"><div class="label">Scenarios Passed</div><div class="value">18/18</div></div>
+<div class="stat-card pass"><div class="label">Checks Passed</div><div class="value">18/18</div></div>
 <div class="stat-card pass"><div class="label">Success Rate</div><div class="value">100%</div></div>
 <div class="stat-card pass"><div class="label">Failed Scenarios</div><div class="value">0</div></div>
 </div>
@@ -93,11 +93,11 @@
 <h2>Executive Summary</h2>
 <table class="meta-table"><tbody>
 <tr><td>Project Name</td><td>Enterprise API Security Automation Framework</td></tr>
-<tr><td>Run Mode</td><td>SingleScenario</td></tr>
+<tr><td>Run Mode</td><td>Batch</td></tr>
 <tr><td>Test Filter</td><td>—</td></tr>
-<tr><td>Execution Date (UTC)</td><td>2026-10-07 13:24:51 UTC</td></tr>
-<tr><td>Completed (UTC)</td><td>2026-10-07 13:24:56 UTC</td></tr>
-<tr><td>Duration</td><td>00:00:04</td></tr>
+<tr><td>Execution Date (UTC)</td><td>2026-10-08 11:21:58 UTC</td></tr>
+<tr><td>Completed (UTC)</td><td>2026-10-08 11:23:05 UTC</td></tr>
+<tr><td>Duration</td><td>00:01:07</td></tr>
 <tr><td>Target Environment</td><td>QA</td></tr>
 <tr><td>API Base URL</td><td>https://as-rc-test-api.azurewebsites.net/</td></tr>
 <tr><td>Framework</td><td>C# .NET 8 + Reqnroll + NUnit + RestSharp</td></tr>
@@ -111,7 +111,160 @@
 <td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
 <td>POST</td>
 <td>FunctionalApi</td>
-<td>PS-AUTH-1 Hospital can search patients by demographic filter</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
+<td>Functional / Regression</td>
+<td><span class="status-pill pass">Pass</span></td>
+<td><span class="sev-badge low">Low</span></td>
+</tr>
+<tr class="data-row">
+<td class="endpoint"><code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></td>
+<td>POST</td>
+<td>FunctionalApi</td>
+<td>PS-FILTER Patient search respects Insurance Sort By filters</td>
 <td>Functional / Regression</td>
 <td><span class="status-pill pass">Pass</span></td>
 <td><span class="sev-badge low">Low</span></td>
@@ -120,21 +273,21 @@
 <section id="panel-conclusion" class="panel">
 <h2>Run Conclusion</h2>
 <table class="meta-table"><tbody>
-<tr><td>Run ID</td><td>20261007_132451_978_869f</td></tr>
-<tr><td>Run Mode</td><td>SingleScenario</td></tr>
+<tr><td>Run ID</td><td>20261008_112158_229_8a33</td></tr>
+<tr><td>Run Mode</td><td>Batch</td></tr>
 <tr><td>Test Filter</td><td>—</td></tr>
-<tr><td>Scenarios</td><td>1/1 passed</td></tr>
-<tr><td>Checks</td><td>1/1 passed</td></tr>
-<tr><td>Duration</td><td>00:00:04</td></tr>
+<tr><td>Scenarios</td><td>18/18 passed</td></tr>
+<tr><td>Checks</td><td>18/18 passed</td></tr>
+<tr><td>Duration</td><td>00:01:07</td></tr>
 </tbody></table>
-<p class="conclusion-verdict">Final verdict: <span class="status-pill pass">1/1 scenarios passed (100%)</span> | Checks success: 100%</p>
+<p class="conclusion-verdict">Final verdict: <span class="status-pill pass">18/18 scenarios passed (100%)</span> | Checks success: 100%</p>
 <p class="empty-state">All scenarios passed — no failures in this run.</p>
-<p class="conclusion-footer">Run concluded at 2026-10-07 18:54:56 (local).</p>
+<p class="conclusion-footer">Run concluded at 2026-10-08 16:53:05 (local).</p>
 </section>
 <section id="panel-scenarios" class="panel">
 <h2>Detailed Scenario Breakdown</h2>
 <article class="scenario-card pass">
-<h3>PS-AUTH-1 Hospital can search patients by demographic filter</h3>
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
 <ul class="scenario-meta">
 <li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
 <li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
@@ -154,7 +307,551 @@
 </li>
 <li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
 </li>
-<li class="step-ok"><strong>When</strong> When User sends flexible &quot;Post&quot; request on &quot;Api&quot; base url for endpoint &quot;patientSearch&quot; with url placeholders &quot;-&quot; target &quot;-&quot; headers &quot;CacheId&quot; query params &quot;-&quot; body &quot;patientSearch_Body&quot; url segments &quot;-&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Recent&quot; by &quot;-&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Recent&quot; by &quot;-&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Name&quot; by &quot;A-Z&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Name&quot; by &quot;A-Z&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Name&quot; by &quot;Z-A&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Name&quot; by &quot;Z-A&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Insurance&quot; by &quot;A-Z&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Insurance&quot; by &quot;A-Z&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Insurance&quot; by &quot;Z-A&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Insurance&quot; by &quot;Z-A&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Admitted&quot; by &quot;Latest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Admitted&quot; by &quot;Latest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Admitted&quot; by &quot;Oldest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Admitted&quot; by &quot;Oldest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Discharge&quot; by &quot;Latest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Discharge&quot; by &quot;Latest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;All&quot; sort &quot;Discharge&quot; by &quot;Oldest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+</ol>
+<div class="result-box">
+<strong>FunctionalApi</strong> — <span class="status-pill pass">Pass</span><br/>
+Expected: <code>200</code> | Actual: <code>200</code><br/>
+API correctly rejected or accepted the request with HTTP 200 for FunctionalApi test (expected 200).
+</div>
+</article>
+<article class="scenario-card pass">
+<h3>PS-FILTER Patient search respects Insurance Sort By filters</h3>
+<ul class="scenario-meta">
+<li><strong>Feature:</strong> Patient Search API — Authorization | <strong>Suite:</strong> Patient Security / Authorization</li>
+<li><strong>Status:</strong> <span class="status-pill pass">Pass</span></li>
+<li><strong>Endpoint:</strong> POST <code>https://as-rc-test-api.azurewebsites.net/api/v2/Patient/Search/1</code></li>
+<li><strong>OWASP:</strong> Functional / Regression | <strong>Severity:</strong> Low</li>
+</ul>
+<h4>Step-by-step</h4><ol class="step-list">
+<li class="step-ok"><strong>When</strong> When User sends POST request on &quot;Auth&quot; base url with &quot;HospitalRole&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status should be OK<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then the access token is stored from the last login response<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends GET request for feature &quot;User API Testing&quot; with cached id<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
+</li>
+<li class="step-ok"><strong>Then</strong> Then session info from the last response is stored in appsettings<br/><em>Step executed as defined in Gherkin scenario.</em>
+</li>
+<li class="step-ok"><strong>When</strong> When User sends Patient Search request on &quot;Api&quot; with insurance &quot;Aetna Group&quot; sort &quot;Discharge&quot; by &quot;Oldest&quot; token &quot;current&quot;<br/><em>Sent POST request to api/v2/Patient/Search/1.</em>
 </li>
 <li class="step-ok"><strong>Then</strong> Then Status code should be 200<br/><em>Validated HTTP status from last API response against expected value.</em>
 </li>
