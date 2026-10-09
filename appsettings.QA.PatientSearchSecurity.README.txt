@@ -1,0 +1,28 @@
+Patient Search Security (@PatientSearch) — plain English scenarios
+====================================================================
+
+Gherkin uses readable steps only. Examples:
+
+  Outcome (response outline):
+    returns patients          — HTTP 200, Data has at least one patient
+    returns no patients       — HTTP 200, Data is empty
+    includes expected patient — HTTP 200, Data contains PatientSearchSecurityTestData:ExpectedPatientId
+
+  AuthProblem (authentication outline):
+    missing authorization header | empty bearer token | invalid token | etc.
+
+  Authorization scenarios:
+    the search should succeed for this user
+    the other organization's patient id must not appear in the response
+      — requires PatientSecurityTestData:OrgBPatientId in appsettings
+
+Config:
+  ApiUrls:ApiBaseUrl — demographic search (curl body) uses Api + Bearer + CacheId
+  ApiUrls:ApimBaseUrl — authentication negative scenarios (TC_02)
+  Timeout — HTTP client timeout ms (default applied from appsettings; 120000 for slow search)
+  PatientSearchSecurityTestData — default demographics (fn/ln/DOB)
+  PatientSecurityTestData:OrgBPatientId — cross-org leak check
+
+If "search should succeed" fails with 401: fix Bearer token, CacheId (login+session step), and Apim access before changing assertions.
+
+Run: scripts/run-patient-search-security.ps1

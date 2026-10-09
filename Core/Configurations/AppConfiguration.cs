@@ -43,13 +43,10 @@ public static class AppConfiguration
                 _apiSettings = new ApiEnvironmentSettings();
                 Instance.GetSection("ApiUrls").Bind(_apiSettings);
 
-                if (_apiSettings.TimeoutMilliseconds <= 0)
+                var timeoutMs = Instance["ApiUrls:TimeoutMilliseconds"] ?? Instance["Timeout"];
+                if (int.TryParse(timeoutMs, out var ms) && ms > 0)
                 {
-                    var timeout = Instance["Timeout"];
-                    if (int.TryParse(timeout, out var ms) && ms > 0)
-                    {
-                        _apiSettings.TimeoutMilliseconds = ms;
-                    }
+                    _apiSettings.TimeoutMilliseconds = ms;
                 }
 
                 return _apiSettings;

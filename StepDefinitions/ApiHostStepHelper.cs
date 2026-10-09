@@ -5,7 +5,7 @@ namespace EnterpriseApiAutomationFramework.StepDefinitions;
 
 internal static class ApiHostStepHelper
 {
-    public static ApiHost ApplyBaseUrlType(string baseUrlType)
+    public static ApiHost   ApplyBaseUrlType(string baseUrlType)
     {
         var host = ApiHostResolver.ResolveFromKey(baseUrlType);
         ApiHostHooks.SetHost(host);

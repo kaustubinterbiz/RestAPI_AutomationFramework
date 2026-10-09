@@ -21,7 +21,10 @@ public static class ApiAuth
     /// </summary>
     public static async Task EnsureReadyAsync(ApiClient apiClient, string appSettingsFile = "appsettings.json")
     {
-        LoadTokenFromAppSettings(appSettingsFile);
+        if (!TokenManager.HasToken)
+        {
+            LoadTokenFromAppSettings(appSettingsFile);
+        }
 
         if (TokenManager.HasToken)
         {
@@ -29,7 +32,10 @@ public static class ApiAuth
         }
 
         await AuthService.EnsureAuthenticatedAsync(apiClient);
-        LoadTokenFromAppSettings(appSettingsFile);
+        if (!TokenManager.HasToken)
+        {
+            LoadTokenFromAppSettings(appSettingsFile);
+        }
 
         if (!TokenManager.HasToken)
         {

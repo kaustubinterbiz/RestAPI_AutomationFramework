@@ -46,7 +46,14 @@ public sealed class PatientSecurityAuthHelper
     {
         await EnsureBaselineTokenAsync(context, role);
         ApiHostStepHelper.ApplyFeatureName(AuthorizationConstants.SessionFeatureName);
-        var sessionResponse = await _driver.GetAsync();
+        var sessionResponse = await _driver.GetWithCurrentTokenAsync();
+        if (!sessionResponse.IsSuccessful)
+        {
+            throw new InvalidOperationException(
+                $"GetSessionInfo failed for role '{role}'. Status={(int)sessionResponse.StatusCode}. " +
+                $"Body={Truncate(sessionResponse.Content, 500)}");
+        }
+
         StoreInfo.SaveSessionInfoFromResponse(sessionResponse.Content);
     }
 
@@ -122,5 +129,13 @@ public sealed class PatientSecurityAuthHelper
             BearerTokenProvided = true,
             BearerToken = token
         };
+    }
+
+    private static string Truncate(string? value, int max)
+    {
+        if (string.IsNullOrEmpty(value) || value.Length <= max)
+            return value ?? string.Empty;
+
+        return value[..max] + "...";
     }
 }
